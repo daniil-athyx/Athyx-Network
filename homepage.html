@@ -573,8 +573,7 @@
         }
       }
 
-      const engine = localStorage.getItem("proxyEngine") || "scramjet";
-      const proxyPath = engine === "ultraviolet" ? "/uv/" : "/scramjet/index.html#";
+      const proxyPath = "/scramjet/index.html#";
       const proxyUrl = proxyPath + encodeURIComponent(query);
       overlayFrame.src = proxyUrl;
       searchOverlay.classList.add("show");

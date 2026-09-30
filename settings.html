@@ -973,8 +973,9 @@
               <span class="setting-title" style="font-size: 16px;">Custom Theme Color</span>
               <span class="setting-desc">Pick an accent color to dynamically generate a custom dark theme.</span>
             </div>
-            <div class="setting-control" style="justify-content: center; width: 100%;">
+            <div class="setting-control" style="flex-direction: column; align-items: center; gap: 10px; justify-content: center; width: 100%;">
               <input type="color" id="themeColorPicker" title="Choose your custom theme color" style="cursor: pointer; width: 64px; height: 64px; padding: 0; border: none; border-radius: 12px; background: none;" onchange="selectCustomTheme(this.value)" oninput="selectCustomTheme(this.value)">
+              <span id="themeColorLabel" style="font-family: monospace; font-size: 14px; color: var(--text-muted); background: var(--surface-hover); padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border-light);">#f43f5e</span>
             </div>
           </div>
 
@@ -1382,6 +1383,11 @@
     function selectCustomTheme(colorHex) {
       if (!window.AthyxThemeEngine) return;
       AthyxThemeEngine.applyTheme(colorHex);
+      
+      const label = document.getElementById("themeColorLabel");
+      if (label) {
+        label.textContent = "Custom Theme (" + colorHex + ")";
+      }
     }
 
     function toggleCompactDock() {
@@ -1721,6 +1727,11 @@
           
           colorPicker.value = hex;
           colorPicker.setAttribute("value", hex);
+          
+          const label = document.getElementById("themeColorLabel");
+          if (label) {
+            label.textContent = (theme && theme.name) ? theme.name + " (" + hex + ")" : hex;
+          }
         }
       };
       window.updateColorPickerState();

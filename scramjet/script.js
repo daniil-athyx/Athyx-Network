@@ -582,6 +582,12 @@ async function loadWispServers() {
             if (selectedOption) {
                 selectedOption.querySelector('.wisp-option-btn').textContent = 'Selected';
             }
+            
+            // Auto-select if enabled
+            const autoSwitch = document.getElementById('auto-wisp-switch');
+            if (autoSwitch && autoSwitch.checked) {
+                autoSelectFastestWisp();
+            }
         }
     } catch (e) {
         console.error('Error loading wisp.txt:', e);
@@ -653,41 +659,45 @@ async function autoSelectFastestWisp() {
     const container = document.getElementById('dynamic-wisps-container');
     if (!container) return;
     const options = Array.from(container.querySelectorAll('.wisp-option')).map(o => o.dataset.url);
-    let bestUrl = null;
-    let bestTime = Infinity;
-    for (const url of options) {
-        const start = performance.now();
-        try {
-            await new Promise((resolve, reject) => {
+    if (options.length === 0) return;
+    
+    updateWispStatus('info', 'Finding fastest WISP...');
+    
+    const promises = options.map(url => {
+        return new Promise((resolve) => {
+            const start = performance.now();
+            try {
                 const ws = new WebSocket(url);
                 const timeout = setTimeout(() => {
-                    ws.close();
-                    reject();
+                    try { ws.close(); } catch {}
+                    resolve({ url, time: Infinity });
                 }, 3000);
                 ws.onopen = () => {
                     clearTimeout(timeout);
-                    ws.close();
-                    resolve();
+                    try { ws.close(); } catch {}
+                    resolve({ url, time: performance.now() - start });
                 };
                 ws.onerror = () => {
                     clearTimeout(timeout);
-                    reject();
+                    try { ws.close(); } catch {}
+                    resolve({ url, time: Infinity });
                 };
-            });
-            const duration = performance.now() - start;
-            if (duration < bestTime) {
-                bestTime = duration;
-                bestUrl = url;
+            } catch (e) {
+                resolve({ url, time: Infinity });
             }
-        } catch (e) {
-            // ignore failed connection
-        }
-    }
-    if (bestUrl) {
-        selectWispUrl(bestUrl);
+        });
+    });
+
+    const results = await Promise.all(promises);
+    let best = results.reduce((min, curr) => curr.time < min.time ? curr : min, { time: Infinity });
+
+    if (best.time < Infinity) {
+        selectWispUrl(best.url);
         applyWispSettings();
+        updateWispStatus('success', `Selected fastest: ${best.url} (${Math.round(best.time)}ms)`);
     } else {
         alert('No reachable WISP servers found.');
+        updateWispStatus('error', 'All WISP servers offline.');
     }
 }
 
@@ -788,13 +798,16 @@ function initializeWISPEvents() {
     document.getElementById('apply-wisp-btn').addEventListener('click', applyWispSettings);
 
     // Auto-select fastest WISP button
-    
-    // Auto-select fastest WISP button
-    document.getElementById('auto-wisp-switch').addEventListener('change', (e) => {
-    if (e.target.checked) {
-        autoSelectFastestWisp();
+    const autoSwitch = document.getElementById('auto-wisp-switch');
+    if (autoSwitch) {
+        autoSwitch.checked = localStorage.getItem('autoSelectFastestWisp') !== 'false';
+        autoSwitch.addEventListener('change', (e) => {
+            localStorage.setItem('autoSelectFastestWisp', e.target.checked);
+            if (e.target.checked) {
+                autoSelectFastestWisp();
+            }
+        });
     }
-});
 
     // Close modal when clicking outside
     document.getElementById('wisp-settings-modal').addEventListener('click', (e) => {

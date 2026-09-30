@@ -861,12 +861,6 @@
           </button>
         </li>
         <li>
-          <button class="nav-item" id="nav-browsing" onclick="switchTab('browsing')" role="tab" aria-selected="false">
-            <i class="fa-solid fa-globe"></i>
-            <span>Browsing</span>
-          </button>
-        </li>
-        <li>
           <button class="nav-item" id="nav-advanced" onclick="switchTab('advanced')" role="tab" aria-selected="false">
             <i class="fa-solid fa-wrench"></i>
             <span>Advanced</span>
@@ -1012,57 +1006,6 @@
         </div>
       </section>
 
-      <!-- ================= BROWSING SECTION ================= -->
-      <section class="tab-section" id="section-browsing" style="display: none;">
-        <div class="settings-card">
-          
-
-
-          <!-- Auto-Switch on Failure -->
-          <div class="setting-row" data-search-keys="auto switch failure proxy wisp fallback fast server">
-            <div class="setting-info">
-              <span class="setting-title">Auto-switch on failure</span>
-              <span class="setting-desc">Automatically switch to the fastest working proxy server if connection drops.</span>
-            </div>
-            <div class="setting-control">
-              <div class="toggle-switch" id="wispAutoSwitchToggle" onclick="toggleWispAutoSwitch()" role="switch" aria-checked="false">
-                <div class="toggle-knob"></div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Wisp Server Header -->
-          <div class="setting-row" style="background: rgba(255, 255, 255, 0.02);">
-            <div class="setting-info">
-              <span class="setting-title"><i class="fa-solid fa-server" style="margin-right:6px;"></i> Wisp Proxy Servers</span>
-              <span class="setting-desc">Select a low-latency proxy endpoint.</span>
-            </div>
-            <div class="setting-control">
-              <button class="btn-action btn-secondary" onclick="pingAllWispServers()"><i class="fa-solid fa-rotate"></i> Ping All</button>
-            </div>
-          </div>
-
-          <!-- Wisp Server List -->
-          <div class="wisp-server-list" id="wispServerList"></div>
-
-          <!-- Add Custom Wisp Server -->
-          <div class="setting-row expanded" data-search-keys="add custom wisp server websocket proxy url">
-            <div class="setting-row-top">
-              <div class="setting-info">
-                <span class="setting-title">Add Custom Wisp Server</span>
-                <span class="setting-desc">Add your own private Wisp WebSocket endpoint.</span>
-              </div>
-            </div>
-            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px;">
-              <input type="text" id="customWispNameInput" class="input-field" placeholder="Server Name (e.g. My Wisp)" style="width: 200px;">
-              <input type="text" id="customWispUrlInput" class="input-field" placeholder="wss://example.com/wisp/" style="flex: 1; min-width: 220px;">
-              <button class="btn-action btn-primary" onclick="addCustomWispServer()"><i class="fa-solid fa-plus"></i> Add Server</button>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
       <!-- ================= ADVANCED SECTION ================= -->
       <section class="tab-section" id="section-advanced" style="display: none;">
         <div class="settings-card">
@@ -1113,7 +1056,6 @@
       const titleMap = {
         privacy: "Privacy",
         customize: "Customize",
-        browsing: "Browsing",
         advanced: "Advanced"
       };
       document.getElementById("currentTabTitle").textContent = titleMap[tabId] || "Settings";
@@ -1121,8 +1063,6 @@
       // Render tab specific items
       if (tabId === "customize") {
         renderThemes(currentThemeFilter);
-      } else if (tabId === "browsing") {
-        renderWispSettings();
       }
     }
 

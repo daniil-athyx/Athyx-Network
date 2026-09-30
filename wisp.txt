@@ -9,3 +9,4 @@ wss://new-server.baylib.top/connection/
 wss://wisp.mercurywork.shop/
 wss://gointospace.app/wisp/
 wss://lunarrr.eminescusm.ro/w/
+wss://ok.worldmicroscope.com/wisp/

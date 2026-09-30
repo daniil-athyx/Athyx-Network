@@ -524,9 +524,7 @@
           <div class="pop-thumb-wrapper">
             ${rawIcon ? `<img class="pop-thumb" src="${rawIcon}" alt="${game.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ""}
             <i class="fa-solid fa-gamepad pop-fallback-icon" style="${rawIcon ? 'display:none;' : ''}"></i>
-            <div class="pop-play-overlay">
-              <div class="pop-play-icon"><i class="fa-solid fa-play"></i></div>
-            </div>
+
           </div>
           <div class="pop-info">
             <span class="pop-title" title="${game.name}">${game.name}</span>

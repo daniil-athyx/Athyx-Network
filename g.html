@@ -636,9 +636,7 @@
         suggestCard.innerHTML = `
           <div class="thumb-wrapper" style="display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.03);">
             <i class="fa-solid fa-plus thumb-fallback" style="font-size: 32px; color: var(--accent);"></i>
-            <div class="play-overlay">
-              <div class="play-icon"><i class="fa-solid fa-external-link-alt"></i></div>
-            </div>
+
           </div>
           <div class="game-info">
             <span class="game-title" title="Suggest Games">Suggest Games</span>
@@ -669,9 +667,7 @@
           <div class="thumb-wrapper">
             ${iconUrl ? `<img class="game-thumb" src="${iconUrl}" alt="${game.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ""}
             <i class="fa-solid fa-gamepad thumb-fallback" style="${iconUrl ? 'display:none;' : ''}"></i>
-            <div class="play-overlay">
-              <div class="play-icon"><i class="fa-solid fa-play"></i></div>
-            </div>
+
           </div>
           <div class="game-info">
             <span class="game-title" title="${game.name}">${game.name}</span>

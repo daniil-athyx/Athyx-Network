@@ -1714,6 +1714,7 @@
         
         if (hex.length === 4) hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
         if (hex.length >= 7) hex = hex.substring(0, 7);
+        hex = hex.toLowerCase();
         
         const applyColor = () => {
           colorPicker.value = hex;

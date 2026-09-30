@@ -990,7 +990,7 @@ iframe {
 
         window.lastGameHtml = cleanHtml;
         
-        const launchMode = localStorage.getItem("athyx_game_launch_mode") === "about:blank" ? "about:blank" : "iframe";
+        const launchMode = localStorage.getItem("athyx_game_launch_mode") === "iframe" ? "iframe" : "about:blank";
 
         if (launchMode === "about:blank") {
           gameStageIframe.removeAttribute("srcdoc");

@@ -532,7 +532,8 @@
       { name: "Silk Interactive", file: "silk.html", icon: "silk.png", tag: "Art & Math" },
       { name: "Pico-8 Education", file: "pico8edu.html", icon: "pico8edu.jpg", tag: "Console" },
       { name: "EmulatorJS", file: "emulatorjs.html", icon: "emulatorjs.png", tag: "Emulator" },
-      { name: "Dos Wasm X", file: "doswasmx.html", icon: "doswasmx.png", tag: "Emulator" }
+      { name: "Dos Wasm X", file: "doswasmx.html", icon: "doswasmx.png", tag: "Emulator" },
+      { name: "TikTok", file: "tiktok.html", icon: "https://raw.githubusercontent.com/daniil-athyx/game-library/main/app_icons/tiktok.png", tag: "Social" }
     ];
 
     let allApps = [];
@@ -765,6 +766,12 @@
         console.warn("Using fallback app database:", err);
         allApps = fallbackApps;
       }
+      
+      // Inject TikTok if it hasn't been added to apps.json yet
+      if (!allApps.some(app => app.name === "TikTok")) {
+        allApps.push({ name: "TikTok", file: "tiktok.html", icon: "https://raw.githubusercontent.com/daniil-athyx/game-library/main/app_icons/tiktok.png", tag: "Social" });
+      }
+
       allApps.sort((a, b) => a.name.localeCompare(b.name));
       if (countPill) countPill.textContent = `${allApps.length} Apps`;
       renderApps();

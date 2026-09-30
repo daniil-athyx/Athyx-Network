@@ -507,6 +507,24 @@
 
     const APP_ICONS_BASE = "https://cdn.jsdelivr.net/gh/athyx-network/game-library@main/app_icons/";
 
+    window.handleIconFallback = function(img) {
+      if (!img.dataset.retried) {
+        img.dataset.retried = "true";
+        let url = new URL(img.src, window.location.href);
+        if (url.pathname.endsWith(".png")) {
+          url.pathname = url.pathname.replace(/\.png$/i, ".jpg");
+          img.src = url.href;
+          return;
+        } else if (url.pathname.endsWith(".jpg")) {
+          url.pathname = url.pathname.replace(/\.jpg$/i, ".png");
+          img.src = url.href;
+          return;
+        }
+      }
+      img.style.display = "none";
+      img.nextElementSibling.style.display = "block";
+    };
+
     const apps = [
       { name: "TurboWarp", file: "turbowarp.html", icon: "turbowarp.png", tag: "Creative" },
       { name: "Silk Interactive", file: "silk.html", icon: "silk.png", tag: "Art & Math" },
@@ -576,7 +594,7 @@
 
         card.innerHTML = `
           <div class="thumb-wrapper">
-            ${iconUrl ? `<img class="app-thumb" src="${iconUrl}" alt="${app.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ""}
+            ${iconUrl ? `<img class="app-thumb" src="${iconUrl}" alt="${app.name}" loading="lazy" onerror="window.handleIconFallback(this);">` : ""}
             <i class="fa-solid fa-shapes thumb-fallback" style="${iconUrl ? 'display:none;' : ''}"></i>
 
           </div>

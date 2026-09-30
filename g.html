@@ -511,6 +511,24 @@
     const REPO_BASE = "https://cdn.jsdelivr.net/gh/athyx-network/game-library@main/";
     const GAMES_JSON_URL = REPO_BASE + "games.json";
 
+    window.handleIconFallback = function(img) {
+      if (!img.dataset.retried) {
+        img.dataset.retried = "true";
+        let url = new URL(img.src, window.location.href);
+        if (url.pathname.endsWith(".png")) {
+          url.pathname = url.pathname.replace(/\.png$/i, ".jpg");
+          img.src = url.href;
+          return;
+        } else if (url.pathname.endsWith(".jpg")) {
+          url.pathname = url.pathname.replace(/\.jpg$/i, ".png");
+          img.src = url.href;
+          return;
+        }
+      }
+      img.style.display = "none";
+      img.nextElementSibling.style.display = "block";
+    };
+
     let allGames = [];
     let currentFilter = "all";
     let activeGameObj = null;
@@ -665,7 +683,7 @@
 
         card.innerHTML = `
           <div class="thumb-wrapper">
-            ${iconUrl ? `<img class="game-thumb" src="${iconUrl}" alt="${game.name}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ""}
+            ${iconUrl ? `<img class="game-thumb" src="${iconUrl}" alt="${game.name}" loading="lazy" onerror="window.handleIconFallback(this);">` : ""}
             <i class="fa-solid fa-gamepad thumb-fallback" style="${iconUrl ? 'display:none;' : ''}"></i>
 
           </div>

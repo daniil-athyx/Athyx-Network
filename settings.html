@@ -1708,13 +1708,12 @@
       // Initialize Color Picker
       const colorPicker = document.getElementById("themeColorPicker");
       if (colorPicker && window.AthyxThemeEngine) {
-        const storedTheme = AthyxThemeEngine.getStoredThemeId();
-        let hex = "#f43f5e";
-        if (storedTheme && storedTheme.startsWith("#")) {
-          hex = storedTheme.trim().toLowerCase();
-          if (hex.length === 4) hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
-          if (hex.length >= 7) hex = hex.substring(0, 7);
-        }
+        const storedThemeId = AthyxThemeEngine.getStoredThemeId();
+        const theme = AthyxThemeEngine.getThemeById(storedThemeId);
+        let hex = (theme && theme.vars && theme.vars["--accent"]) ? theme.vars["--accent"] : "#f43f5e";
+        
+        if (hex.length === 4) hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+        if (hex.length >= 7) hex = hex.substring(0, 7);
         
         const applyColor = () => {
           colorPicker.value = hex;

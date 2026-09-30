@@ -1062,7 +1062,9 @@
 
       // Render tab specific items
       if (tabId === "customize") {
-        renderThemes(currentThemeFilter);
+        if (window.updateColorPickerState) {
+          window.updateColorPickerState();
+        }
       }
     }
 
@@ -1706,23 +1708,29 @@
       }
 
       // Initialize Color Picker
-      const colorPicker = document.getElementById("themeColorPicker");
-      if (colorPicker && window.AthyxThemeEngine) {
-        const storedThemeId = AthyxThemeEngine.getStoredThemeId();
-        const theme = AthyxThemeEngine.getThemeById(storedThemeId);
-        let hex = (theme && theme.vars && theme.vars["--accent"]) ? theme.vars["--accent"] : "#f43f5e";
-        
-        if (hex.length === 4) hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
-        if (hex.length >= 7) hex = hex.substring(0, 7);
-        hex = hex.toLowerCase();
-        
-        const applyColor = () => {
+      window.updateColorPickerState = () => {
+        const colorPicker = document.getElementById("themeColorPicker");
+        if (colorPicker && window.AthyxThemeEngine) {
+          const storedThemeId = AthyxThemeEngine.getStoredThemeId();
+          const theme = AthyxThemeEngine.getThemeById(storedThemeId);
+          let hex = (theme && theme.vars && theme.vars["--accent"]) ? theme.vars["--accent"] : "#f43f5e";
+          
+          if (hex.length === 4) hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+          if (hex.length >= 7) hex = hex.substring(0, 7);
+          hex = hex.toLowerCase();
+          
           colorPicker.value = hex;
           colorPicker.setAttribute("value", hex);
-        };
-        applyColor();
-        setTimeout(applyColor, 50);
-      }
+        }
+      };
+      window.updateColorPickerState();
+      setTimeout(window.updateColorPickerState, 50);
+
+      window.onAthyxThemeChange = () => {
+        if (window.updateColorPickerState) {
+          window.updateColorPickerState();
+        }
+      };
 
       // Render Wisps
       renderWispSettings();

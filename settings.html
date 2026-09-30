@@ -831,6 +831,14 @@
         white-space: nowrap;
       }
     }
+
+    #themeColorPickerContainer:hover {
+      transform: scale(1.08);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6), inset 0 0 0 2px rgba(255, 255, 255, 0.4) !important;
+    }
+    #themeColorPickerContainer:active {
+      transform: scale(0.95);
+    }
   </style>
 </head>
 
@@ -973,9 +981,16 @@
               <span class="setting-title" style="font-size: 16px;">Custom Theme Color</span>
               <span class="setting-desc">Pick an accent color to dynamically generate a custom dark theme.</span>
             </div>
-            <div class="setting-control" style="flex-direction: column; align-items: center; gap: 10px; justify-content: center; width: 100%;">
-              <input type="color" id="themeColorPicker" title="Choose your custom theme color" style="cursor: pointer; width: 64px; height: 64px; padding: 0; border: none; border-radius: 12px; background: none;" onchange="selectCustomTheme(this.value)" oninput="selectCustomTheme(this.value)">
-              <span id="themeColorLabel" style="font-family: monospace; font-size: 14px; color: var(--text-muted); background: var(--surface-hover); padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border-light);">#f43f5e</span>
+            <div class="setting-control" style="flex-direction: column; align-items: center; gap: 12px; justify-content: center; width: 100%;">
+              <div id="themeColorPickerContainer" title="Click to choose custom theme color" style="position: relative; width: 72px; height: 72px; border-radius: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.2); transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease; overflow: hidden;">
+                <!-- True visual color swatch directly controlled by CSS and JS -->
+                <div id="themeColorSwatch" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 16px; background-color: var(--accent, #f43f5e); pointer-events: none; transition: background-color 0.15s ease;"></div>
+                <!-- Sleek centered palette icon -->
+                <i class="fa-solid fa-palette" style="position: relative; z-index: 1; color: #ffffff; font-size: 20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); pointer-events: none; opacity: 0.95;"></i>
+                <!-- Invisible native input positioned over the swatch so clicking anywhere opens the color dialog -->
+                <input type="color" id="themeColorPicker" title="Click to choose custom theme color" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; padding: 0; margin: 0; border: none; appearance: none; -webkit-appearance: none;" onchange="selectCustomTheme(this.value)" oninput="selectCustomTheme(this.value)">
+              </div>
+              <span id="themeColorLabel" style="font-family: monospace; font-size: 14px; font-weight: 600; color: var(--text-main); background: var(--surface-hover); padding: 5px 14px; border-radius: 8px; border: 1px solid var(--border-light); letter-spacing: 0.5px;">Crimson (#F43F5E)</span>
             </div>
           </div>
 
@@ -990,7 +1005,9 @@
                 <div class="toggle-knob"></div>
               </div>
             </div>
-            <!-- Flying Particles Mode -->
+          </div>
+
+          <!-- Flying Particles Mode -->
           <div class="setting-row" data-search-keys="flying particles background animation">
             <div class="setting-info">
               <span class="setting-title">Flying Particles</span>
@@ -1002,8 +1019,6 @@
               </div>
             </div>
           </div>
-        </div>
-
         </div>
       </section>
 
@@ -1065,6 +1080,8 @@
       if (tabId === "customize") {
         if (window.updateColorPickerState) {
           window.updateColorPickerState();
+          requestAnimationFrame(window.updateColorPickerState);
+          setTimeout(window.updateColorPickerState, 50);
         }
       }
     }
@@ -1381,13 +1398,25 @@
 
     // Themes
     function selectCustomTheme(colorHex) {
-      if (!window.AthyxThemeEngine) return;
-      AthyxThemeEngine.applyTheme(colorHex);
+      if (!colorHex) return;
+      
+      let hex = colorHex;
+      if (hex.startsWith("#") && hex.length === 4) {
+        hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+      }
+      
+      const swatch = document.getElementById("themeColorSwatch");
+      if (swatch) {
+        swatch.style.backgroundColor = hex;
+      }
       
       const label = document.getElementById("themeColorLabel");
       if (label) {
-        label.textContent = "Custom Theme (" + colorHex + ")";
+        label.textContent = "Custom Theme (" + hex.toUpperCase() + ")";
       }
+      
+      if (!window.AthyxThemeEngine) return;
+      AthyxThemeEngine.applyTheme(hex);
     }
 
     function toggleCompactDock() {
@@ -1716,21 +1745,44 @@
       // Initialize Color Picker
       window.updateColorPickerState = () => {
         const colorPicker = document.getElementById("themeColorPicker");
-        if (colorPicker && window.AthyxThemeEngine) {
+        const swatch = document.getElementById("themeColorSwatch");
+        const label = document.getElementById("themeColorLabel");
+
+        let hex = "#f43f5e";
+        let displayName = "";
+
+        if (window.AthyxThemeEngine) {
           const storedThemeId = AthyxThemeEngine.getStoredThemeId();
           const theme = AthyxThemeEngine.getThemeById(storedThemeId);
-          let hex = (theme && theme.vars && theme.vars["--accent"]) ? theme.vars["--accent"] : "#f43f5e";
-          
+          if (theme && theme.vars && theme.vars["--accent"]) {
+            hex = theme.vars["--accent"];
+          }
+          if (theme && theme.name) {
+            displayName = theme.name;
+          }
+        }
+        
+        if (hex.startsWith("#")) {
           if (hex.length === 4) hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
           if (hex.length >= 7) hex = hex.substring(0, 7);
           hex = hex.toLowerCase();
-          
-          colorPicker.value = hex;
-          colorPicker.setAttribute("value", hex);
-          
-          const label = document.getElementById("themeColorLabel");
-          if (label) {
-            label.textContent = (theme && theme.name) ? theme.name + " (" + hex + ")" : hex;
+        }
+        
+        if (swatch) {
+          swatch.style.backgroundColor = hex;
+        }
+        if (colorPicker) {
+          try {
+            colorPicker.value = hex;
+            colorPicker.setAttribute("value", hex);
+          } catch(e) {}
+        }
+        
+        if (label) {
+          if (displayName && !displayName.toLowerCase().includes("custom")) {
+            label.textContent = `${displayName} (${hex.toUpperCase()})`;
+          } else {
+            label.textContent = hex.toUpperCase();
           }
         }
       };
@@ -1742,6 +1794,22 @@
           window.updateColorPickerState();
         }
       };
+
+      window.addEventListener("message", (event) => {
+        if (event.data && (event.data.action === "athyx_theme_change" || event.data.type === "athyx_theme_change")) {
+          if (window.updateColorPickerState) {
+            window.updateColorPickerState();
+          }
+        }
+      });
+
+      window.addEventListener("storage", (event) => {
+        if (event.key === "athyx_theme") {
+          if (window.updateColorPickerState) {
+            window.updateColorPickerState();
+          }
+        }
+      });
 
       // Render Wisps
       renderWispSettings();

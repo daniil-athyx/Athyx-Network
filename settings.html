@@ -643,7 +643,7 @@
       text-align: center;
     }
     .segmented-control .segment.active {
-      color: #fff;
+      color: var(--accent-text, #fff);
       font-weight: 600;
     }
 
@@ -949,7 +949,7 @@
               <span class="setting-desc">Instantly open this entire proxy site in an isolated about:blank window to hide it from history.</span>
             </div>
             <div class="setting-control">
-              <button class="primary-btn" onclick="openSiteInAboutBlank()" style="padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; background: var(--accent); color: #fff; transition: opacity 0.2s;">Open <i class="fa-solid fa-external-link-alt" style="margin-left: 6px;"></i></button>
+              <button class="primary-btn" onclick="openSiteInAboutBlank()" style="padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; background: var(--accent); color: var(--accent-text, #fff); transition: opacity 0.2s;">Open <i class="fa-solid fa-external-link-alt" style="margin-left: 6px;"></i></button>
             </div>
           </div>
 

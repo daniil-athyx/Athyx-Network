@@ -495,7 +495,7 @@ input.bar:focus {
 .wisp-option-btn {
     padding: 4px 12px;
     background: var(--accent);
-    color: var(--text-main);
+    color: var(--accent-text, #fff);
     border: none;
     border-radius: 6px;
     font-size: 0.8rem;
@@ -570,7 +570,7 @@ input.bar:focus {
 
 .wisp-save-btn {
     background: var(--accent);
-    color: var(--text-main);
+    color: var(--accent-text, #fff);
     border: none;
 }
 
@@ -657,7 +657,7 @@ input.bar:focus {
 
 .btn-primary {
     background: var(--accent);
-    color: var(--text-main);
+    color: var(--accent-text, #fff);
     border: none;
 }
 

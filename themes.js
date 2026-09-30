@@ -12,6 +12,8 @@ function generateCustomTheme(hexColor) {
   if (!rgb) return null;
 
   const r = rgb.r, g = rgb.g, b = rgb.b;
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  const accentText = luminance > 0.5 ? '#000000' : '#ffffff';
   return {
     id: hexColor,
     name: "Custom Theme",
@@ -30,6 +32,7 @@ function generateCustomTheme(hexColor) {
       "--text-muted": "#a1a1aa",
       "--text-dim": hexColor,
       "--accent": hexColor,
+      "--accent-text": accentText,
       "--accent-dim": `rgba(${r}, ${g}, ${b}, 0.18)`,
       "--accent-glow": `rgba(${r}, ${g}, ${b}, 0.45)`,
       "--accent-hover": hexColor,

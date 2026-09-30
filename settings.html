@@ -976,18 +976,21 @@
         <div class="settings-card">
           
           <!-- Theme Color Picker -->
-          <div class="setting-row" data-search-keys="theme color custom picker accent" style="flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 16px; padding: 24px;">
-            <div class="setting-info" style="align-items: center;">
-              <span class="setting-title" style="font-size: 16px;">Custom Theme Color</span>
-              <span class="setting-desc">Pick an accent color to dynamically generate a custom dark theme.</span>
-            </div>
-            <div class="setting-control" style="flex-direction: column; align-items: center; gap: 12px; justify-content: center; width: 100%;">
-              <div id="themeColorPickerContainer" title="Click to choose custom theme color" style="position: relative; width: 72px; height: 72px; border-radius: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.2); transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease; overflow: hidden;">
+          <div class="setting-row" data-search-keys="theme color custom picker accent" style="justify-content: flex-start; gap: 20px;">
+            <div class="setting-control" style="width: auto;">
+              <div id="themeColorPickerContainer" title="Click to choose custom theme color" style="position: relative; width: 140px; height: 44px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.2); transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease; overflow: hidden;">
                 <!-- True visual color swatch directly controlled by CSS and JS -->
-                <div id="themeColorSwatch" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 16px; background-color: var(--accent, #f43f5e); pointer-events: none; transition: background-color 0.15s ease;"></div>
+                <div id="themeColorSwatch" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 12px; background-color: var(--accent, #f43f5e); pointer-events: none; transition: background-color 0.15s ease;"></div>
+                
+                <!-- Text that says click to change -->
+                <span style="position: relative; z-index: 1; color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); pointer-events: none; opacity: 0.95;">Click to change</span>
+                
                 <!-- Invisible native input positioned over the swatch so clicking anywhere opens the color dialog -->
                 <input type="color" id="themeColorPicker" title="Click to choose custom theme color" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; padding: 0; margin: 0; border: none; appearance: none; -webkit-appearance: none;" onchange="selectCustomTheme(this.value)" oninput="selectCustomTheme(this.value)">
               </div>
+            </div>
+            <div class="setting-info" style="margin-left: 4px;">
+              <span class="setting-title" style="font-size: 16px;">Theme</span>
             </div>
           </div>
 

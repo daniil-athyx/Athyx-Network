@@ -525,7 +525,9 @@
       img.nextElementSibling.style.display = "block";
     };
 
-    const apps = [
+    const APPS_JSON_URL = "https://cdn.jsdelivr.net/gh/athyx-network/game-library@main/apps.json";
+
+    const fallbackApps = [
       { name: "TurboWarp", file: "turbowarp.html", icon: "turbowarp.png", tag: "Creative" },
       { name: "Silk Interactive", file: "silk.html", icon: "silk.png", tag: "Art & Math" },
       { name: "Pico-8 Education", file: "pico8edu.html", icon: "pico8edu.jpg", tag: "Console" },
@@ -533,7 +535,7 @@
       { name: "Dos Wasm X", file: "doswasmx.html", icon: "doswasmx.png", tag: "Emulator" }
     ];
 
-    apps.sort((a, b) => a.name.localeCompare(b.name));
+    let allApps = [];
 
     let activeAppObj = null;
 
@@ -568,7 +570,7 @@
 
     function renderApps() {
       const query = searchBox.value.trim().toLowerCase();
-      const filtered = apps.filter(app =>
+      const filtered = allApps.filter(app =>
         app.name.toLowerCase().includes(query) ||
         app.tag.toLowerCase().includes(query)
       );
@@ -754,7 +756,21 @@
       }
     });
 
-    renderApps();
+    async function initApps() {
+      try {
+        const res = await fetch(APPS_JSON_URL + "?t=" + Date.now());
+        if (!res.ok) throw new Error("Could not load apps.json");
+        allApps = await res.json();
+      } catch (err) {
+        console.warn("Using fallback app database:", err);
+        allApps = fallbackApps;
+      }
+      allApps.sort((a, b) => a.name.localeCompare(b.name));
+      if (countPill) countPill.textContent = `${allApps.length} Apps`;
+      renderApps();
+    }
+
+    initApps();
   </script>
 
   <script src="particle.js"></script>

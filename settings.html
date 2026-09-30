@@ -985,12 +985,9 @@
               <div id="themeColorPickerContainer" title="Click to choose custom theme color" style="position: relative; width: 72px; height: 72px; border-radius: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 0 2px rgba(255, 255, 255, 0.2); transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease; overflow: hidden;">
                 <!-- True visual color swatch directly controlled by CSS and JS -->
                 <div id="themeColorSwatch" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 16px; background-color: var(--accent, #f43f5e); pointer-events: none; transition: background-color 0.15s ease;"></div>
-                <!-- Sleek centered palette icon -->
-                <i class="fa-solid fa-palette" style="position: relative; z-index: 1; color: #ffffff; font-size: 20px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); pointer-events: none; opacity: 0.95;"></i>
                 <!-- Invisible native input positioned over the swatch so clicking anywhere opens the color dialog -->
                 <input type="color" id="themeColorPicker" title="Click to choose custom theme color" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; padding: 0; margin: 0; border: none; appearance: none; -webkit-appearance: none;" onchange="selectCustomTheme(this.value)" oninput="selectCustomTheme(this.value)">
               </div>
-              <span id="themeColorLabel" style="font-family: monospace; font-size: 14px; font-weight: 600; color: var(--text-main); background: var(--surface-hover); padding: 5px 14px; border-radius: 8px; border: 1px solid var(--border-light); letter-spacing: 0.5px;">Crimson (#F43F5E)</span>
             </div>
           </div>
 
@@ -1410,11 +1407,6 @@
         swatch.style.backgroundColor = hex;
       }
       
-      const label = document.getElementById("themeColorLabel");
-      if (label) {
-        label.textContent = "Custom Theme (" + hex.toUpperCase() + ")";
-      }
-      
       if (!window.AthyxThemeEngine) return;
       AthyxThemeEngine.applyTheme(hex);
     }
@@ -1746,7 +1738,6 @@
       window.updateColorPickerState = () => {
         const colorPicker = document.getElementById("themeColorPicker");
         const swatch = document.getElementById("themeColorSwatch");
-        const label = document.getElementById("themeColorLabel");
 
         let hex = "#f43f5e";
         let displayName = "";
@@ -1776,14 +1767,6 @@
             colorPicker.value = hex;
             colorPicker.setAttribute("value", hex);
           } catch(e) {}
-        }
-        
-        if (label) {
-          if (displayName && !displayName.toLowerCase().includes("custom")) {
-            label.textContent = `${displayName} (${hex.toUpperCase()})`;
-          } else {
-            label.textContent = hex.toUpperCase();
-          }
         }
       };
       window.updateColorPickerState();

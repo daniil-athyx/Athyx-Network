@@ -665,7 +665,7 @@ window.addEventListener("load", async () => {
 
 async function loadWispServers() {
     try {
-        const response = await fetch('https://cdn.jsdelivr.net/gh/athyx-network/Athyx-Network@main/wisp.txt');
+        const response = await fetch('https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main/wisp.txt');
         if (!response.ok) throw new Error('Failed to fetch');
         const text = await response.text();
         const urls = text.split('\n').map(l => l.trim()).filter(l => l.length > 0 && l.startsWith('ws'));

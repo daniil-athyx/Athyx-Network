@@ -556,7 +556,7 @@
     const loadingModalText = document.getElementById("loadingModalText");
     let loadingQuotes = ["Loading the matrix...", "Stealth mode engaged.", "Bypassing restrictions..."];
 
-    fetch("https://cdn.jsdelivr.net/gh/athyx-network/Athyx-Network@main/quotes.txt?t=" + Date.now())
+    fetch("https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main/quotes.txt?t=" + Date.now())
       .then(res => {
         if (!res.ok) throw new Error("Network error");
         return res.text();

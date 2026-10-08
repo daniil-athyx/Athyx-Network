@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 
 <head>
@@ -22,27 +22,27 @@
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="themes.css">
-  <script src="themes.js?v=2"></script>
+  <script src="js/themes.js?v=2"></script>
 
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="shortcut icon" href="assets/favicon.ico">
 
   <style>
     :root {
       color-scheme: dark;
-      --bg-base: #0c0406;
-      --surface: #190a0e;
-      --surface-hover: #251016;
-      --surface-active: #35161f;
-      --dock-bg: rgba(25, 10, 14, 0.88);
-      --dock-border: rgba(244, 63, 94, 0.2);
-      --dock-btn-hover: rgba(244, 63, 94, 0.14);
-      --dock-btn-active: rgba(244, 63, 94, 0.25);
-      --text-main: #fff1f2;
-      --text-muted: #fecdd3;
-      --accent: #f43f5e;
-      --accent-dim: rgba(244, 63, 94, 0.18);
-      --accent-glow: rgba(244, 63, 94, 0.45);
+      --bg-base: #0b0508;
+      --surface: rgba(28, 12, 16, 0.82);
+      --surface-hover: rgba(42, 18, 24, 0.9);
+      --surface-active: rgba(64, 26, 35, 0.96);
+      --dock-bg: rgba(18, 8, 12, 0.8);
+      --dock-border: rgba(10, 255, 206, 0.2);
+      --dock-btn-hover: rgba(10, 255, 206, 0.12);
+      --dock-btn-active: rgba(10, 255, 206, 0.22);
+      --text-main: #fff5f6;
+      --text-muted: #f7c6ce;
+      --accent: rgb(10, 255, 206);
+      --accent-dim: rgba(10, 255, 206, 0.16);
+      --accent-glow: rgba(10, 255, 206, 0.42);
     }
 
     * {
@@ -80,12 +80,13 @@
 
     .dock-wrapper {
       position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%);
+      top: 50%;
+      left: 24px;
+      transform: translateY(-50%);
       z-index: 1000;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: stretch;
       padding: 6px;
       background: var(--dock-bg);
       backdrop-filter: blur(20px) saturate(160%);
@@ -102,7 +103,7 @@
     }
 
     .dock-wrapper.dock-hidden {
-      transform: translate(-50%, calc(100% + 40px));
+      transform: translate(-115%, -50%);
       opacity: 0;
       pointer-events: none;
     }
@@ -110,12 +111,13 @@
 
     .dock-toggle-btn {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 0;
+      right: 0;
       z-index: 1001;
       width: 42px;
       height: 42px;
-      border-radius: 13px;
+      border-radius: 13px 0 0 0;
+      border: 1px solid var(--dock-border);
       background: var(--dock-bg);
       backdrop-filter: blur(20px) saturate(160%);
       -webkit-backdrop-filter: blur(20px) saturate(160%);
@@ -164,6 +166,7 @@
     .dock-item {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
       padding: 9px 16px;
       font-size: 13.5px;
@@ -209,10 +212,10 @@
     }
 
     .dock-separator {
-      width: 1px;
-      height: 20px;
+      width: 32px;
+      height: 1px;
       background: var(--dock-border);
-      margin: 0 4px;
+      margin: 4px auto;
     }
 
 
@@ -237,18 +240,26 @@
 
     @media (max-width: 680px) {
       .dock-wrapper {
-        bottom: 16px;
-        padding: 5px;
-        gap: 2px;
+        top: auto;
+        left: 12px;
+        bottom: 12px;
+        transform: none;
+        flex-direction: row;
+        max-width: calc(100% - 64px);
+        overflow-x: auto;
+      }
+
+      .dock-wrapper.dock-hidden {
+        transform: translate(-115%, 0);
       }
 
       .dock-toggle-btn {
-        bottom: 16px;
-        right: 16px;
+        bottom: 0;
+        right: 0;
         width: 36px;
         height: 36px;
         font-size: 13px;
-        border-radius: 11px;
+        border-radius: 11px 0 0 0;
       }
 
       .dock-item {
@@ -288,9 +299,14 @@
       <i class="fa-solid fa-server"></i>
       <span>Browser</span>
     </button>
-    <button class="dock-item" data-tab="movies" onclick="navigate('movies')" title="Movies">
-      <i class="fa-solid fa-film"></i>
-      <span>Movies</span>
+
+    <button class="dock-item" data-tab="ai" onclick="navigate('ai')" title="AI">
+      <i class="fa-solid fa-robot"></i>
+      <span>AI</span>
+    </button>
+    <button class="dock-item" data-tab="chat" onclick="navigate('chat')" title="Chat">
+      <i class="fa-solid fa-comments"></i>
+      <span>Chat</span>
     </button>
     <div class="dock-separator"></div>
     <button class="dock-item" data-tab="settings" onclick="navigate('settings')" title="Settings">
@@ -299,9 +315,8 @@
     </button>
   </div>
 
-
-  <button class="dock-toggle-btn" id="dockToggleBtn" aria-label="Toggle Selection Bar" title="Toggle selection bar">
-    <i class="fa-solid fa-chevron-down" id="dockToggleIcon"></i>
+  <button class="dock-toggle-btn" id="dockToggleBtn" aria-label="Toggle App Bar" title="Hide App Bar">
+    <i class="fa-solid fa-chevron-right" id="dockToggleIcon"></i>
   </button>
 
   <iframe id="contentFrame" title="Athyx Content"
@@ -316,39 +331,40 @@
       const isHidden = dockNav.classList.toggle("dock-hidden");
       dockToggleBtn.classList.toggle("dock-collapsed", isHidden);
       dockToggleBtn.setAttribute("aria-expanded", String(!isHidden));
-      dockToggleBtn.title = isHidden ? "Show selection bar" : "Hide selection bar";
+      dockToggleBtn.title = isHidden ? "Show App Bar" : "Hide App Bar";
       localStorage.setItem("athyx_dock_hidden", isHidden ? "true" : "false");
     }
 
     dockToggleBtn.addEventListener("click", toggleDock);
 
-
     if (localStorage.getItem("athyx_dock_hidden") === "true") {
       dockNav.classList.add("dock-hidden");
       dockToggleBtn.classList.add("dock-collapsed");
       dockToggleBtn.setAttribute("aria-expanded", "false");
-      dockToggleBtn.title = "Show selection bar";
+      dockToggleBtn.title = "Show App Bar";
     }
 
 
-    if (localStorage.getItem("athyx_compact_dock") === "true") {
+    if (localStorage.getItem("athyx_compact_dock") !== "false") {
       dockNav.classList.add("compact-dock");
     }
 
 
     const routes = {
-      home: () => "homepage.html?v=" + Date.now(),
-      games: () => "g.html?v=" + Date.now(),
-      apps: () => "apps.html?v=" + Date.now(),
-      movies: () => {
-        const path = 'scramjet/index.html?v=';
-        return window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + path + Date.now() + '#https://moviex.athyx.workers.dev/';
-      },
+      home: () => "pages/homepage.html?v=" + Date.now(),
+      games: () => "pages/g.html?v=" + Date.now(),
+      apps: () => "pages/apps.html?v=" + Date.now(),
+      chat: () => "pages/chat.html?v=" + Date.now(),
+
       proxy: () => {
         const path = 'scramjet/index.html?v=';
         return window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + path + Date.now();
       },
-      settings: () => "settings.html?v=" + Date.now()
+      ai: () => {
+        const path = 'scramjet/index.html?v=';
+        return window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + path + Date.now() + '#https://deepai.org/';
+      },
+      settings: () => "pages/settings.html?v=" + Date.now()
     };
 
     function setActiveTab(tabKey) {
@@ -379,10 +395,8 @@
         } else if (event.data.action === "athyx_game_active") {
           if (event.data.active) {
             dockNav.style.display = "none";
-            dockToggleBtn.style.display = "none";
           } else {
             dockNav.style.display = "";
-            dockToggleBtn.style.display = "flex";
           }
         } else if (event.data.action === "athyx_cloak_change") {
           updateTabTitleAndIcon(event.data.title, event.data.icon);
@@ -479,7 +493,8 @@
     navigate("home");
   </script>
 
-  <script src="particle.js"></script>
+  <script src="js/particle.js"></script>
 </body>
 
 </html>
+

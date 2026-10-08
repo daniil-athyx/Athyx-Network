@@ -12,10 +12,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="themes.css">
-  <script src="themes.js?v=2"></script>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="../themes.css">
+  <script src="../js/themes.js?v=2"></script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="shortcut icon" href="../assets/favicon.ico">
 
   <style>
     :root {
@@ -28,20 +28,20 @@
       --surface: #141c2b;
       --surface-hover: #1c263a;
       --surface-active: #25334d;
-      --border: rgba(255, 255, 255, 0.06);
-      --border-hover: rgba(255, 255, 255, 0.16);
+      --border: rgba(10, 255, 206, 0.14);
+      --border-hover: rgba(10, 255, 206, 0.26);
       
-      --accent: #0ea5e9;
-      --accent-dim: rgba(56, 189, 248, 0.15);
-      --accent-glow: rgba(56, 189, 248, 0.35);
+      --accent: rgb(10, 255, 206);
+      --accent-dim: rgba(10, 255, 206, 0.15);
+      --accent-glow: rgba(10, 255, 206, 0.35);
       --border-light: rgba(255, 255, 255, 0.12);
       --text: #f1f5f9;
       --text-muted: #94a3b8;
-      --text-dim: #64748b;
-      --accent: #38bdf8;
-      --accent-dim: rgba(56, 189, 248, 0.15);
-      --accent-glow: rgba(56, 189, 248, 0.35);
-      --accent-hover: #0ea5e9;
+      --text-dim: rgb(10, 255, 206);
+      --accent: rgb(10, 255, 206);
+      --accent-dim: rgba(10, 255, 206, 0.15);
+      --accent-glow: rgba(10, 255, 206, 0.35);
+      --accent-hover: rgb(0, 214, 174);
       --nav-active-bg: rgba(255, 255, 255, 0.12);
       --nav-active-text: #ffffff;
       --toggle-off: #334155;
@@ -73,6 +73,7 @@
       max-width: 1300px;
       margin: 0 auto;
       padding: 40px 30px 120px;
+      padding-left: calc(30px + 88px);
       gap: 40px;
     }
 
@@ -953,6 +954,19 @@
             </div>
           </div>
 
+          <!-- Auto about:blank -->
+          <div class="setting-row" data-search-keys="auto about blank launch cloaker automatically">
+            <div class="setting-info">
+              <span class="setting-title">Auto about:blank</span>
+              <span class="setting-desc">Automatically launch the site in an about:blank tab when you open it.</span>
+            </div>
+            <div class="setting-control">
+              <div class="toggle-switch" id="autoAbToggle" onclick="toggleAutoAboutBlank()" role="switch" aria-checked="false">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+          </div>
+
           <!-- Game Launch Mode -->
           <div class="setting-row" data-search-keys="game launch mode open about:blank iframe srcdoc">
             <div class="setting-info">
@@ -984,7 +998,7 @@
             <div class="setting-control">
               <div id="themeColorPickerContainer" title="Click to choose custom theme color" style="position: relative; width: 44px; height: 44px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.2); transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease; overflow: hidden;">
                 <!-- True visual color swatch directly controlled by CSS and JS -->
-                <div id="themeColorSwatch" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 12px; background-color: var(--accent, #f43f5e); pointer-events: none; transition: background-color 0.15s ease;"></div>
+                <div id="themeColorSwatch" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 12px; background-color: var(--accent, #0affce); pointer-events: none; transition: background-color 0.15s ease;"></div>
                 
                 <!-- Font Awesome icon -->
                 <i class="fa-solid fa-palette" style="position: relative; z-index: 1; color: #ffffff; font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); pointer-events: none; opacity: 0.95;"></i>
@@ -1005,6 +1019,19 @@
               <div class="toggle-switch" id="compactDockToggle" onclick="toggleCompactDock()" role="switch" aria-checked="false">
                 <div class="toggle-knob"></div>
               </div>
+            </div>
+          </div>
+
+          <!-- Hide App Bar -->
+          <div class="setting-row" data-search-keys="hide app bar navigation selection bar">
+            <div class="setting-info">
+              <span class="setting-title">Hide App Bar</span>
+              <span class="setting-desc">Hide the selection bar until you reopen it from the edge.</span>
+            </div>
+            <div class="setting-control">
+              <button class="toggle-switch" id="hideDockToggle" onclick="toggleDockFromSettings()" role="switch" aria-checked="false" aria-label="Hide App Bar">
+                <div class="toggle-knob"></div>
+              </button>
             </div>
           </div>
 
@@ -1264,7 +1291,50 @@
       localStorage.setItem("athyx_auto_about_blank", next.toString());
       toggle.classList.toggle("active", next);
       toggle.setAttribute("aria-checked", next.toString());
-      showToast(next ? "Auto about:blank enabled on launch" : "Auto about:blank disabled");
+      
+      if (next) {
+        let popupsAllowed = false;
+        try {
+          const testWin = window.open("about:blank", "_blank", "width=1,height=1");
+          if (testWin) {
+            popupsAllowed = true;
+            testWin.close();
+          }
+        } catch(e) {}
+        
+        if (!popupsAllowed) {
+          const overlay = document.createElement("div");
+          overlay.style.position = "fixed";
+          overlay.style.top = "0";
+          overlay.style.left = "0";
+          overlay.style.width = "100vw";
+          overlay.style.height = "100vh";
+          overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
+          overlay.style.zIndex = "999999";
+          overlay.style.display = "flex";
+          overlay.style.alignItems = "center";
+          overlay.style.justifyContent = "center";
+          overlay.style.backdropFilter = "blur(8px)";
+          
+          overlay.innerHTML = `
+            <div style="background: var(--surface); padding: 32px; border-radius: 20px; border: 1px solid var(--border); text-align: center; max-width: 420px; box-shadow: 0 24px 48px rgba(0,0,0,0.6);">
+              <i class="fa-solid fa-up-right-from-square" style="font-size: 42px; color: var(--accent); margin-bottom: 20px;"></i>
+              <h2 style="color: #ffffff; margin-bottom: 12px; font-family: 'Outfit', sans-serif; font-size: 24px;">Pop-ups Required</h2>
+              <p style="color: var(--text-dim); margin-bottom: 24px; line-height: 1.5; font-size: 14.5px;">allow opening about blank please allow pop ups to open in about blank</p>
+              <button onclick="window.top ? window.top.location.reload() : window.location.reload()" style="background: var(--accent); color: var(--accent-text, #fff); border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; font-family: inherit; font-size: 14.5px; cursor: pointer; transition: transform 0.2s;">I've Allowed Pop-ups</button>
+            </div>
+          `;
+          document.body.appendChild(overlay);
+        } else {
+          if (window.top) {
+            window.top.location.reload();
+          } else {
+            window.location.reload();
+          }
+        }
+      } else {
+        showToast("Auto about:blank disabled");
+      }
     }
 
     function togglePanicKey() {
@@ -1427,6 +1497,18 @@
       showToast(isActive ? "Compact dock enabled" : "Compact dock disabled");
     }
 
+    function toggleDockFromSettings() {
+      const toggle = document.getElementById("hideDockToggle");
+      const isHidden = !toggle.classList.contains("active");
+      toggle.classList.toggle("active", isHidden);
+      toggle.setAttribute("aria-checked", isHidden.toString());
+
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ action: "athyx_dock_toggle" }, "*");
+      }
+      showToast(isHidden ? "App bar hidden" : "App bar shown");
+    }
+
     function setGameLaunchMode(mode) {
       localStorage.setItem("athyx_game_launch_mode", mode);
       document.getElementById("gameLaunchSegmented").setAttribute("data-mode", mode);
@@ -1454,7 +1536,7 @@
     }
 
     // Wisp Management
-    const DEFAULT_WISP = "wss://lunarrr.eminescusm.ro/w/";
+    const DEFAULT_WISP = "wss://ok.worldmicroscope.com/wisp/";
     let DEFAULT_WISP_SERVERS = [
       { name: "Escala Humana Wisp", url: "wss://math.soyescalahumana.cl/wisp/" },
       { name: "Gressvik BMX Wisp", url: "wss://school.gressvikbmx.no/wisp/" },
@@ -1479,7 +1561,14 @@
     }
 
     function getAllWispServers() {
-      return [...DEFAULT_WISP_SERVERS, ...getStoredWisps()];
+      const currentUrl = getActiveWispUrl();
+      const list = [...DEFAULT_WISP_SERVERS, ...getStoredWisps()];
+      list.sort((a, b) => {
+        if (a.url === currentUrl) return -1;
+        if (b.url === currentUrl) return 1;
+        return 0;
+      });
+      return list;
     }
 
     function getActiveWispUrl() {
@@ -1697,15 +1786,23 @@
       }
 
       // Compact Dock state
-      const compactDock = localStorage.getItem("athyx_compact_dock") === "true";
+      const compactDock = localStorage.getItem("athyx_compact_dock") !== "false";
       const compactToggle = document.getElementById("compactDockToggle");
       if (compactToggle) {
         compactToggle.classList.toggle("active", compactDock);
         compactToggle.setAttribute("aria-checked", compactDock.toString());
       }
 
+      // App Bar state
+      const dockHidden = localStorage.getItem("athyx_dock_hidden") === "true";
+      const hideDockToggle = document.getElementById("hideDockToggle");
+      if (hideDockToggle) {
+        hideDockToggle.classList.toggle("active", dockHidden);
+        hideDockToggle.setAttribute("aria-checked", dockHidden.toString());
+      }
+
       // Flying Particles state
-      const flyingParticles = localStorage.getItem("athyx_flying_particles") === "true";
+      const flyingParticles = localStorage.getItem("athyx_flying_particles") !== "false";
       const particlesToggle = document.getElementById("flyingParticlesToggle");
       if (particlesToggle) {
         particlesToggle.classList.toggle("active", flyingParticles);
@@ -1743,7 +1840,7 @@
         const colorPicker = document.getElementById("themeColorPicker");
         const swatch = document.getElementById("themeColorSwatch");
 
-        let hex = "#f43f5e";
+        let hex = "#0affce";
         let displayName = "";
 
         if (window.AthyxThemeEngine) {
@@ -1804,6 +1901,6 @@
     });
   </script>
 
-  <script src="particle.js"></script>
+  <script src="../js/particle.js"></script>
 </body>
 </html>

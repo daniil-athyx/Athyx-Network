@@ -1,5 +1,6 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,27 +8,29 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="themes.css">
-  <script src="themes.js?v=2"></script>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="../themes.css">
+  <script src="../js/themes.js?v=2"></script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="shortcut icon" href="../assets/favicon.ico">
 
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0c0406;
-      --surface: #190a0e;
-      --surface-hover: #251016;
-      --border: rgba(244, 63, 94, 0.16);
-      --border-hover: rgba(244, 63, 94, 0.32);
-      --text: #fff1f2;
-      --text-muted: #fecdd3;
-      --text-dim: #f43f5e;
-      --accent: #f43f5e;
-      --accent-dim: rgba(244, 63, 94, 0.18);
-      --accent-glow: rgba(244, 63, 94, 0.45);
+      --bg: #0b0508;
+      --surface: rgba(28, 12, 16, 0.82);
+      --surface-hover: rgba(42, 18, 24, 0.9);
+      --border: rgba(10, 255, 206, 0.16);
+      --border-hover: rgba(10, 255, 206, 0.32);
+      --text: #fff5f6;
+      --text-muted: #f7c6ce;
+      --text-dim: rgb(10, 255, 206);
+      --accent: rgb(10, 255, 206);
+      --accent-dim: rgba(10, 255, 206, 0.18);
+      --accent-glow: rgba(10, 255, 206, 0.45);
     }
 
     * {
@@ -36,7 +39,8 @@
       padding: 0;
     }
 
-    html, body {
+    html,
+    body {
       min-height: 100%;
       background-color: var(--bg);
       background-image: radial-gradient(rgba(255, 255, 255, 0.075) 1.5px, transparent 1.5px);
@@ -46,7 +50,7 @@
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     }
 
-    
+
     #topBar {
       position: sticky;
       top: 0;
@@ -73,7 +77,7 @@
       justify-content: center;
     }
 
-    
+
     .search-wrapper {
       position: relative;
       width: 100%;
@@ -134,14 +138,15 @@
       color: var(--accent);
     }
 
-    
+
     .main-content {
       max-width: 1400px;
       margin: 0 auto;
       padding: 24px 28px 120px;
+      padding-left: calc(28px + 88px);
     }
 
-    
+
     #gamesGrid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -252,7 +257,7 @@
       color: #fff;
     }
 
-    
+
     .state-message {
       grid-column: 1 / -1;
       text-align: center;
@@ -270,7 +275,7 @@
       color: var(--text-muted);
     }
 
-    
+
     #gameStage {
       position: fixed;
       inset: 0;
@@ -354,7 +359,7 @@
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .game-fab-main:hover {
@@ -405,7 +410,7 @@
       overflow: hidden;
     }
 
-    
+
     #loadingModal {
       position: fixed;
       inset: 0;
@@ -434,16 +439,20 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     @media (max-width: 600px) {
       #topBar {
         padding: 12px 16px;
       }
+
       .main-content {
         padding: 16px 16px 120px;
       }
+
       #gamesGrid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 12px;
@@ -454,20 +463,22 @@
 
 <body>
 
-  
+
   <header id="topBar">
     <div class="controls-section">
       <div class="search-wrapper">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
         <input type="text" id="searchBox" placeholder="Search games..." autocomplete="off" spellcheck="false">
-        <button class="clear-search-btn" id="clearSearchBtn" title="Clear search"><i class="fa-solid fa-xmark"></i></button>
+        <button class="clear-search-btn" id="clearSearchBtn" title="Clear search"><i
+            class="fa-solid fa-xmark"></i></button>
       </div>
     </div>
   </header>
 
-  
+
   <main class="main-content">
-    <script async="async" data-cfasync="false" src="https://pl31349133.profitableratecpmnetwork.com/bd117fa99ec0d7cbc1a49cea3e1756e7/invoke.js"></script>
+    <script async="async" data-cfasync="false"
+      src="https://pl31349133.profitableratecpmnetwork.com/bd117fa99ec0d7cbc1a49cea3e1756e7/invoke.js"></script>
     <div id="container-bd117fa99ec0d7cbc1a49cea3e1756e7"></div>
     <div id="gamesGrid">
       <div class="state-message">
@@ -477,7 +488,7 @@
     </div>
   </main>
 
-  
+
   <div id="gameStage">
     <div class="game-fab-container">
       <button class="game-fab-main" title="Game Options">
@@ -498,20 +509,22 @@
         </button>
       </div>
     </div>
-    <iframe id="gameStageIframe" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; cross-origin-isolated" scrolling="no"></iframe>
+    <iframe id="gameStageIframe"
+      allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; cross-origin-isolated"
+      scrolling="no"></iframe>
   </div>
 
-  
+
   <div id="loadingModal">
     <div class="loading-spinner"></div>
     <div id="loadingModalText">Preparing game assets...</div>
   </div>
 
   <script>
-    const REPO_BASE = "https://cdn.jsdelivr.net/gh/athyx-network/game-library@main/";
+    const REPO_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/";
     const GAMES_JSON_URL = REPO_BASE + "games.json";
 
-    window.handleIconFallback = function(img) {
+    window.handleIconFallback = function (img) {
       if (!img.dataset.retried) {
         img.dataset.retried = "true";
         let url = new URL(img.src, window.location.href);
@@ -562,7 +575,7 @@
           .catch(e => console.log(e));
       });
 
-    
+
     const fallbackGames = [
       { "name": "2048", "path": "2048.html", "icon": "icons/2048.png" },
       { "name": "Angry Birds", "path": "Angry Birds.html", "icon": "icons/angry_birds.png" },
@@ -634,7 +647,7 @@
           const gameObj = JSON.parse(autoLaunch);
           const found = allGames.find(g => g.name === gameObj.name || g.path === gameObj.path) || gameObj;
           setTimeout(() => launchGame(found), 150);
-        } catch(e) {}
+        } catch (e) { }
       }
     }
 
@@ -660,7 +673,7 @@
             <span class="game-title" title="Suggest Games">Suggest Games</span>
           </div>
         `;
-        suggestCard.onclick = () => window.open("https://docs.google.com/forms/d/e/1FAIpQLSdL9_nG0Twn0JoQOLUiizFwpvoc8hk0JmDhCcnnRnTz7FMSaA/viewform?usp=publish-editor", "_blank");
+        suggestCard.onclick = () => window.open("https://docs.google.com/forms/d/e/1FAIpQLSfzK1g3S79Y1j5B0WfO4deqaJmDDp-I3wPP_t6jGtk89A26dQ/viewform?usp=sharing&ouid=102328248139394391547", "_blank");
         gridEl.appendChild(suggestCard);
       }
 
@@ -700,8 +713,7 @@
 
     async function launchGame(game) {
       activeGameObj = game;
-      const randomQuote = loadingQuotes[Math.floor(Math.random() * loadingQuotes.length)];
-      loadingModalText.textContent = `${randomQuote} (Loading ${game.name}...)`;
+      loadingModalText.textContent = `Loading ${game.name}...`;
       loadingModal.classList.add("show");
 
       let gameUrl = REPO_BASE + encodeURI(game.path);
@@ -712,8 +724,8 @@
         if (!res.ok) throw new Error("Status " + res.status);
         let html = await res.text();
 
-        
-        
+
+
         const iframeMatch = html.match(/<iframe\b[^>]*?\bsrc=["']([^"']+\.html(?:\?[^"']*)?)["']/i);
         if (iframeMatch && iframeMatch[1]) {
           let nestedUrl = iframeMatch[1];
@@ -727,25 +739,25 @@
               gameUrl = nestedUrl;
               gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
             }
-          } catch(errNested) {
+          } catch (errNested) {
             console.warn("Could not unwrap nested iframe HTML:", errNested);
           }
         }
 
         document.body.classList.add("game-active");
 
-        
+
         const baseMatch = html.match(/<base\s+[^>]*href=["']([^"']+)["']/i);
         const resolvedBase = baseMatch ? baseMatch[1] : gameBaseFolder;
         const absoluteBase = resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/';
 
-        
+
         html = html.replace(/streamingAssetsUrl\s*:\s*(["'])(?!https?:\/\/)(.*?)\1/gi, (match, quote, relPath) => {
           const abs = absoluteBase + relPath.replace(/^(\.\/|\/)/, '');
           return `streamingAssetsUrl: "${abs}"`;
         });
 
-        
+
         const engineShim = `
 <script>
 (function() {
@@ -948,7 +960,7 @@
 })();
 <\/script>`;
 
-        
+
         const defaultStyleShim = `
 <style>
 html, body {
@@ -975,7 +987,7 @@ iframe {
 }
 </style>`;
 
-        
+
         const baseTag = baseMatch ? '' : `<base href="${gameBaseFolder}">`;
         const headInjection = baseTag + defaultStyleShim + engineShim;
 
@@ -989,28 +1001,28 @@ iframe {
         }
 
         window.lastGameHtml = cleanHtml;
-        
+
         const launchMode = localStorage.getItem("athyx_game_launch_mode") === "iframe" ? "iframe" : "about:blank";
 
         if (launchMode === "about:blank") {
           gameStageIframe.removeAttribute("srcdoc");
           gameStageIframe.src = "about:blank";
           gameStage.classList.add("show");
-          
+
           gameStageIframe.contentWindow.document.open();
           gameStageIframe.contentWindow.document.write(cleanHtml);
           gameStageIframe.contentWindow.document.close();
-          
+
           try {
             window.parent.postMessage({ action: "athyx_game_active", active: true }, "*");
-          } catch(e) {}
+          } catch (e) { }
         } else {
           gameStageIframe.removeAttribute("src");
           gameStageIframe.srcdoc = cleanHtml;
           gameStage.classList.add("show");
           try {
             window.parent.postMessage({ action: "athyx_game_active", active: true }, "*");
-          } catch(e) {}
+          } catch (e) { }
         }
       } catch (err) {
         console.error("Failed to launch game:", err);
@@ -1030,28 +1042,28 @@ iframe {
       activeGameObj = null;
       document.body.classList.remove("game-active");
       if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().catch(() => { });
       }
       try {
         window.parent.postMessage({ action: "athyx_game_active", active: false }, "*");
-      } catch(e) {}
+      } catch (e) { }
     }
     function openGameInNewTab() {
       try {
         const title = localStorage.getItem("athyx_tab_title") || "Athyx Network";
         const icon = localStorage.getItem("athyx_tab_icon") || "https://ssl.gstatic.com/classroom/favicon.png";
-        
+
         let content = "";
         if (gameStageIframe.src && gameStageIframe.src !== "about:blank" && !gameStageIframe.src.startsWith("blob:")) {
-           window.open(gameStageIframe.src, "_blank");
-           closeActiveGame();
-           return;
+          window.open(gameStageIframe.src, "_blank");
+          closeActiveGame();
+          return;
         } else if (window.lastGameHtml) {
-           content = window.lastGameHtml;
+          content = window.lastGameHtml;
         } else {
-           content = gameStageIframe.srcdoc || "";
+          content = gameStageIframe.srcdoc || "";
         }
-        
+
         const win = window.open("about:blank", "_blank");
         if (win) {
           win.document.open();
@@ -1079,7 +1091,7 @@ iframe {
       }
     }
 
-    
+
     searchBox.addEventListener("input", () => {
       clearSearchBtn.style.display = searchBox.value ? "block" : "none";
       renderGames();
@@ -1092,17 +1104,19 @@ iframe {
       renderGames();
     });
 
-    
+
     window.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && gameStage.classList.contains("show")) {
         closeActiveGame();
       }
     });
 
-    
+
     fetchGameLibrary();
   </script>
 
-  <script src="particle.js"></script>
+  <script src="../js/particle.js"></script>
 </body>
+
 </html>
+

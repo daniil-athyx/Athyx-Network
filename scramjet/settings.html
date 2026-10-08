@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Proxy Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../themes.css"/>
+  <script src="../js/themes.js?v=2"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --toggle-off: #334155;
+    }
+    body {
+      background-color: var(--bg, #0b0f17);
+      background-image: radial-gradient(rgba(255, 255, 255, 0.075) 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+      color: var(--text, #e2e8f0);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    
+    .settings-main {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .tab-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 38px;
+    }
+
+    .tab-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-main, #ffffff);
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    .settings-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.45);
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      gap: 20px;
+      transition: background 0.15s ease;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-row:hover {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .settings-section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-main, #ffffff);
+      letter-spacing: -0.02em;
+      margin: 0;
+    }
+
+    .setting-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .setting-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main, #ffffff);
+      letter-spacing: -0.01em;
+    }
+
+    .setting-desc {
+      font-size: 13px;
+      color: var(--text-dim, #94a3b8);
+      line-height: 1.45;
+    }
+
+    .setting-control {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      width: 48px;
+      height: 26px;
+      background: var(--toggle-off);
+      border-radius: 9999px;
+      padding: 3px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+      user-select: none;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .toggle-knob {
+      width: 20px;
+      height: 20px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
+    }
+
+    .toggle-switch.active {
+      background: var(--text-main, #ffffff);
+    }
+
+    .toggle-switch.active .toggle-knob {
+      transform: translateX(22px);
+      background: var(--bg, #0f172a);
+    }
+
+    .primary-btn {
+      background: var(--accent, #0ea5e9);
+      color: var(--bg, #ffffff);
+      border: none;
+      border-radius: 10px;
+      padding: 8px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .primary-btn:hover {
+      background: var(--accent-hover, #0284c7);
+      transform: translateY(-1px);
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .wisp-url {
+        color: var(--text-muted);
+        font-size: 13px;
+        font-family: monospace;
+        margin-top: 2px;
+    }
+    .wisp-status {
+        font-size: 12px;
+        margin-top: 4px;
+        font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="settings-main">
+    <div class="tab-header">
+      <h2 class="tab-title">Proxy Settings</h2>
+    </div>
+
+    <div class="settings-card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Adblocker</div>
+          <div class="setting-desc">Block known ad networks and trackers</div>
+        </div>
+        <div class="setting-control">
+          <div class="toggle-switch" id="adblock-switch">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Auto-select Fastest WISP</div>
+          <div class="setting-desc">Automatically switch to the WISP server with the lowest latency</div>
+        </div>
+        <div class="setting-control">
+          <div class="toggle-switch" id="auto-wisp-switch">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-header" style="margin-top: 8px;">
+      <h2 class="settings-section-title">Advanced Compatibility</h2>
+    </div>
+
+    <div class="settings-card">
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Browser compatibility check</div>
+          <div class="setting-desc">Warn and avoid unsupported features when service workers or WebSockets are unavailable.</div>
+        </div>
+        <div class="setting-control">
+          <div class="toggle-switch" id="compat-check-switch">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Transport fallback</div>
+          <div class="setting-desc">Retry the proxy transport and use a basic mode if the WISP connection fails.</div>
+        </div>
+        <div class="setting-control">
+          <div class="toggle-switch" id="transport-fallback-switch">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Request fallback</div>
+          <div class="setting-desc">Reload a site directly when the proxy cannot load it successfully.</div>
+        </div>
+        <div class="setting-control">
+          <div class="toggle-switch" id="request-fallback-switch">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Offline error page</div>
+          <div class="setting-desc">Show a clear offline or unsupported-page message instead of displaying a broken page.</div>
+        </div>
+        <div class="setting-control">
+          <div class="toggle-switch" id="offline-page-switch">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-info">
+          <div class="setting-title">Reduced-feature mode</div>
+          <div class="setting-desc">Disable advanced proxy features to improve compatibility with older browsers.</div>
+        </div>
+        <div class="setting-control">
+          <div class="toggle-switch" id="reduced-feature-switch">
+            <div class="toggle-knob"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-header" style="margin-top: 8px;">
+      <h2 class="tab-title" style="font-size: 22px;">WISP Servers</h2>
+    </div>
+
+    <div class="settings-card" id="wisp-list">
+      <div class="setting-row" style="justify-content: center; color: var(--text-muted);">
+        Loading servers...
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentWisp = localStorage.getItem('proxServer') || "wss://ok.worldmicroscope.com/wisp/";
+    let allUrls = [];
+    
+    // Toggle switch logic
+    function setupToggle(id, storageKey, callback) {
+        const toggle = document.getElementById(id);
+        const isActive = localStorage.getItem(storageKey) === 'true';
+        if (isActive) toggle.classList.add('active');
+        
+        toggle.addEventListener('click', () => {
+            const willBeActive = !toggle.classList.contains('active');
+            if (willBeActive) toggle.classList.add('active');
+            else toggle.classList.remove('active');
+            
+            localStorage.setItem(storageKey, willBeActive);
+            if (callback) callback(willBeActive);
+        });
+    }
+
+    async function loadServers() {
+      try {
+        const res = await fetch('../wisp.txt');
+        const text = await res.text();
+        allUrls = text.split('\n').map(u => u.trim()).filter(u => u.startsWith('ws'));
+        
+        renderList();
+
+        setupToggle('auto-wisp-switch', 'autoSelectFastestWisp', (isActive) => {
+            if(isActive) autoSelect();
+        });
+        
+        setupToggle('adblock-switch', 'adblockEnabled', (isActive) => {
+            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: "config",
+                    wispurl: currentWisp,
+                    adblock: isActive
+                });
+            }
+        });
+
+        setupToggle('compat-check-switch', 'compatCheckEnabled');
+        setupToggle('transport-fallback-switch', 'transportFallbackEnabled');
+        setupToggle('request-fallback-switch', 'requestFallbackEnabled');
+        setupToggle('offline-page-switch', 'offlinePageEnabled');
+        setupToggle('reduced-feature-switch', 'reducedFeatureEnabled');
+
+        if (document.getElementById('auto-wisp-switch').classList.contains('active')) {
+            autoSelect();
+        }
+      } catch (err) {
+          document.getElementById('wisp-list').innerHTML = '<div class="setting-row" style="color:var(--accent);">Failed to load WISP servers.</div>';
+      }
+    }
+
+    function renderList() {
+        const list = document.getElementById('wisp-list');
+        list.innerHTML = '';
+
+        const urls = [...allUrls];
+        urls.sort((a, b) => {
+            if (a === currentWisp) return -1;
+            if (b === currentWisp) return 1;
+            return 0;
+        });
+        
+        urls.forEach(url => {
+          const isActive = url === currentWisp;
+          const urlObj = new URL(url);
+          
+          const div = document.createElement('div');
+          div.className = `setting-row ${isActive ? 'active-wisp' : ''}`;
+          if (isActive) {
+              div.style.background = 'rgba(255,255,255,0.03)';
+              div.style.borderLeft = '3px solid var(--accent)';
+          }
+
+          div.innerHTML = `
+            <div class="setting-info">
+              <div class="setting-title">${urlObj.hostname}</div>
+              <div class="wisp-url">${url}</div>
+              <div class="wisp-status latency-display" id="lat-${btoa(url).replace(/=/g,'')}">Testing latency...</div>
+            </div>
+            <div class="setting-control">
+                <button class="primary-btn select-btn" ${isActive ? 'disabled' : ''}>
+                ${isActive ? '<i class="fa-solid fa-check"></i> Connected' : 'Connect'}
+                </button>
+            </div>
+          `;
+          
+          const btn = div.querySelector('.select-btn');
+          btn.onclick = () => selectWisp(url);
+          
+          list.appendChild(div);
+          testLatency(url, div.querySelector('.latency-display'));
+        });
+    }
+
+    function selectWisp(url) {
+        localStorage.setItem('proxServer', url);
+        currentWisp = url;
+        
+        try {
+            const event = new CustomEvent('localStorageUpdate', { detail: { key: 'proxServer', newValue: url } });
+            window.parent.dispatchEvent(event);
+        } catch (e) {}
+
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({
+                type: "config",
+                wispurl: url,
+                adblock: document.getElementById('adblock-switch').classList.contains('active')
+            });
+        }
+
+        renderList();
+    }
+
+    async function testLatency(url, element) {
+        return new Promise(resolve => {
+            const start = performance.now();
+            try {
+                const ws = new WebSocket(url);
+                const timeout = setTimeout(() => {
+                    try { ws.close(); } catch {}
+                    if (element) {
+                        element.textContent = 'Offline';
+                        element.style.color = 'var(--accent-hover)';
+                    }
+                    resolve({ url, time: Infinity });
+                }, 3000);
+                ws.onopen = () => {
+                    clearTimeout(timeout);
+                    try { ws.close(); } catch {}
+                    const latency = Math.round(performance.now() - start);
+                    if (element) {
+                        element.textContent = latency + 'ms';
+                        element.style.color = 'var(--accent)';
+                    }
+                    resolve({ url, time: latency });
+                };
+                ws.onerror = () => {
+                    clearTimeout(timeout);
+                    try { ws.close(); } catch {}
+                    if (element) {
+                        element.textContent = 'Error';
+                        element.style.color = 'var(--accent-hover)';
+                    }
+                    resolve({ url, time: Infinity });
+                };
+            } catch(e) {
+                if (element) {
+                    element.textContent = 'Error';
+                    element.style.color = 'var(--accent-hover)';
+                }
+                resolve({ url, time: Infinity });
+            }
+        });
+    }
+
+    async function autoSelect() {
+        const promises = allUrls.map(url => testLatency(url, null));
+        const results = await Promise.all(promises);
+        const best = results.reduce((min, curr) => curr.time < min.time ? curr : min, { time: Infinity });
+        
+        if (best.time < Infinity && best.url !== currentWisp) {
+            selectWisp(best.url);
+        }
+    }
+
+    // Default states for toggles missing from localStorage
+    if (localStorage.getItem('autoSelectFastestWisp') === null) {
+        localStorage.setItem('autoSelectFastestWisp', 'false');
+    }
+    if (localStorage.getItem('adblockEnabled') === null) {
+        localStorage.setItem('adblockEnabled', 'true');
+    }
+    [
+        'compatCheckEnabled',
+        'transportFallbackEnabled',
+        'requestFallbackEnabled',
+        'offlinePageEnabled',
+        'reducedFeatureEnabled'
+    ].forEach((key) => {
+        if (localStorage.getItem(key) === null) {
+            localStorage.setItem(key, 'false');
+        }
+    });
+
+    loadServers();
+  </script>
+</body>
+</html>

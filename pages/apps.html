@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -15,25 +15,25 @@
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="themes.css">
-  <script src="themes.js?v=2"></script>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="../themes.css">
+  <script src="../js/themes.js?v=2"></script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="shortcut icon" href="../assets/favicon.ico">
 
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0c0406;
-      --surface: #190a0e;
-      --surface-hover: #251016;
-      --border: rgba(244, 63, 94, 0.16);
-      --border-hover: rgba(244, 63, 94, 0.32);
-      --text: #fff1f2;
-      --text-muted: #fecdd3;
-      --text-dim: #f43f5e;
-      --accent: #f43f5e;
-      --accent-dim: rgba(244, 63, 94, 0.18);
-      --accent-glow: rgba(244, 63, 94, 0.45);
+      --bg: #0b0508;
+      --surface: rgba(28, 12, 16, 0.82);
+      --surface-hover: rgba(42, 18, 24, 0.9);
+      --border: rgba(10, 255, 206, 0.16);
+      --border-hover: rgba(10, 255, 206, 0.32);
+      --text: #fff5f6;
+      --text-muted: #f7c6ce;
+      --text-dim: rgb(10, 255, 206);
+      --accent: rgb(10, 255, 206);
+      --accent-dim: rgba(10, 255, 206, 0.18);
+      --accent-glow: rgba(10, 255, 206, 0.45);
     }
 
     * {
@@ -137,6 +137,7 @@
       max-width: 1400px;
       margin: 0 auto;
       padding: 24px 28px 120px;
+      padding-left: calc(28px + 88px);
     }
 
     .apps-grid {
@@ -505,7 +506,7 @@
       return url + sep + "_nc=" + Date.now();
     }
 
-    const APP_ICONS_BASE = "https://cdn.jsdelivr.net/gh/athyx-network/game-library@main/app_icons/";
+    const APP_ICONS_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/";
 
     window.handleIconFallback = function(img) {
       if (!img.dataset.retried) {
@@ -525,7 +526,7 @@
       img.nextElementSibling.style.display = "block";
     };
 
-    const APPS_JSON_URL = "https://cdn.jsdelivr.net/gh/athyx-network/game-library@main/apps.json";
+    const APPS_JSON_URL = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/apps.json";
 
     const fallbackApps = [
       { name: "TurboWarp", file: "turbowarp.html", icon: "turbowarp.png", tag: "Creative" },
@@ -533,7 +534,10 @@
       { name: "Pico-8 Education", file: "pico8edu.html", icon: "pico8edu.jpg", tag: "Console" },
       { name: "EmulatorJS", file: "emulatorjs.html", icon: "emulatorjs.png", tag: "Emulator" },
       { name: "Dos Wasm X", file: "doswasmx.html", icon: "doswasmx.png", tag: "Emulator" },
-      { name: "TikTok", file: "tiktok.html", icon: "https://raw.githubusercontent.com/daniil-athyx/game-library/main/app_icons/tiktok.png", tag: "Social" }
+      { name: "TikTok", file: "tiktok.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/tiktok.png", tag: "Social" },
+      { name: "Tubi", file: "tubi.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/tubi.png", tag: "Movies" },
+      { name: "SoundCloud", file: "soundcloud.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/soundcloud.png", tag: "Music" },
+      { name: "Twitch", file: "twitch.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/twitch.png", tag: "Social" }
     ];
 
     let allApps = [];
@@ -613,8 +617,7 @@
 
     async function launchApp(app) {
       activeAppObj = app;
-      const randomQuote = loadingQuotes[Math.floor(Math.random() * loadingQuotes.length)];
-      loadingModalText.textContent = `${randomQuote} (Launching ${app.name}...)`;
+      loadingModalText.textContent = `Launching ${app.name}...`;
       loadingModal.classList.add("show");
 
       try {
@@ -769,7 +772,22 @@
       
       // Inject TikTok if it hasn't been added to apps.json yet
       if (!allApps.some(app => app.name === "TikTok")) {
-        allApps.push({ name: "TikTok", file: "tiktok.html", icon: "https://raw.githubusercontent.com/daniil-athyx/game-library/main/app_icons/tiktok.png", tag: "Social" });
+        allApps.push({ name: "TikTok", file: "tiktok.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/tiktok.png", tag: "Social" });
+      }
+      
+      // Inject Tubi
+      if (!allApps.some(app => app.name === "Tubi")) {
+        allApps.push({ name: "Tubi", file: "tubi.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/tubi.png", tag: "Movies" });
+      }
+
+      // Inject SoundCloud
+      if (!allApps.some(app => app.name === "SoundCloud")) {
+        allApps.push({ name: "SoundCloud", file: "soundcloud.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/soundcloud.png", tag: "Music" });
+      }
+
+      // Inject Twitch
+      if (!allApps.some(app => app.name === "Twitch")) {
+        allApps.push({ name: "Twitch", file: "twitch.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/twitch.png", tag: "Social" });
       }
 
       allApps.sort((a, b) => a.name.localeCompare(b.name));
@@ -780,7 +798,8 @@
     initApps();
   </script>
 
-  <script src="particle.js"></script>
+  <script src="../js/particle.js"></script>
 </body>
 
 </html>
+

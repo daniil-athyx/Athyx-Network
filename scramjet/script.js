@@ -17,27 +17,92 @@ const DEFAULT_SEARCH_ENGINES = {
 window.basePath = window.basePath || (typeof location !== 'undefined' ? location.pathname.replace(/[^/]*$/, '') : '/');
 var basePath = window.basePath;
 
-// Declare scramjet globally so it can be used by createTab and other functions
-let scramjet;
+const COMPATIBILITY_FLAGS = {
+    compatCheck: 'compatCheckEnabled',
+    transportFallback: 'transportFallbackEnabled',
+    requestFallback: 'requestFallbackEnabled',
+    offlinePage: 'offlinePageEnabled',
+    reducedFeature: 'reducedFeatureEnabled'
+};
 
-let blockedSitesList = [];
-async function loadBlockedSites() {
-    try {
-        const response = await fetch(basePath + '../blockedsite.txt');
-        if (response.ok) {
-            const text = await response.text();
-            blockedSitesList = text.split('\n').map(line => {
-                const parts = line.split(' - ');
-                if (parts.length >= 2) {
-                    return { domain: parts[0].trim(), reason: parts.slice(1).join(' - ').trim() };
-                }
-                return null;
-            }).filter(item => item !== null);
-        }
-    } catch (e) {
-        console.warn('Could not load blockedsite.txt', e);
+function getCompatibilityFlag(key, defaultValue = false) {
+    const value = localStorage.getItem(key);
+    return value === null ? defaultValue : value === 'true';
+}
+
+function getCompatibilitySettings() {
+    return Object.fromEntries(Object.entries(COMPATIBILITY_FLAGS).map(([name, key]) => [name, getCompatibilityFlag(key, false)]));
+}
+
+function logCompatibilityIssue(message) {
+    if (getCompatibilityFlag(COMPATIBILITY_FLAGS.compatCheck, false)) {
+        console.warn(`[Advanced Compatibility] ${message}`);
     }
 }
+
+function showCompatibilityError(url, reason) {
+    if (!getCompatibilityFlag(COMPATIBILITY_FLAGS.offlinePage, false)) {
+        return false;
+    }
+
+    const safeUrl = encodeURIComponent(url || 'about:blank');
+    const errorUrl = `${basePath}compat-error.html?url=${safeUrl}&reason=${encodeURIComponent(reason || 'The page could not be loaded.')}`;
+    const activeTab = getActiveTab();
+    if (activeTab) {
+        activeTab.frame.frame.src = errorUrl;
+        activeTab.url = errorUrl;
+        activeTab.loading = false;
+        activeTab.progress = 100;
+        updateLoadingBar(activeTab);
+        return true;
+    }
+    return false;
+}
+
+function retryCompatibilityErrorPage() {
+    const activeTab = getActiveTab();
+    if (!activeTab || !activeTab.url || !activeTab.url.startsWith(`${basePath}compat-error.html`)) {
+        return;
+    }
+    const params = new URLSearchParams(activeTab.url.split('?')[1] || '');
+    const originalUrl = params.get('url');
+    if (originalUrl) {
+        activeTab.frame.frame.src = decodeURIComponent(originalUrl);
+        activeTab.loading = true;
+        activeTab.progress = 10;
+        updateLoadingBar(activeTab);
+    }
+}
+
+async function configureTransportWithFallback() {
+    const transportUrl = `${basePath}Ep/index.mjs`;
+    const transportArgs = [{ wisp: store.wispurl }];
+
+    try {
+        await connection.setTransport(transportUrl, transportArgs);
+    } catch (error) {
+        logCompatibilityIssue(`Transport failed: ${error.message || error}`);
+        if (!getCompatibilityFlag(COMPATIBILITY_FLAGS.transportFallback, false)) {
+            throw error;
+        }
+
+        const maxAttempts = 2;
+        for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+            try {
+                await new Promise((resolve) => setTimeout(resolve, 250 * attempt));
+                await connection.setTransport(transportUrl, transportArgs);
+                return;
+            } catch (retryError) {
+                if (attempt === maxAttempts) {
+                    throw retryError;
+                }
+            }
+        }
+    }
+}
+
+// Declare scramjet globally so it can be used by createTab and other functions
+let scramjet;
 
 document.addEventListener('DOMContentLoaded', async function () {
     basePath = location.pathname.replace(/[^/]*$/, '');
@@ -56,23 +121,36 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     scramjet.init();
-    // Dynamic path calculation for subfolder hosting compatibility
-    await navigator.serviceWorker.register(basePath + 'sw.js', { scope: basePath });
+
+    const reducedFeatureMode = getCompatibilityFlag(COMPATIBILITY_FLAGS.reducedFeature, false);
+    const supportsServiceWorker = 'serviceWorker' in navigator;
+    const supportsWebSocket = 'WebSocket' in window;
+
+    if (getCompatibilityFlag(COMPATIBILITY_FLAGS.compatCheck, false)) {
+        if (!supportsServiceWorker) logCompatibilityIssue('Service Workers are unavailable; proxy features may fail.');
+        if (!supportsWebSocket) logCompatibilityIssue('WebSockets are unavailable; WISP servers cannot be used.');
+    }
+
+    if (!reducedFeatureMode && supportsServiceWorker) {
+        // Dynamic path calculation for subfolder hosting compatibility
+        await navigator.serviceWorker.register(basePath + 'sw.js', { scope: basePath });
+    }
     
     // Send the WISP URL to the service worker once ready or if controller already exists
-    const wispUrl = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://wisp.rhw.one/wisp/");
-    if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({
-            type: "config",
-            wispurl: wispUrl,
-        });
+    const wispUrl = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://ok.worldmicroscope.com/wisp/");
+    const adblockEnabled = localStorage.getItem('adblockEnabled') === 'true';
+    const configMessage = {
+        type: "config",
+        wispurl: wispUrl,
+        adblock: adblockEnabled,
+        ...getCompatibilitySettings()
+    };
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage(configMessage);
     }
-    navigator.serviceWorker.ready.then((registration) => {
+    navigator.serviceWorker?.ready.then((registration) => {
         if (registration.active) {
-            registration.active.postMessage({
-                type: "config",
-                wispurl: localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://wisp.rhw.one/wisp/"),
-            });
+            registration.active.postMessage(configMessage);
         }
     });
 });
@@ -83,9 +161,13 @@ const store = {
     wispurl: localStorage.getItem("proxServer") || _CONFIG.wispurl,
     bareurl: _CONFIG?.bareurl || (location.protocol === "https:" ? "https" : "http") + "://" + location.host + "/bare/"
 };
-connection.setTransport(`${basePath}Ep/index.mjs`, [{
-    wisp: store.wispurl
-}]);
+
+configureTransportWithFallback().catch((error) => {
+    logCompatibilityIssue(`Unable to initialize the proxy transport: ${error.message || error}`);
+    if (getCompatibilityFlag(COMPATIBILITY_FLAGS.offlinePage, false)) {
+        showCompatibilityError('about:blank', 'The proxy transport could not start.');
+    }
+});
 
 // Monitor WISP connection health
 setInterval(testWispHealth, 60000); // Check every minute
@@ -105,7 +187,8 @@ function createTab(makeActive = true) {
         favicon: "", // Start with empty favicon
         loading: true,
         progress: 10, // Start at 10%
-        faviconTimeout: null // Track favicon loading timeout
+        faviconTimeout: null, // Track favicon loading timeout
+        isInitialPageLoad: true
     };
 
     updateLoadingBar(tab);
@@ -116,15 +199,7 @@ function createTab(makeActive = true) {
         if (!e.url || e.url === "about:blank")
             return;
             
-        try {
-            const urlObj = new URL(e.url);
-            const blockedMatch = blockedSitesList.find(b => urlObj.hostname.includes(b.domain) || b.domain.includes(urlObj.hostname));
-            if (blockedMatch) {
-                frame.go(basePath + 'blocked.html?reason=' + encodeURIComponent(blockedMatch.reason));
-                return;
-            }
-        } catch(err) {}
-        
+
         tab.url = e.url;
         tab.loading = true;
         tab.progress = 10;
@@ -173,12 +248,14 @@ function createTab(makeActive = true) {
                 tab.loading = false;
                 tab.progress = 100;
                 updateLoadingBar(tab);
+                tab.isInitialPageLoad = false;
                 updateTabsUI();
             } else {
                 tab.loading = false;
                 tab.title = "New Tab";
                 tab.progress = 100;
                 updateLoadingBar(tab);
+                tab.isInitialPageLoad = false;
                 updateTabsUI();
             }
         } catch (e) {/* Ignore cross-origin access */
@@ -186,10 +263,24 @@ function createTab(makeActive = true) {
             tab.title = "New Tab";
             tab.progress = 100;
             updateLoadingBar(tab);
+            tab.isInitialPageLoad = false;
             updateTabsUI();
         }
-    }
-    );
+    });
+
+    frame.frame.addEventListener('error', () => {
+        if (getCompatibilityFlag(COMPATIBILITY_FLAGS.requestFallback, false)) {
+            const directUrl = tab.url && !tab.url.startsWith('scram://') ? tab.url : null;
+            if (directUrl) {
+                tab.frame.frame.src = directUrl;
+                tab.loading = true;
+                tab.progress = 10;
+                updateLoadingBar(tab);
+                return;
+            }
+        }
+        showCompatibilityError(tab.url || 'about:blank', 'The page failed to load and could not be opened through the proxy.');
+    });
     tabs.push(tab);
     if (makeActive) {
         activeTabId = tab.id;
@@ -350,6 +441,17 @@ function toggleDevTools() {
             if (frameWindow.eruda && typeof frameWindow.eruda.init === 'function') {
                 frameWindow.eruda.init();
                 frameWindow.eruda.show();
+                
+                // Hide via JS API if available
+                if (frameWindow.eruda._entryBtn) frameWindow.eruda._entryBtn.hide();
+                
+                // Hide via CSS injected into Shadow DOM
+                let erudaRoot = frameWindow.document.getElementById('eruda');
+                if (erudaRoot && erudaRoot.shadowRoot) {
+                    let style = frameWindow.document.createElement('style');
+                    style.innerHTML = '.eruda-entry-btn { display: none !important; }';
+                    erudaRoot.shadowRoot.appendChild(style);
+                }
             } else {
                 // Retry if not immediately available
                 let attempts = 0;
@@ -357,6 +459,16 @@ function toggleDevTools() {
                     if (frameWindow.eruda && typeof frameWindow.eruda.init === 'function') {
                         frameWindow.eruda.init();
                         frameWindow.eruda.show();
+                        
+                        if (frameWindow.eruda._entryBtn) frameWindow.eruda._entryBtn.hide();
+                        
+                        let erudaRoot = frameWindow.document.getElementById('eruda');
+                        if (erudaRoot && erudaRoot.shadowRoot) {
+                            let style = frameWindow.document.createElement('style');
+                            style.innerHTML = '.eruda-entry-btn { display: none !important; }';
+                            erudaRoot.shadowRoot.appendChild(style);
+                        }
+                        
                         clearInterval(interval);
                     } else if (attempts > 10) {
                         clearInterval(interval);
@@ -399,11 +511,13 @@ async function initializeBrowser() {
     updateTabsUI();
     updateAddressBar();
 
+    // Wait for Service Worker to be active before navigating to proxy links
+    if (navigator.serviceWorker) {
+        await navigator.serviceWorker.ready;
+    }
+
     // Check for hash parameters after initialization
     await checkHashParameters();
-
-    // Load blocked sites list
-    await loadBlockedSites();
 
     // Initialize WISP events after UI is created
     initializeWISPEvents();
@@ -509,6 +623,17 @@ function handleSubmit(url = null) {
         // If decoding fails, use original input
     }
 
+    // Handle custom internal schemes
+    if (inputUrl === "scram://settings") {
+        activeTab.isInitialPageLoad = true;
+        activeTab.loading = true;
+        updateLoadingBar(activeTab);
+        activeTab.frame.frame.src = basePath + 'settings.html';
+        activeTab.url = inputUrl;
+        if (addressBar) addressBar.value = inputUrl;
+        return;
+    }
+
     // Handle special cases where URL might be malformed
     if (!inputUrl.match(/^https?:\/\//i)) {
         if (inputUrl.includes('.') && !inputUrl.includes(' ')) {
@@ -520,15 +645,14 @@ function handleSubmit(url = null) {
 
     // Final validation check
     try {
-        const urlObj = new URL(inputUrl);
-        const blockedMatch = blockedSitesList.find(b => urlObj.hostname.includes(b.domain) || b.domain.includes(urlObj.hostname));
-        if (blockedMatch) {
-            activeTab.frame.go(basePath + 'blocked.html?reason=' + encodeURIComponent(blockedMatch.reason));
-            return;
-        }
+        new URL(inputUrl);
     } catch {
         inputUrl = 'https://search.brave.com/search?q=' + encodeURIComponent(inputUrl);
     }
+    activeTab.isInitialPageLoad = true;
+    activeTab.loading = true;
+    updateLoadingBar(activeTab);
+    activeTab.url = inputUrl;
     activeTab.frame.go(inputUrl);
 }
 
@@ -549,6 +673,15 @@ async function loadWispServers() {
         const container = document.getElementById('dynamic-wisps-container');
         if (container) {
             container.innerHTML = '';
+            
+            const currentUrl = localStorage.getItem('proxServer') || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://ok.worldmicroscope.com/wisp/");
+            
+            urls.sort((a, b) => {
+                if (a === currentUrl) return -1;
+                if (b === currentUrl) return 1;
+                return 0;
+            });
+            
             urls.forEach(url => {
                 const wispOption = document.createElement('div');
                 wispOption.className = 'wisp-option';
@@ -577,7 +710,6 @@ async function loadWispServers() {
             });
             
             // Re-apply selected state
-            const currentUrl = localStorage.getItem('proxServer') || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://wisp.rhw.one/wisp/");
             const selectedOption = container.querySelector(`[data-url="${currentUrl}"]`);
             if (selectedOption) {
                 selectedOption.querySelector('.wisp-option-btn').textContent = 'Selected';
@@ -693,7 +825,7 @@ async function autoSelectFastestWisp() {
 
     if (best.time < Infinity) {
         selectWispUrl(best.url);
-        applyWispSettings();
+        applyWispSettings(false); // Do not close the modal automatically
         updateWispStatus('success', `Selected fastest: ${best.url} (${Math.round(best.time)}ms)`);
     } else {
         alert('No reachable WISP servers found.');
@@ -701,7 +833,7 @@ async function autoSelectFastestWisp() {
     }
 }
 
-function applyWispSettings() {
+function applyWispSettings(closeModal = true) {
     const newWispUrl = document.getElementById('current-wisp-url').textContent;
 
     // Save to localStorage
@@ -714,11 +846,14 @@ function applyWispSettings() {
     window.dispatchEvent(event);
 
     // Message the Service Worker
+    const configMessage = {
+        type: 'config',
+        wispurl: newWispUrl,
+        adblock: localStorage.getItem('adblockEnabled') === 'true',
+        ...getCompatibilitySettings()
+    };
     if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({
-            type: 'config',
-            wispurl: newWispUrl
-        });
+        navigator.serviceWorker.controller.postMessage(configMessage);
     }
 
     // Update store and reconnect BareMux transports
@@ -731,9 +866,11 @@ function applyWispSettings() {
     updateWispStatus('success', 'WISP settings applied successfully!');
 
     // Close modal after a short delay
-    setTimeout(() => {
-        closeWISPSettingsModal();
-    }, 1000);
+    if (closeModal !== false) {
+        setTimeout(() => {
+            closeWISPSettingsModal();
+        }, 1000);
+    }
 }
 
 function updateWispStatus(type, message) {
@@ -780,7 +917,12 @@ function updateApplyButton() {
 // Initialize event listeners for WISP modal
 function initializeWISPEvents() {
     // WISP settings button click
-    document.getElementById('wisp-settings-btn').addEventListener('click', openWISPSettingsModal);
+    document.getElementById('wisp-settings-btn').addEventListener('click', () => {
+        const newTab = createTab(false);
+        document.getElementById("iframe-container").appendChild(newTab.frame.frame);
+        switchTab(newTab.id);
+        handleSubmit("scram://settings");
+    });
 
     // Close buttons
     document.getElementById('close-wisp-modal').addEventListener('click', closeWISPSettingsModal);
@@ -863,11 +1005,54 @@ function addNewShortcutButton(container) {
 }
 
 function updateLoadingBar(tab) {
+    let fullLoadingScreen = document.getElementById("full-loading-screen");
+    if (!fullLoadingScreen) {
+        fullLoadingScreen = document.createElement("div");
+        fullLoadingScreen.id = "full-loading-screen";
+        fullLoadingScreen.innerHTML = '<div class="loader"></div>';
+        fullLoadingScreen.style.cssText = "position:absolute;top:0;left:0;width:100%;height:100%;background:var(--bg, #0c0406);display:none;justify-content:center;align-items:center;z-index:9999;transition:opacity 0.3s;pointer-events:none;";
+        
+        const style = document.createElement("style");
+        style.textContent = `
+            .loader {
+                border: 4px solid var(--accent-dim, rgba(255, 255, 255, 0.1));
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                border-left-color: var(--accent, #0affce);
+                animation: spin 1s linear infinite;
+            }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        `;
+        document.head.appendChild(style);
+        
+        const iframeContainer = document.getElementById("iframe-container");
+        if (iframeContainer) {
+            iframeContainer.style.position = "relative";
+            iframeContainer.appendChild(fullLoadingScreen);
+        }
+    }
+
     const loadingBar = document.getElementById("loading-bar");
     if (!loadingBar || !tab) return;
 
     // Only update if it's the active tab
     if (tab.id !== activeTabId) return;
+
+    if (tab.loading && tab.isInitialPageLoad) {
+        fullLoadingScreen.style.display = "flex";
+        void fullLoadingScreen.offsetWidth; // force reflow
+        fullLoadingScreen.style.opacity = "1";
+    } else {
+        if (fullLoadingScreen.style.display !== "none") {
+            fullLoadingScreen.style.opacity = "0";
+            setTimeout(() => {
+                if (activeTabId === tab.id && (!tab.loading || !tab.isInitialPageLoad)) {
+                    fullLoadingScreen.style.display = "none";
+                }
+            }, 300);
+        }
+    }
 
     if (tab.loading) {
         loadingBar.style.width = `${tab.progress}%`;
@@ -913,4 +1098,3 @@ function updateLoadingBar(tab) {
     }
 }
 
-module.exports = { addNewShortcutButton };

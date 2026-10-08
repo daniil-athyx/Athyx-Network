@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,26 +8,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="themes.css">
-  <script src="themes.js?v=2"></script>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="stylesheet" href="../themes.css">
+  <script src="../js/themes.js?v=2"></script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png">
+  <link rel="shortcut icon" href="../assets/favicon.ico">
 
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0c0406;
-      --surface: #190a0e;
-      --surface-hover: #251016;
-      --surface-active: #35161f;
-      --border: rgba(244, 63, 94, 0.16);
-      --border-hover: rgba(244, 63, 94, 0.32);
-      --text: #fff1f2;
-      --text-muted: #fecdd3;
-      --text-dim: #f43f5e;
-      --accent: #f43f5e;
-      --accent-dim: rgba(244, 63, 94, 0.18);
-      --accent-glow: rgba(244, 63, 94, 0.45);
+      --bg: #0b0508;
+      --surface: rgba(28, 12, 16, 0.82);
+      --surface-hover: rgba(42, 18, 24, 0.9);
+      --surface-active: rgba(64, 26, 35, 0.96);
+      --border: rgba(10, 255, 206, 0.16);
+      --border-hover: rgba(10, 255, 206, 0.32);
+      --text: #fff5f6;
+      --text-muted: #f7c6ce;
+      --text-dim: rgb(10, 255, 206);
+      --accent: rgb(10, 255, 206);
+      --accent-dim: rgba(10, 255, 206, 0.18);
+      --accent-glow: rgba(10, 255, 206, 0.45);
     }
 
     * {
@@ -136,7 +136,7 @@
       border-radius: 999px;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      border: 1px solid rgba(244, 63, 94, 0.3);
+      border: 1px solid rgba(10, 255, 206, 0.3);
     }
 
     .dork-btn {
@@ -216,9 +216,20 @@
       border: none;
       outline: none;
       color: var(--text);
+      caret-color: var(--accent);
       font-family: inherit;
       font-size: 15px;
       padding: 10px 0;
+      -webkit-text-fill-color: var(--text);
+    }
+
+    .search-box input:-webkit-autofill,
+    .search-box input:-webkit-autofill:hover,
+    .search-box input:-webkit-autofill:focus {
+      -webkit-box-shadow: 0 0 0 1000px var(--surface-hover) inset;
+      -webkit-text-fill-color: var(--text);
+      border: none;
+      transition: background-color 5000s ease-in-out 0s;
     }
 
     .search-box input::placeholder {
@@ -470,24 +481,9 @@
         <input type="text" id="searchInput" placeholder="Search with Google or enter a web URL..." autocomplete="off" spellcheck="false">
         <button class="search-btn" id="searchBtn" title="Press Enter to Search">
           <span>Search</span>
-          <span class="kbd-badge">↵</span>
+          <span class="kbd-badge">Enter</span>
         </button>
       </div>
-    </div>
-
-    
-    <div class="quick-chips">
-      <button class="chip" onclick="quickSearch('https://www.youtube.com')">
-        <i class="fa-brands fa-youtube"></i> YouTube
-      </button>
-      <button class="chip" onclick="quickSearch('https://www.tiktok.com')">
-        <i class="fa-brands fa-tiktok"></i> TikTok
-      </button>
-    </div>
-
-    
-    <div class="popular-section">
-      <div class="popular-grid" id="popularGrid"></div>
     </div>
 
   </div>
@@ -498,70 +494,6 @@
   </div>
 
   <script>
-    const REPO_BASE = "https://cdn.jsdelivr.net/gh/athyx-network/game-library@main/";
-
-    window.handleIconFallback = function(img) {
-      if (!img.dataset.retried) {
-        img.dataset.retried = "true";
-        let url = new URL(img.src, window.location.href);
-        if (url.pathname.endsWith(".png")) {
-          url.pathname = url.pathname.replace(/\.png$/i, ".jpg");
-          img.src = url.href;
-          return;
-        } else if (url.pathname.endsWith(".jpg")) {
-          url.pathname = url.pathname.replace(/\.jpg$/i, ".png");
-          img.src = url.href;
-          return;
-        }
-      }
-      img.style.display = "none";
-      img.nextElementSibling.style.display = "block";
-    };
-
-    const POPULAR_GAMES = [
-      { name: "Slope", path: "Slope 2.html", icon: "icons/slope_2.png" },
-      { name: "Geometry Dash", path: "Geometry Dash.html", icon: "icons/geometry_dash.svg" },
-      { name: "Snow Rider 3D", path: "Snow Rider.html", icon: "icons/snow_rider.png" },
-      { name: "Cookie Clicker", path: "Cookie Clicker.html", icon: "icons/cookie_clicker.png" },
-      { name: "Block Blast", path: "Block Blast.html", icon: "icons/block_blast.png" },
-      { name: "Raldi's Crackhouse", path: "Raldis Crackhouse.html", icon: "icons/raldis_crackhouse.png" }
-    ];
-
-    function renderPopularGames() {
-      const grid = document.getElementById("popularGrid");
-      if (!grid) return;
-      grid.innerHTML = "";
-
-      POPULAR_GAMES.forEach(game => {
-        const rawIcon = game.icon ? (game.icon.startsWith("http") ? game.icon : REPO_BASE + encodeURI(game.icon)) : "";
-        const card = document.createElement("div");
-        card.className = "pop-card";
-        card.onclick = () => launchPopularGame(game);
-
-        card.innerHTML = `
-          <div class="pop-thumb-wrapper">
-            ${rawIcon ? `<img class="pop-thumb" src="${rawIcon}" alt="${game.name}" loading="lazy" onerror="window.handleIconFallback(this);">` : ""}
-            <i class="fa-solid fa-gamepad pop-fallback-icon" style="${rawIcon ? 'display:none;' : ''}"></i>
-
-          </div>
-          <div class="pop-info">
-            <span class="pop-title" title="${game.name}">${game.name}</span>
-          </div>
-        `;
-
-        grid.appendChild(card);
-      });
-    }
-
-    function launchPopularGame(game) {
-      sessionStorage.setItem("athyx_launch_game", JSON.stringify(game));
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ action: "navigate", tab: "games" }, "*");
-      } else {
-        window.location.href = "g.html";
-      }
-    }
-
     const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
     const searchIcon = document.getElementById("searchIcon");
@@ -586,10 +518,6 @@
       searchOverlay.classList.add("show");
     }
 
-    function quickSearch(url) {
-      performSearch(url);
-    }
-
     function closeOverlay() {
       searchOverlay.classList.remove("show");
       overlayFrame.src = "about:blank";
@@ -611,7 +539,6 @@
       }
     });
 
-    renderPopularGames();
 
     fetch("https://cdn.jsdelivr.net/gh/athyx-network/Athyx-Network@main/quotes.txt?t=" + Date.now())
       .then(res => {
@@ -637,6 +564,7 @@
       });
   </script>
 
-  <script src="particle.js"></script>
+  <script src="../js/particle.js"></script>
 </body>
 </html>
+

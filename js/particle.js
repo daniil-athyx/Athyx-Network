@@ -61,7 +61,7 @@
     let accentColor = rootStyles.getPropertyValue('--accent').trim();
     
     if (!accentColor || accentColor.startsWith('rgba')) {
-        accentColor = '#f43f5e';
+        accentColor = '#0affce';
     }
 
     particles.forEach(p => {
@@ -98,7 +98,7 @@
     }
   }
 
-  const particlesActive = localStorage.getItem("athyx_flying_particles") === "true";
+  const particlesActive = localStorage.getItem("athyx_flying_particles") !== "false";
   toggleParticlesAnimation(particlesActive);
 
   window.addEventListener("message", (event) => {

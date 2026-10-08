@@ -20,6 +20,9 @@ const { ScramjetServiceWorker } = $scramjetLoadWorker();
 
 const scramjet = new ScramjetServiceWorker({
     prefix: basePath + 'JS/scramjet/',
+    flags: {
+        allowInvalidJs: true
+    }
 });
 
 self.addEventListener('install', (event) => {
@@ -27,23 +30,74 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-    event.waitUntil(self.clients.claim());
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => caches.delete(cacheName))
+            );
+        }).then(() => self.clients.claim())
+    );
 });
 
 
 self.addEventListener("fetch", (event) => {
     event.respondWith((async () => {
-        // Wait for the scramjet config to be loaded before routing.
-        // This can prevent race conditions on initial load.
-        await scramjet.loadConfig();
-        if (scramjet.route(event)) {
-            return scramjet.fetch(event);
+        const requestUrl = new URL(event.request.url);
+        const compatibilityEnabled = wispConfig.compatCheck === true;
+        const requestFallbackEnabled = wispConfig.requestFallback === true;
+        const reducedFeatureMode = wispConfig.reducedFeature === true;
+
+        try {
+            if (compatibilityEnabled && requestUrl.protocol === 'http:' && self.location.protocol === 'https:') {
+                return fetch(event.request, { mode: 'cors', redirect: 'manual' });
+            }
+
+            if (reducedFeatureMode && !event.request.url.startsWith(self.location.origin)) {
+                return fetch(event.request);
+            }
+
+            await scramjet.loadConfig();
+            if (scramjet.route(event)) {
+                try {
+                    return await scramjet.fetch(event);
+                } catch (err) {
+                    if (!requestFallbackEnabled) {
+                        return new Response('Proxy request failed', { status: 502, statusText: 'Bad Gateway' });
+                    }
+                    return fetch(event.request, { mode: 'cors', redirect: 'manual' });
+                }
+            }
+            return await fetch(event.request);
+        } catch (err) {
+            if (requestFallbackEnabled) {
+                try {
+                    return await fetch(event.request);
+                } catch (fallbackError) {
+                    return new Response('The page could not be loaded.', { status: 502, statusText: 'Bad Gateway' });
+                }
+            }
+            return new Response(null, { status: 204 });
         }
-        return fetch(event.request);
     })());
 });
 
 let wispConfig = {};
+
+const AD_DOMAINS = [
+  'doubleclick.net', 'google-analytics.com', 'googlesyndication.com', 
+  'adservice.google.com', 'amazon-adsystem.com', 'criteo.com',
+  'outbrain.com', 'taboola.com', 'adtech.de', 'advertising.com',
+  'scorecardresearch.com', 'quantserve.com', 'zedo.com', 'yieldmanager.com',
+  'adnxs.com', 'rubiconproject.com', 'openx.net', 'casalemedia.com',
+  'pubmatic.com', 'smartadserver.com', 'exponential.com',
+  'serving-sys.com', 'adblade.com', 'adroll.com', 'media.net',
+  'moatads.com', 'adsrvr.org', 'spotxchange.com', 'turn.com',
+  'mathtag.com', 'adnexus.net', 'fastclick.net'
+];
+
+function isAdDomain(hostname) {
+    return AD_DOMAINS.some(adDomain => hostname === adDomain || hostname.endsWith('.' + adDomain));
+}
 
 // Prevent Race Condition: Create a promise that resolves when the config message is received.
 let resolveConfigReady;
@@ -52,28 +106,58 @@ const configReadyPromise = new Promise(resolve => {
     // Safety fallback so requests never hang if config message is delayed
     setTimeout(() => {
         if (!wispConfig.wispurl) {
-            wispConfig.wispurl = "wss://wisp.rhw.one/wisp/";
+            wispConfig.wispurl = "wss://ok.worldmicroscope.com/wisp/";
         }
         resolve();
     }, 3000);
 });
 
 self.addEventListener("message", ({ data }) => {
-	if (data.type === "config" && data.wispurl) {
-        const oldWisp = wispConfig.wispurl;
-		wispConfig.wispurl = data.wispurl;
-        if (resolveConfigReady) {
-            resolveConfigReady();
-            resolveConfigReady = null; // Ensure it only resolves once
+	if (data.type === "config") {
+        if (data.wispurl) {
+            const oldWisp = wispConfig.wispurl;
+            wispConfig.wispurl = data.wispurl;
+            if (resolveConfigReady) {
+                resolveConfigReady();
+                resolveConfigReady = null; // Ensure it only resolves once
+            }
+            if (scramjet.client && oldWisp && oldWisp !== data.wispurl) {
+                scramjet.client = null; // Force recreation on next request to avoid transport errors
+            }
         }
-        if (scramjet.client && oldWisp && oldWisp !== data.wispurl) {
-            scramjet.client.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: data.wispurl }]).catch(console.error);
+        if (data.hasOwnProperty('adblock')) {
+            wispConfig.adblock = data.adblock;
+        }
+        if (data.hasOwnProperty('compatCheck')) {
+            wispConfig.compatCheck = data.compatCheck;
+        }
+        if (data.hasOwnProperty('transportFallback')) {
+            wispConfig.transportFallback = data.transportFallback;
+        }
+        if (data.hasOwnProperty('requestFallback')) {
+            wispConfig.requestFallback = data.requestFallback;
+        }
+        if (data.hasOwnProperty('offlinePage')) {
+            wispConfig.offlinePage = data.offlinePage;
+        }
+        if (data.hasOwnProperty('reducedFeature')) {
+            wispConfig.reducedFeature = data.reducedFeature;
         }
 	}
 });
 
 // The main Scramjet listener where the proxying logic happens.
 scramjet.addEventListener("request", async (e) => {
+    if (wispConfig.adblock) {
+        try {
+            const urlObj = new URL(e.url);
+            if (isAdDomain(urlObj.hostname)) {
+                e.response = new Response("Blocked by Adblocker", { status: 403 });
+                return;
+            }
+        } catch(err) {}
+    }
+
 	e.response = (async () => {
 		// Use a single, persistent client instance on the scramjet object.
 		if (!scramjet.client) {

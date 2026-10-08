@@ -1,0 +1,38 @@
+:root {
+  --bg: #050b12;
+  --bg-base: #050b12;
+  --surface: #101b29;
+  --surface-hover: #1a2d3d;
+  --surface-active: #24405a;
+  --border: rgba(125, 211, 252, 0.18);
+  --border-hover: rgba(125, 211, 252, 0.32);
+  --border-light: rgba(125, 211, 252, 0.24);
+  --text: #f4fbff;
+  --text-main: #f4fbff;
+  --text-muted: #cbd5e1;
+  --text-dim: #7dd3fc;
+  --accent: #67e8f9;
+  --accent-dim: rgba(103, 232, 249, 0.14);
+  --accent-glow: rgba(103, 232, 249, 0.38);
+  --accent-hover: #22d3ee;
+  --dock-bg: rgba(16, 27, 41, 0.92);
+  --dock-border: rgba(103, 232, 249, 0.18);
+  --dock-btn-hover: rgba(103, 232, 249, 0.12);
+  --dock-btn-active: rgba(103, 232, 249, 0.2);
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 10% 15%, rgba(103, 232, 249, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(148, 163, 184, 0.03), transparent 45%),
+    var(--bg);
+}
+
+.card,
+.section-card,
+.search-box,
+#topBar,
+.dock-wrapper {
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}

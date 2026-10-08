@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,23 +9,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="../themes.css">
-  <script src="../themes.js?v=2"></script>
+  <script src="../js/themes.js?v=2"></script>
   <style>
     :root {
       color-scheme: dark;
-      --bg: #0c0406;
-      --surface: #190a0e;
-      --surface-hover: #251016;
-      --surface-active: #35161f;
-      --border: rgba(244, 63, 94, 0.16);
-      --border-hover: rgba(244, 63, 94, 0.32);
+      --bg: #0b0508;
+      --surface: rgba(28, 12, 16, 0.82);
+      --surface-hover: rgba(42, 18, 24, 0.9);
+      --surface-active: rgba(64, 26, 35, 0.96);
+      --border: rgba(10, 255, 206, 0.16);
+      --border-hover: rgba(10, 255, 206, 0.32);
       --text: #fff1f2;
       --text-muted: #fecdd3;
-      --text-dim: #f43f5e;
-      --accent: #f43f5e;
-      --accent-dim: rgba(244, 63, 94, 0.18);
-      --accent-glow: rgba(244, 63, 94, 0.45);
-      --accent-hover: #e11d48;
+      --text-dim: rgb(10, 255, 206);
+      --accent: rgb(10, 255, 206);
+      --accent-dim: rgba(10, 255, 206, 0.18);
+      --accent-glow: rgba(10, 255, 206, 0.45);
+      --accent-hover: rgb(0, 214, 174);
     }
 
     body {
@@ -407,13 +407,19 @@
           }
         });
 
-        // Insert before the "Add New" button container
-        container.insertBefore(div, addButton.parentNode);
+        // Insert before the "Add New" button container if it exists
+        if (addButton && addButton.parentNode) {
+          container.insertBefore(div, addButton.parentNode);
+        } else {
+          container.appendChild(div);
+        }
       });
     }
 
-    document.getElementById('addNewShortcut').addEventListener('click', () => {
-      // Use browser window notifications/prompts as requested
+    const addBtn = document.getElementById('addNewShortcut');
+    if (addBtn) {
+      addBtn.addEventListener('click', () => {
+        // Use browser window notifications/prompts as requested
       // Since we are in an iframe, we might need to use standard prompt
       const name = prompt("Enter shortcut name:");
       if (!name) return;
@@ -430,10 +436,12 @@
       localStorage.setItem('shortcuts', JSON.stringify(shortcuts));
 
       loadShortcuts();
-    });
+      });
+    }
 
     loadShortcuts();
   </script>
 </body>
 
 </html>
+

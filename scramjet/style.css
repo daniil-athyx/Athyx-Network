@@ -2,22 +2,22 @@
 
 :root {
     color-scheme: dark;
-    --bg: #0c0406;
-    --bg-base: #0c0406;
-    --surface: #190a0e;
-    --surface-hover: #251016;
-    --surface-active: #35161f;
-    --border: rgba(244, 63, 94, 0.16);
-    --border-hover: rgba(244, 63, 94, 0.32);
-    --border-light: rgba(244, 63, 94, 0.22);
-    --text: #fff1f2;
-    --text-main: #fff1f2;
-    --text-muted: #fecdd3;
-    --text-dim: #f43f5e;
-    --accent: #f43f5e;
-    --accent-dim: rgba(244, 63, 94, 0.18);
-    --accent-glow: rgba(244, 63, 94, 0.45);
-    --accent-hover: #e11d48;
+    --bg: #0b0508;
+    --bg-base: #0b0508;
+    --surface: rgba(28, 12, 16, 0.82);
+    --surface-hover: rgba(42, 18, 24, 0.9);
+    --surface-active: rgba(64, 26, 35, 0.96);
+    --border: rgba(10, 255, 206, 0.16);
+    --border-hover: rgba(10, 255, 206, 0.32);
+    --border-light: rgba(10, 255, 206, 0.22);
+    --text: #fff5f6;
+    --text-main: #fff5f6;
+    --text-muted: #f7c6ce;
+    --text-dim: rgb(10, 255, 206);
+    --accent: rgb(10, 255, 206);
+    --accent-dim: rgba(10, 255, 206, 0.18);
+    --accent-glow: rgba(10, 255, 206, 0.45);
+    --accent-hover: rgb(0, 214, 174);
 
     /* Compatibility aliases for Staticsj variables */
     --button-bg: var(--surface);

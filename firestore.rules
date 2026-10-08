@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwnUser(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function validMessage() {
+      return request.resource.data.text is string
+        && request.resource.data.text.size() >= 1
+        && request.resource.data.text.size() <= 500
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 1
+        && request.resource.data.nickname.size() <= 20
+        && request.resource.data.userId == request.auth.uid;
+    }
+
+    function validOwnProfile() {
+      return request.resource.data.nickname is string
+        && request.resource.data.nickname.size() >= 1
+        && request.resource.data.nickname.size() <= 20
+        && request.resource.data.role == 'member'
+        && request.resource.data.banned is bool;
+    }
+
+    match /messages/{messageId} {
+      allow read: if true;
+      allow create: if signedIn() && !get(/databases/$(database)/documents/users/$(request.auth.uid)).data.banned && validMessage();
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
+
+    match /messageReports/{reportId} {
+      allow read: if false;
+      allow create: if false;
+      allow update, delete: if false;
+    }
+
+    match /usernames/{username} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email is string
+        && request.resource.data.email.matches('.*@athyx-network\\.local$');
+      allow update, delete: if false;
+    }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow create: if isOwnUser(userId) && validOwnProfile();
+      allow update: if (isOwnUser(userId)
+          && request.resource.data.keys().hasOnly(['nickname', 'username', 'role', 'banned', 'online', 'lastSeen', 'updatedAt'])
+          && request.resource.data.nickname is string
+          && request.resource.data.nickname.size() >= 1
+          && request.resource.data.nickname.size() <= 20
+          && request.resource.data.username == resource.data.username
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.banned == resource.data.banned
+          && (!request.resource.data.keys().hasAny(['online']) || request.resource.data.online is bool)
+          && (!request.resource.data.keys().hasAny(['lastSeen']) || request.resource.data.lastSeen is timestamp)
+          && (!request.resource.data.keys().hasAny(['updatedAt']) || request.resource.data.updatedAt is timestamp))
+        || (isAdmin() && request.resource.data.keys().hasOnly(['nickname', 'username', 'role', 'banned', 'online', 'lastSeen', 'updatedAt'])
+          && (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role in ['member', 'moderator', 'admin'])
+          && (!request.resource.data.keys().hasAny(['banned']) || request.resource.data.banned is bool)
+          && (!request.resource.data.keys().hasAny(['online']) || request.resource.data.online is bool)
+          && (!request.resource.data.keys().hasAny(['lastSeen']) || request.resource.data.lastSeen is timestamp)
+          && (!request.resource.data.keys().hasAny(['nickname']) || request.resource.data.nickname is string)
+          && (!request.resource.data.keys().hasAny(['username']) || request.resource.data.username is string));
+      allow delete: if false;
+    }
+  }
+}

@@ -1,13 +1,20 @@
 // Dynamic WISP URL Configuration
-// Default WISP URL: wss://wisp.rhw.one/wisp/
+// Default WISP URL: wss://ok.worldmicroscope.com/wisp/
 // This can be changed via the settings UI which updates localStorage 'proxServer' key
 
 window.basePath = window.basePath || (typeof location !== 'undefined' ? location.pathname.replace(/[^/]*$/, '') : '/');
 var basePath = window.basePath;
 
+const DEFAULT_WISP = "wss://math.soyescalahumana.cl/wisp/";
+let savedWisp = localStorage.getItem("proxServer");
+if (savedWisp && (savedWisp.includes("ok.worldmicroscope.com") || savedWisp.includes("keep.tribeoftwo.com") || savedWisp.includes("secure.bitds.eu"))) {
+    savedWisp = null;
+    localStorage.removeItem("proxServer");
+}
+
 let _CONFIG = {
-  wispurl: localStorage.getItem("proxServer") || "wss://wisp.rhw.one/wisp/", // fallback to default WISP URL if proxServer not set
-  bareurl: undefined // remove default value, rely on runtime construction
+  wispurl: savedWisp || DEFAULT_WISP,
+  bareurl: undefined
 };
 
 // Valid URL patterns for WISP servers (or general ws/wss URLs)
@@ -22,7 +29,7 @@ function isValidWispUrl(url) {
   }
 }
 
-console.assert(isValidWispUrl("wss://wisp.rhw.one/wisp/"), "Default WISP URL should pass validation");
+console.assert(isValidWispUrl(DEFAULT_WISP), "Default WISP URL should pass validation");
 
 /**
  * Updates the WISP URL in configuration when localStorage changes

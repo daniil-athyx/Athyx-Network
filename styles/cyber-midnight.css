@@ -1,0 +1,39 @@
+:root {
+  --bg: #050b17;
+  --bg-base: #050b17;
+  --surface: #0d1b2a;
+  --surface-hover: #142b3d;
+  --surface-active: #1e3c52;
+  --border: rgba(96, 165, 250, 0.2);
+  --border-hover: rgba(96, 165, 250, 0.38);
+  --border-light: rgba(96, 165, 250, 0.28);
+  --text: #f0f9ff;
+  --text-main: #f0f9ff;
+  --text-muted: #bfdbfe;
+  --text-dim: #60a5fa;
+  --accent: #38bdf8;
+  --accent-dim: rgba(56, 189, 248, 0.16);
+  --accent-glow: rgba(56, 189, 248, 0.42);
+  --accent-hover: #0284c7;
+  --dock-bg: rgba(13, 27, 42, 0.92);
+  --dock-border: rgba(96, 165, 250, 0.18);
+  --dock-btn-hover: rgba(56, 189, 248, 0.12);
+  --dock-btn-active: rgba(56, 189, 248, 0.24);
+}
+
+body {
+  background-image:
+    linear-gradient(rgba(96, 165, 250, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.04) 1px, transparent 1px),
+    var(--bg);
+  background-size: 24px 24px, 24px 24px, auto;
+}
+
+.card,
+.section-card,
+.search-box,
+.search-wrapper,
+#topBar {
+  border-image: linear-gradient(120deg, rgba(56, 189, 248, 0.7), rgba(168, 85, 247, 0.3)) 1;
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.08), 0 18px 45px rgba(2, 132, 199, 0.12);
+}

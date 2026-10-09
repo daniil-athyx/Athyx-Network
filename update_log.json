@@ -1,6 +1,5 @@
 {
   "updateId": "v1.1",
-  "title": "Welcome to Athyx Network Update!",
   "changes": [
     "Removed all red default colors for anonymous users",
     "Set pure white theme as the absolute default",

@@ -416,6 +416,12 @@
           }
         } else if (event.data.action === "athyx_cloak_change") {
           updateTabTitleAndIcon(event.data.title, event.data.icon);
+        } else if (event.data.action === "online_count_update") {
+          try {
+            if (iframe && iframe.contentWindow) {
+              iframe.contentWindow.postMessage(event.data, '*');
+            }
+          } catch(e) {}
         } else if (event.data.action === "mention") {
           const container = document.getElementById('global-notification-container');
           const notif = document.createElement('div');

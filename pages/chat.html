@@ -623,6 +623,11 @@
         memberCount.textContent = formatOnlineCount(profiles.length);
         renderAdminUsers(profiles);
         renderSidebarUsers(profiles);
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ action: 'online_count_update', count: profiles.length }, '*');
+          }
+        } catch(e) {}
       }, (error) => {
         console.error('Presence error:', error);
         memberCount.textContent = 'Presence unavailable';

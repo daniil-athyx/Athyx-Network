@@ -14,6 +14,15 @@
   <link rel="shortcut icon" href="../assets/favicon.ico">
 
   <style>
+    @font-face {
+      font-family: 'Sabersong';
+      src: url('../assets/fonts/Sabersong-X38j2.ttf') format('truetype'),
+           url('../assets/fonts/Sabersong-L3Djy.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
     :root {
       color-scheme: dark;
       --bg: #0b0508;
@@ -152,13 +161,13 @@
     }
 
     .title {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.4rem, 5vw, 3.4rem);
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
+      font-family: 'Sabersong', 'Outfit', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 4.2rem);
+      font-weight: normal;
+      line-height: 1.2;
+      letter-spacing: 0.03em;
       margin-bottom: 24px;
-      background: linear-gradient(180deg, #ffffff 30%, #a1a1aa 100%);
+      background: linear-gradient(180deg, #ffffff 30%, #d4d4d8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }

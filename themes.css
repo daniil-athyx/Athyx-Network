@@ -1,4 +1,13 @@
 
+@font-face {
+  font-family: 'Sabersong';
+  src: url('assets/fonts/Sabersong-X38j2.ttf') format('truetype'),
+       url('assets/fonts/Sabersong-L3Djy.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
   --bg: #0b0508;

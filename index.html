@@ -473,13 +473,13 @@
 
     iframe.addEventListener("load", () => {
       try {
-        const themeId = localStorage.getItem("athyx_theme") || "crimson";
+        const themeId = localStorage.getItem("athyx_theme") || "white";
         iframe.contentWindow.postMessage({ action: "athyx_theme_change", themeId }, "*");
       } catch (e) { }
     });
     chatFrame.addEventListener("load", () => {
       try {
-        const themeId = localStorage.getItem("athyx_theme") || "crimson";
+        const themeId = localStorage.getItem("athyx_theme") || "white";
         chatFrame.contentWindow.postMessage({ action: "athyx_theme_change", themeId }, "*");
       } catch (e) { }
     });

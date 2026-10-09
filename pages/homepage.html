@@ -295,11 +295,11 @@
 
     .kbd-badge {
       font-size: 10px;
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--surface-active);
       padding: 2px 5px;
       border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #d4d4d8;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
     }
 
     
@@ -311,7 +311,7 @@
     }
 
     .chip {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--surface-hover);
       border: 1px solid var(--border);
       border-radius: 9999px;
       padding: 6px 14px;
@@ -330,8 +330,8 @@
     }
 
     .chip:hover {
-      background: var(--surface-hover);
-      color: #fff;
+      background: var(--surface-active);
+      color: var(--text-main);
       border-color: var(--accent);
       transform: translateY(-1px);
     }
@@ -442,7 +442,7 @@
     .pop-title {
       font-size: 13px;
       font-weight: 600;
-      color: #f4f4f5;
+      color: var(--text-main);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -450,7 +450,7 @@
     }
 
     .pop-card:hover .pop-title {
-      color: #fff;
+      color: var(--accent);
     }
 
     

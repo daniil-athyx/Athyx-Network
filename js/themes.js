@@ -20,16 +20,22 @@ function generateCustomTheme(hexColor) {
   const r = rgb.r, g = rgb.g, b = rgb.b;
   const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
   const accentText = luminance > 0.5 ? '#000000' : '#ffffff';
+  
+  // Create tinted dark backgrounds
+  const bgR = Math.floor(r * 0.03), bgG = Math.floor(g * 0.03), bgB = Math.floor(b * 0.03);
+  const surfR = Math.floor(r * 0.06), surfG = Math.floor(g * 0.06), surfB = Math.floor(b * 0.06);
+  const surfHoverR = Math.floor(r * 0.09), surfHoverG = Math.floor(g * 0.09), surfHoverB = Math.floor(b * 0.09);
+
   return {
     id: hexColor,
     name: "Custom Theme",
     category: "Custom",
     vars: {
-      "--bg": "#09090b",
-      "--bg-base": "#09090b",
-      "--surface": "#121215",
-      "--surface-hover": "#18181c",
-      "--surface-active": "#222228",
+      "--bg": `rgb(${bgR + 9}, ${bgG + 9}, ${bgB + 11})`,
+      "--bg-base": `rgb(${bgR + 9}, ${bgG + 9}, ${bgB + 11})`,
+      "--surface": `rgb(${surfR + 18}, ${surfG + 18}, ${surfB + 21})`,
+      "--surface-hover": `rgb(${surfHoverR + 24}, ${surfHoverG + 24}, ${surfHoverB + 28})`,
+      "--surface-active": `rgb(${surfHoverR + 34}, ${surfHoverG + 34}, ${surfHoverB + 40})`,
       "--border": `rgba(${r}, ${g}, ${b}, 0.16)`,
       "--border-hover": `rgba(${r}, ${g}, ${b}, 0.32)`,
       "--border-light": `rgba(${r}, ${g}, ${b}, 0.22)`,
@@ -43,7 +49,7 @@ function generateCustomTheme(hexColor) {
       "--accent-glow": `rgba(${r}, ${g}, ${b}, 0.45)`,
       "--accent-hover": hexColor,
       "--shadow-glow": `0 0 0 1px rgba(${r}, ${g}, ${b}, 0.18), 0 18px 44px rgba(${r}, ${g}, ${b}, 0.25)`,
-      "--dock-bg": "rgba(18, 18, 22, 0.85)",
+      "--dock-bg": `rgba(${surfR + 18}, ${surfG + 18}, ${surfB + 22}, 0.85)`,
       "--dock-border": `rgba(${r}, ${g}, ${b}, 0.2)`,
       "--dock-btn-hover": `rgba(${r}, ${g}, ${b}, 0.14)`,
       "--dock-btn-active": `rgba(${r}, ${g}, ${b}, 0.25)`
@@ -53,31 +59,32 @@ function generateCustomTheme(hexColor) {
 
 const ATHYX_THEMES = [
   {
-    id: "crimson",
-    name: "Crimson",
-    subtitle: "Default Onyx & Aqua Teal",
-    category: "Vivid",
+    id: "white",
+    name: "Pure White",
+    subtitle: "Clean & bright light mode",
+    category: "Light",
     vars: {
-      "--bg": "#0b0508",
-      "--bg-base": "#0b0508",
-      "--surface": "rgba(28, 12, 16, 0.82)",
-      "--surface-hover": "rgba(42, 18, 24, 0.9)",
-      "--surface-active": "rgba(64, 26, 35, 0.96)",
-      "--border": "rgba(10, 255, 206, 0.16)",
-      "--border-hover": "rgba(10, 255, 206, 0.32)",
-      "--border-light": "rgba(10, 255, 206, 0.22)",
-      "--text": "#fff5f6",
-      "--text-main": "#fff5f6",
-      "--text-muted": "#f7c6ce",
-      "--text-dim": "rgb(10, 255, 206)",
-      "--accent": "rgb(10, 255, 206)",
-      "--accent-dim": "rgba(10, 255, 206, 0.16)",
-      "--accent-glow": "rgba(10, 255, 206, 0.42)",
-      "--accent-hover": "rgb(0, 214, 174)",
-      "--dock-bg": "rgba(18, 8, 12, 0.8)",
-      "--dock-border": "rgba(10, 255, 206, 0.2)",
-      "--dock-btn-hover": "rgba(10, 255, 206, 0.12)",
-      "--dock-btn-active": "rgba(10, 255, 206, 0.22)"
+      "--bg": "#ffffff",
+      "--bg-base": "#ffffff",
+      "--surface": "#f4f4f5",
+      "--surface-hover": "#e4e4e7",
+      "--surface-active": "#d4d4d8",
+      "--border": "rgba(0, 0, 0, 0.15)",
+      "--border-hover": "rgba(0, 0, 0, 0.3)",
+      "--border-light": "rgba(0, 0, 0, 0.1)",
+      "--text": "#09090b",
+      "--text-main": "#09090b",
+      "--text-muted": "#52525b",
+      "--text-dim": "#71717a",
+      "--accent": "#000000",
+      "--accent-dim": "rgba(0, 0, 0, 0.08)",
+      "--accent-glow": "rgba(0, 0, 0, 0.15)",
+      "--accent-hover": "#27272a",
+      "--accent-text": "#ffffff",
+      "--dock-bg": "rgba(255, 255, 255, 0.9)",
+      "--dock-border": "rgba(0, 0, 0, 0.15)",
+      "--dock-btn-hover": "rgba(0, 0, 0, 0.08)",
+      "--dock-btn-active": "rgba(0, 0, 0, 0.15)"
     }
   },
   {
@@ -395,7 +402,19 @@ const AthyxThemeEngine = {
   
   getStoredThemeId: () => {
     try {
-      const local = localStorage.getItem("athyx_theme");
+      let local = localStorage.getItem("athyx_theme");
+      
+      // Migrate custom themes to white once
+      if (local && !localStorage.getItem("athyx_white_migrated")) {
+        if (local.startsWith("#") || local === "custom") {
+          try {
+            localStorage.setItem("athyx_theme", "white");
+            localStorage.setItem("athyx_white_migrated", "true");
+            local = "white";
+          } catch(e) {}
+        }
+      }
+      
       if (local) return local;
 
       if (typeof window !== "undefined" && window.parent && window.parent !== window) {
@@ -420,7 +439,7 @@ const AthyxThemeEngine = {
         } catch(e) {}
       }
     } catch(e) {}
-    return "crimson";
+    return "white";
   },
 
   getThemeById: (id) => {
@@ -435,7 +454,7 @@ const AthyxThemeEngine = {
       const customTheme = generateCustomTheme(norm);
       if (customTheme) return customTheme;
     }
-    return ATHYX_THEMES.find(t => t.id === id) || ATHYX_THEMES.find(t => t.id.toLowerCase() === norm) || ATHYX_THEMES.find(t => t.id === "crimson") || ATHYX_THEMES[0];
+    return ATHYX_THEMES.find(t => t.id === id) || ATHYX_THEMES.find(t => t.id.toLowerCase() === norm) || ATHYX_THEMES.find(t => t.id === "white") || ATHYX_THEMES[0];
   },
 
   applyTheme: function(themeId, options = { broadcast: true, save: true }) {

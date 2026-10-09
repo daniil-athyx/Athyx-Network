@@ -1,5 +1,21 @@
 
 @font-face {
+  font-family: 'UltimateBlackMetal';
+  src: url('assets/fonts/XXII-Ultimate-Black-Metal.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'XXII Ultimate-Black-Metal';
+  src: url('assets/fonts/XXII-Ultimate-Black-Metal.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Maskdown';
   src: url('assets/fonts/MaskdownOne-BWV7V.otf') format('opentype');
   font-weight: normal;

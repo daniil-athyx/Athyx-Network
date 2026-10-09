@@ -8,12 +8,28 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="../themes.css?v=5">
-  <script src="../js/themes.js?v=5"></script>
+  <link rel="stylesheet" href="../themes.css?v=6">
+  <script src="../js/themes.js?v=6"></script>
   <link rel="icon" type="image/png" href="../assets/favicon.png">
   <link rel="shortcut icon" href="../assets/favicon.ico">
 
   <style>
+    @font-face {
+      font-family: 'UltimateBlackMetal';
+      src: url('../assets/fonts/XXII-Ultimate-Black-Metal.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: 'XXII Ultimate-Black-Metal';
+      src: url('../assets/fonts/XXII-Ultimate-Black-Metal.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+
     @font-face {
       font-family: 'Maskdown';
       src: url('../assets/fonts/MaskdownOne-BWV7V.otf') format('opentype');
@@ -169,15 +185,18 @@
     }
 
     .title {
-      font-family: 'Maskdown', 'Outfit', sans-serif;
-      font-size: clamp(2.8rem, 6vw, 4.2rem);
+      font-family: 'UltimateBlackMetal', 'XXII Ultimate-Black-Metal', 'Maskdown', 'Outfit', sans-serif;
+      font-size: clamp(3rem, 7vw, 4.6rem);
       font-weight: normal;
-      line-height: 1.2;
-      letter-spacing: 0.03em;
-      margin-bottom: 24px;
-      background: linear-gradient(180deg, #ffffff 30%, #d4d4d8 100%);
+      line-height: 1.25;
+      letter-spacing: 0.05em;
+      margin-bottom: 22px;
+      padding: 10px 0;
+      background: linear-gradient(180deg, #ffffff 15%, #e2e8f0 60%, #94a3b8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.75)) drop-shadow(0 0 25px var(--accent-glow));
+      user-select: none;
     }
 
     
@@ -470,8 +489,8 @@
       font-size: 13.5px;
       font-weight: 500;
       color: var(--text-muted);
-      margin-top: -14px;
-      margin-bottom: 10px;
+      margin-top: 2px;
+      margin-bottom: 12px;
       letter-spacing: 0.01em;
       opacity: 0.85;
       transition: color 0.2s ease, opacity 0.2s ease;
@@ -588,28 +607,24 @@
     });
 
 
-    fetch("https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main/quotes.txt?t=" + Date.now())
+    fetch("../quotes.txt?t=" + Date.now())
       .then(res => {
-        if (!res.ok) throw new Error("Network error");
+        if (!res.ok) throw new Error("Local fetch failed");
         return res.text();
       })
+      .catch(() => {
+        return fetch("https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main/quotes.txt?t=" + Date.now())
+          .then(res => res.text());
+      })
       .then(text => {
-        const quotes = text.split(/\r?\n/).map(q => q.trim()).filter(q => q.length > 0);
+        const quotes = text.split(/\r?\n/)
+          .map(q => q.trim().replace(/[\u0300-\u036f\u0483-\u0489\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]/g, ''))
+          .filter(q => q.length > 0);
         if (quotes.length > 0) {
           document.getElementById("homeQuote").textContent = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
         }
       })
-      .catch(() => {
-        fetch("quotes.txt?t=" + Date.now())
-          .then(res => res.text())
-          .then(text => {
-            const quotes = text.split(/\r?\n/).map(q => q.trim()).filter(q => q.length > 0);
-            if (quotes.length > 0) {
-              document.getElementById("homeQuote").textContent = `"${quotes[Math.floor(Math.random() * quotes.length)]}"`;
-            }
-          })
-          .catch(e => console.log(e));
-      });
+      .catch(e => console.log(e));
   </script>
 
   <script type="module">

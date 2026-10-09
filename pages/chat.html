@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link rel="stylesheet" href="../themes.css" />
-  <script src="../js/themes.js?v=2"></script>
+  <link rel="stylesheet" href="../themes.css?v=4" />
+  <script src="../js/themes.js?v=4"></script>
   <style>
     :root {
       color-scheme: dark;
@@ -41,7 +41,7 @@
 
     button, input { font: inherit; }
     button { cursor: pointer; }
-    button:focus-visible, input:focus-visible { outline: 3px solid var(--accent-glow); outline-offset: 2px; }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     :root {
       color-scheme: dark;
@@ -69,6 +69,45 @@
       color: var(--text);
       font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       overflow: hidden;
+    }
+
+    #notification-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .mention-notification {
+      background: #000;
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      pointer-events: auto;
+      cursor: pointer;
+      font-size: 14px;
+      animation: slideInLeft 0.3s ease-out;
+      max-width: 300px;
+      transition: 0.2s;
+    }
+    .mention-notification:hover {
+      transform: scale(1.02);
+    }
+    @keyframes slideInLeft {
+      from { transform: translateX(-100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .highlight-flash {
+      animation: highlightFlash 2s;
+    }
+    @keyframes highlightFlash {
+      0% { background: rgba(10, 255, 206, 0.3); }
+      100% { background: transparent; }
     }
 
     .app-shell {
@@ -290,6 +329,18 @@
     }
     .admin-panel-message { color: var(--muted); font-size: 12px; min-height: 16px; }
 
+    .mention {
+      color: var(--accent);
+      font-weight: 700;
+      background: rgba(10, 255, 206, 0.15);
+      padding: 0 4px;
+      border-radius: 4px;
+    }
+    .mention-me {
+      background: var(--accent);
+      color: #000;
+    }
+
     @media (max-width: 700px) {
       .app-shell {
         height: 100dvh;
@@ -399,6 +450,7 @@
   </style>
 </head>
 <body>
+  <div id="notification-container"></div>
   <main class="app-shell no-sidebar" id="app-shell">
     <aside class="sidebar" id="sidebar" hidden>
       <div class="sidebar-header">
@@ -514,6 +566,7 @@
     let user = null;
     let userName = '';
     let lastMessageId = null;
+    let knownMessageIds = new Set();
     let authMode = 'login';
     let blockedWords = [];
 
@@ -596,7 +649,16 @@
       item.className = 'message' + (message.userId === user?.uid ? ' self' : '');
       item.dataset.id = message.id;
       
-      let textHtml = message.text ? `<div class="message-text">${escapeHtml(message.text)}</div>` : '';
+      let textContent = escapeHtml(message.text || '');
+      if (textContent) {
+        textContent = textContent.replace(/@([a-zA-Z0-9_-]+)/g, (match, mentionedName) => {
+          const isMe = userName && mentionedName.toLowerCase() === userName.toLowerCase();
+          const spanClass = isMe ? 'mention mention-me' : 'mention';
+          return `<span class="${spanClass}">@${mentionedName}</span>`;
+        });
+      }
+      
+      let textHtml = message.text ? `<div class="message-text">${textContent}</div>` : '';
       let gifHtml = message.gifUrl ? `<img src="${escapeHtml(message.gifUrl)}" class="message-gif" loading="lazy" alt="GIF">` : '';
       
       item.innerHTML = `
@@ -633,6 +695,48 @@
     function showAdminMessage(message, isError = false) {
       adminMessage.textContent = message;
       adminMessage.style.color = isError ? 'var(--danger)' : 'var(--muted)';
+    }
+
+    function showNotification(message) {
+      if (window.parent !== window) {
+        window.parent.postMessage({ 
+          action: 'mention', 
+          nickname: message.nickname, 
+          text: (message.text || 'Sent an image').substring(0, 50) + '...',
+          messageId: message.id 
+        }, '*');
+        // We still let it show locally if we wanted, but parent is better.
+        return;
+      }
+
+      const container = document.getElementById('notification-container');
+      const notif = document.createElement('div');
+      notif.className = 'mention-notification';
+      notif.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+          <strong style="color:var(--accent)">${escapeHtml(message.nickname)}</strong>
+          <button class="notif-close-btn" style="background:transparent; border:none; color:var(--text); font-size:18px; cursor:pointer; padding:0 4px; margin:-2px -4px 0 0; line-height:1; opacity:0.6;">&times;</button>
+        </div>
+        <span style="color:var(--text)">mentioned you:</span><br>
+        <span style="font-size: 0.9em; color:var(--muted); opacity: 0.9">${escapeHtml((message.text || 'Sent an image').substring(0, 50))}...</span>
+      `;
+      
+      notif.addEventListener('click', (e) => {
+        if (e.target.closest('.notif-close-btn')) {
+          notif.remove();
+          return;
+        }
+        const msgEl = document.querySelector(`.message[data-id="${message.id}"]`);
+        if (msgEl) {
+          msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          msgEl.classList.add('highlight-flash');
+          setTimeout(() => msgEl.classList.remove('highlight-flash'), 2000);
+        }
+        notif.remove();
+      });
+
+      container.appendChild(notif);
+      setTimeout(() => { if (notif.parentNode) notif.remove(); }, 6000);
     }
 
     async function clearChatMessages() {
@@ -747,6 +851,11 @@
       const q = query(messagesRef, orderBy('createdAt', 'asc'));
       unsubscribeMessages = onSnapshot(q, (snapshot) => {
         const messages = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        const isAtBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < 50;
+        const previousScrollTop = messagesEl.scrollTop;
+        const isInitialLoad = (lastMessageId === null);
+
         messagesEl.innerHTML = '';
 
         if (!messages.length) {
@@ -754,11 +863,27 @@
           return;
         }
 
-        messages.forEach(message => messagesEl.appendChild(renderMessage(message)));
+        messages.forEach(message => {
+          messagesEl.appendChild(renderMessage(message));
+          
+          // Trigger notification for new mentions
+          if (!isInitialLoad && !knownMessageIds.has(message.id) && message.userId !== user?.uid) {
+            if (userName && message.text && message.text.toLowerCase().includes('@' + userName.toLowerCase())) {
+              showNotification(message);
+            }
+          }
+          knownMessageIds.add(message.id);
+        });
+        
         const last = messages[messages.length - 1];
-        if (last && last.id !== lastMessageId) {
+        const isOwnNewMessage = last && last.id !== lastMessageId && last.userId === user?.uid;
+
+        if (isInitialLoad || isAtBottom || isOwnNewMessage) {
           messagesEl.scrollTop = messagesEl.scrollHeight;
+        } else {
+          messagesEl.scrollTop = previousScrollTop;
         }
+        
         lastMessageId = last?.id || lastMessageId;
       }, (error) => {
         console.error('Messages error:', error);
@@ -904,9 +1029,9 @@
         const msgData = {
           nickname,
           userId: user.uid,
+          text: cleanText || '', // Firestore rules require text to be a string
           createdAt: serverTimestamp()
         };
-        if (cleanText) msgData.text = cleanText;
         if (gifUrl) msgData.gifUrl = gifUrl;
 
         await addDoc(messagesRef, msgData);
@@ -1068,6 +1193,17 @@
         console.error('Profile setup failed:', error);
         showError(`Unable to load your profile. ${error.message || 'Check the console for details.'}`);
       });
+    });
+
+    window.addEventListener("message", (event) => {
+      if (event.data && event.data.action === "scrollToMessage") {
+        const msgEl = document.querySelector(`.message[data-id="${event.data.messageId}"]`);
+        if (msgEl) {
+          msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          msgEl.classList.add('highlight-flash');
+          setTimeout(() => msgEl.classList.remove('highlight-flash'), 2000);
+        }
+      }
     });
 
     memberCount.textContent = '0 people online';

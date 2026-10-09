@@ -1,4 +1,10 @@
 function hexToRgb(hex) {
+  // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+  var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+    return r + r + g + g + b + b;
+  });
+
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? {
     r: parseInt(result[1], 16),
@@ -36,6 +42,7 @@ function generateCustomTheme(hexColor) {
       "--accent-dim": `rgba(${r}, ${g}, ${b}, 0.18)`,
       "--accent-glow": `rgba(${r}, ${g}, ${b}, 0.45)`,
       "--accent-hover": hexColor,
+      "--shadow-glow": `0 0 0 1px rgba(${r}, ${g}, ${b}, 0.18), 0 18px 44px rgba(${r}, ${g}, ${b}, 0.25)`,
       "--dock-bg": "rgba(18, 18, 22, 0.85)",
       "--dock-border": `rgba(${r}, ${g}, ${b}, 0.2)`,
       "--dock-btn-hover": `rgba(${r}, ${g}, ${b}, 0.14)`,
@@ -388,18 +395,47 @@ const AthyxThemeEngine = {
   
   getStoredThemeId: () => {
     try {
-      return localStorage.getItem("athyx_theme") || "crimson";
-    } catch(e) {
-      return "crimson";
-    }
+      const local = localStorage.getItem("athyx_theme");
+      if (local) return local;
+
+      if (typeof window !== "undefined" && window.parent && window.parent !== window) {
+        try {
+          if (window.parent.AthyxThemeEngine) {
+            const pTheme = window.parent.AthyxThemeEngine.getStoredThemeId();
+            if (pTheme) return pTheme;
+          }
+          const pLocal = window.parent.localStorage.getItem("athyx_theme");
+          if (pLocal) return pLocal;
+        } catch(e) {}
+      }
+
+      if (typeof window !== "undefined" && window.top && window.top !== window && window.top !== window.parent) {
+        try {
+          if (window.top.AthyxThemeEngine) {
+            const tTheme = window.top.AthyxThemeEngine.getStoredThemeId();
+            if (tTheme) return tTheme;
+          }
+          const tLocal = window.top.localStorage.getItem("athyx_theme");
+          if (tLocal) return tLocal;
+        } catch(e) {}
+      }
+    } catch(e) {}
+    return "crimson";
   },
 
   getThemeById: (id) => {
-    if (id && id.startsWith("#")) {
-      const customTheme = generateCustomTheme(id);
+    if (!id) return ATHYX_THEMES[0];
+    let norm = String(id).trim().toLowerCase();
+    if (norm === "white") norm = "#ffffff";
+    if (norm === "black") norm = "#000000";
+    if (/^[0-9a-f]{3}$/i.test(norm) || /^[0-9a-f]{6}$/i.test(norm)) {
+      norm = "#" + norm;
+    }
+    if (norm.startsWith("#")) {
+      const customTheme = generateCustomTheme(norm);
       if (customTheme) return customTheme;
     }
-    return ATHYX_THEMES.find(t => t.id === id) || ATHYX_THEMES.find(t => t.id === "crimson") || ATHYX_THEMES[0];
+    return ATHYX_THEMES.find(t => t.id === id) || ATHYX_THEMES.find(t => t.id.toLowerCase() === norm) || ATHYX_THEMES.find(t => t.id === "crimson") || ATHYX_THEMES[0];
   },
 
   applyTheme: function(themeId, options = { broadcast: true, save: true }) {
@@ -410,7 +446,6 @@ const AthyxThemeEngine = {
       const root = document.documentElement;
       root.setAttribute("data-theme", theme.id);
 
-      
       Object.entries(theme.vars).forEach(([prop, value]) => {
         root.style.setProperty(prop, value);
       });
@@ -422,16 +457,13 @@ const AthyxThemeEngine = {
       } catch(e) {}
     }
 
-    
     if (typeof window !== "undefined" && typeof window.onAthyxThemeChange === "function") {
       window.onAthyxThemeChange(theme);
     }
 
-    
     if (options.broadcast !== false && typeof window !== "undefined") {
       const msg = { action: "athyx_theme_change", themeId: theme.id };
-      
-      
+
       try {
         if (window.parent && window.parent !== window) {
           window.parent.postMessage(msg, "*");
@@ -441,7 +473,6 @@ const AthyxThemeEngine = {
         }
       } catch (e) {}
 
-      
       try {
         if (typeof document !== "undefined") {
           const frames = document.querySelectorAll("iframe");
@@ -462,19 +493,26 @@ const AthyxThemeEngine = {
     this.applyTheme(savedId, { broadcast: false, save: false });
 
     if (typeof window !== "undefined") {
-      
       window.addEventListener("message", (event) => {
         if (event.data && (event.data.action === "athyx_theme_change" || event.data.type === "athyx_theme_change")) {
           const newThemeId = event.data.themeId || event.data.theme;
-          if (newThemeId && newThemeId !== this.getStoredThemeId()) {
+          if (newThemeId) {
             this.applyTheme(newThemeId, { broadcast: false, save: true });
-          } else if (newThemeId) {
-            this.applyTheme(newThemeId, { broadcast: false, save: false });
+            // If this window has child iframes, forward the theme down to them
+            try {
+              const frames = document.querySelectorAll("iframe");
+              frames.forEach(f => {
+                try {
+                  if (f.contentWindow && f.contentWindow !== event.source) {
+                    f.contentWindow.postMessage({ action: "athyx_theme_change", themeId: newThemeId }, "*");
+                  }
+                } catch(e) {}
+              });
+            } catch(e) {}
           }
         }
       });
 
-      
       window.addEventListener("storage", (event) => {
         if (event.key === "athyx_theme" && event.newValue) {
           this.applyTheme(event.newValue, { broadcast: false, save: false });

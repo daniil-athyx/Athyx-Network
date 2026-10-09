@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link rel="stylesheet" href="../themes.css?v=4" />
-  <script src="../js/themes.js?v=4"></script>
+  <link rel="stylesheet" href="../themes.css?v=6" />
+  <script src="../js/themes.js?v=6"></script>
   <style>
     :root {
       color-scheme: dark;
@@ -21,6 +21,7 @@
       --muted: var(--text-muted, #f7c6ce);
       --accent: var(--accent, rgb(10, 255, 206));
       --accent-hover: var(--accent-hover, rgb(0, 214, 174));
+      --accent-text: var(--accent-text, #050505);
       --danger: rgb(10, 255, 206);
       --success: #34d399;
       --shadow: rgba(0, 0, 0, 0.45);
@@ -42,21 +43,6 @@
     button, input { font: inherit; }
     button { cursor: pointer; }
     button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-    :root {
-      color-scheme: dark;
-      --bg: var(--bg, #0b0508);
-      --surface: var(--surface, rgba(28, 12, 16, 0.82));
-      --card: var(--surface-hover, rgba(42, 18, 24, 0.9));
-      --border: var(--border, rgba(10, 255, 206, 0.16));
-      --text: var(--text-main, #fff5f6);
-      --muted: var(--text-muted, #f7c6ce);
-      --accent: var(--accent, rgb(10, 255, 206));
-      --accent-hover: var(--accent-hover, rgb(0, 214, 174));
-      --danger: rgb(10, 255, 206);
-      --success: #34d399;
-      --shadow: rgba(0, 0, 0, 0.45);
-    }
 
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -110,6 +96,10 @@
       100% { background: transparent; }
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     .app-shell {
       width: 100%;
       height: 100vh;
@@ -119,14 +109,30 @@
       grid-template-columns: 260px 1fr;
       grid-template-rows: auto 1fr auto;
       gap: 0;
+      position: relative;
     }
     .app-shell.no-sidebar { grid-template-columns: 1fr; }
     .sidebar { grid-row: 1 / 4; grid-column: 1; border-right: 1px solid var(--border); background: rgba(3, 7, 18, 0.5); display: flex; flex-direction: column; }
-    .sidebar[hidden] { display: none !important; }
     .header { grid-row: 1; grid-column: 2; }
-    .auth-card { grid-row: 1 / 4; grid-column: 1 / 3; }
     .chat-panel { grid-row: 2; grid-column: 2; }
     .composer { grid-row: 3; grid-column: 2; }
+
+    .auth-card {
+      grid-row: 1 / 4;
+      grid-column: 1 / -1;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
+      padding: 24px;
+      background: transparent;
+      z-index: 50;
+    }
+    .auth-card[hidden] {
+      display: none !important;
+    }
     
     .sidebar-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
     .sidebar-header h2 { margin: 0; font-size: 15px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); font-weight: 700; }
@@ -180,7 +186,7 @@
       cursor: pointer; color: var(--text); padding: 10px 14px; font-weight: 600;
     }
     .ghost-btn { background: rgba(255,255,255,0.03); }
-    .primary-btn { background: var(--accent); color: var(--text-main); border-color: transparent; }
+    .primary-btn { background: var(--accent) !important; color: var(--accent-text, #050505) !important; border-color: transparent !important; font-weight: 700; }
     .danger-btn { background: rgba(10, 255, 206, 0.12); color: #f7c6ce; border-color: rgba(10, 255, 206, 0.2); }
     button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -235,35 +241,181 @@
     .gif-result:hover { transform: scale(1.02); box-shadow: 0 0 0 2px var(--accent); }
     .message-gif { margin-top: 8px; border-radius: 10px; max-width: 100%; max-height: 250px; display: block; }
 
-    .auth-card, .error-box, .empty-state {
-      display: grid; place-items: center; text-align: center; min-height: 200px; padding: 30px;
-      border: 0; border-radius: 0; background: rgba(255,255,255,0.02);
+    .auth-box {
+      width: min(390px, 92vw);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 34px 28px;
+      box-shadow: 
+        0 24px 60px -12px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 0 35px -6px var(--accent-glow);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      text-align: center;
+      animation: authFadeIn 0.3s ease-out;
     }
-    .auth-card { gap: 10px; }
-    .auth-card[hidden] { display: none !important; }
-    .auth-card form { display: grid; gap: 10px; width: min(320px, 90%); }
-    .auth-card input { width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); color: var(--text); font: inherit; }
-    .auth-card button { width: 100%; }
-    .password-field { position: relative; }
-    .password-field input { padding-right: 46px; }
+
+    @keyframes authFadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .auth-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 20px var(--accent-dim);
+    }
+
+    .auth-title {
+      margin: 4px 0 2px 0;
+      font-size: 22px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .auth-subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .auth-tabs button {
+      flex: 1;
+      background: transparent;
+      color: var(--muted);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .auth-tabs button.active {
+      background: var(--accent);
+      color: var(--accent-text, #050505) !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .auth-card form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .input-wrap .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      pointer-events: none;
+      transition: color 0.2s ease;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 12px 14px 12px 38px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font: inherit;
+      font-size: 13.5px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+    }
+
+    .input-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-dim);
+    }
+
+    .input-wrap:focus-within .input-icon {
+      color: var(--accent);
+    }
+
+    .password-field input {
+      padding-right: 56px;
+    }
+
     .password-toggle {
       position: absolute;
-      top: 50%;
-      right: 8px;
-      transform: translateY(-50%);
-      width: auto;
-      min-width: 32px;
-      padding: 6px 8px;
-      border: 0;
+      right: 10px;
       background: transparent;
+      border: none;
       color: var(--muted);
       font-size: 12px;
       font-weight: 700;
+      padding: 6px 8px;
+      cursor: pointer;
     }
-    .auth-tabs { display: flex; gap: 8px; }
-    .auth-tabs button { flex: 1; background: transparent; color: var(--muted); }
-    .auth-tabs button.active { background: var(--accent-dim); color: var(--text); border-color: var(--border); }
-    .auth-message { font-size: 12px; color: var(--muted); min-height: 16px; }
+
+    .password-toggle:hover {
+      color: var(--accent);
+    }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      text-align: left;
+      padding: 2px 2px;
+    }
+
+    .remember-row input[type="checkbox"] {
+      accent-color: var(--accent);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+    }
+
+    .auth-message {
+      font-size: 12px;
+      color: #f87171;
+      min-height: 16px;
+      margin: 0;
+    }
+
+    .error-box, .empty-state {
+      display: grid; place-items: center; text-align: center; min-height: 200px; padding: 30px;
+      border: 0; border-radius: 0; background: rgba(255,255,255,0.02);
+    }
     .error-box strong { display: block; margin-bottom: 8px; }
 
     .notice { font-size: 12px; color: var(--muted); }
@@ -466,26 +618,41 @@
       <div class="header-actions">
         <span class="pill" aria-live="polite"><i class="fa-solid fa-people-group"></i> <span id="member-count">0 online</span></span>
         <button class="ghost-btn" id="admin-btn" type="button" hidden><i class="fa-solid fa-shield-halved"></i> Admin</button>
+        <button class="ghost-btn" id="logout-btn" type="button" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
       </div>
     </header>
 
     <section class="auth-card" id="auth-card">
-      <div>
-        <h2>Welcome to Community Chat</h2>
-      </div>
-      <div class="auth-tabs" aria-label="Authentication options">
-        <button class="active" id="login-tab" type="button">Log in</button>
-        <button id="register-tab" type="button">Register</button>
-      </div>
-      <form id="auth-form" novalidate>
-        <input id="auth-username" type="text" minlength="3" maxlength="20" placeholder="Username" autocomplete="username" required />
-        <div class="password-field">
-          <input id="auth-password" type="password" minlength="6" placeholder="Password" autocomplete="current-password" required />
-          <button class="password-toggle" id="password-toggle" type="button" aria-label="Show password" aria-pressed="false">Show</button>
+      <div class="auth-box">
+        <div class="auth-icon-wrap">
+          <i class="fa-solid fa-comments"></i>
         </div>
-        <button class="primary-btn" id="auth-submit" type="submit">Log in</button>
-        <p class="auth-message" id="auth-message" aria-live="polite"></p>
-      </form>
+        <div>
+          <h2 class="auth-title">Community Chat</h2>
+          <p class="auth-subtitle">Sign in or create an account to start chatting</p>
+        </div>
+        <div class="auth-tabs" aria-label="Authentication options">
+          <button class="active" id="login-tab" type="button">Log in</button>
+          <button id="register-tab" type="button">Register</button>
+        </div>
+        <form id="auth-form" novalidate>
+          <div class="input-wrap">
+            <i class="fa-solid fa-user input-icon"></i>
+            <input id="auth-username" type="text" minlength="3" maxlength="20" placeholder="Username" autocomplete="username" required />
+          </div>
+          <div class="input-wrap password-field">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input id="auth-password" type="password" minlength="6" placeholder="Password" autocomplete="current-password" required />
+            <button class="password-toggle" id="password-toggle" type="button" aria-label="Show password" aria-pressed="false">Show</button>
+          </div>
+          <label class="remember-row">
+            <input type="checkbox" id="remember-me" checked />
+            <span>Remember me and stay signed in</span>
+          </label>
+          <button class="primary-btn" id="auth-submit" type="submit">Log in</button>
+          <p class="auth-message" id="auth-message" aria-live="polite"></p>
+        </form>
+      </div>
     </section>
 
     <section class="chat-panel" id="chat-panel" aria-live="polite" hidden>
@@ -494,7 +661,7 @@
 
     <form class="composer" id="composer" novalidate hidden>
       <button class="gif-btn" id="gif-toggle-btn" type="button" aria-label="Send GIF"><i class="fa-solid fa-image"></i></button>
-      <input id="message-input" maxlength="500" autocomplete="off" placeholder="Type a messageвЂ¦" aria-label="Message" />
+      <input id="message-input" maxlength="500" autocomplete="off" placeholder="Type a message..." aria-label="Message" />
       <button class="primary-btn" id="send-btn" type="submit">Send</button>
       
       <div class="gif-picker" id="gif-picker" hidden>
@@ -529,7 +696,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
     import { getFirestore, collection, query, where, onSnapshot, addDoc, deleteDoc, getDocs, serverTimestamp, doc, setDoc, getDoc, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
     import { firebaseConfig } from './chat-config.js';
@@ -543,11 +710,13 @@
     const authUsername = document.getElementById('auth-username');
     const authPassword = document.getElementById('auth-password');
     const passwordToggle = document.getElementById('password-toggle');
+    const rememberMeCheckbox = document.getElementById('remember-me');
     const authSubmit = document.getElementById('auth-submit');
     const authMessage = document.getElementById('auth-message');
     const loginTab = document.getElementById('login-tab');
     const registerTab = document.getElementById('register-tab');
     const adminBtn = document.getElementById('admin-btn');
+    const logoutBtn = document.getElementById('logout-btn');
     const adminPanel = document.getElementById('admin-panel');
     const adminUserList = document.getElementById('admin-user-list');
     const adminAllUsersList = document.getElementById('admin-all-users-list');
@@ -585,6 +754,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
     const db = getFirestore(app);
     const messagesRef = collection(db, 'messages');
     const usersRef = collection(db, 'users');
@@ -986,6 +1156,17 @@
           }, { merge: true });
         }
 
+        if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+          localStorage.setItem('athyx_chat_remember', 'true');
+          localStorage.setItem('athyx_chat_saved_u', username);
+          localStorage.setItem('athyx_chat_saved_p', btoa(password));
+        } else {
+          localStorage.removeItem('athyx_chat_remember');
+          localStorage.removeItem('athyx_chat_saved_u');
+          localStorage.removeItem('athyx_chat_saved_p');
+        }
+        localStorage.setItem('athyx_chat_username', username);
+
         await setUserProfile();
       } catch (error) {
         console.error('Authentication failed:', error);
@@ -1162,11 +1343,11 @@
     });
     clearChatBtn.addEventListener('click', () => clearChatMessages());
 
-    onAuthStateChanged(auth, (currentUser) => {
+    onAuthStateChanged(auth, async (currentUser) => {
       user = currentUser;
       authSubmit.disabled = false;
       authCard.hidden = !!currentUser;
-      authCard.style.display = currentUser ? 'none' : 'grid';
+      authCard.style.display = currentUser ? 'none' : 'flex';
       authForm.hidden = !!currentUser;
       composer.hidden = !currentUser;
       chatPanel.hidden = !currentUser;
@@ -1185,6 +1366,34 @@
         if (presenceInterval) clearInterval(presenceInterval);
         if (unsubscribePresence) unsubscribePresence();
         setPresence(false);
+
+        // Prepopulate remembered username
+        const savedUsername = localStorage.getItem('athyx_chat_username') || localStorage.getItem('athyx_chat_saved_u') || '';
+        if (savedUsername && authUsername && !authUsername.value) {
+          authUsername.value = savedUsername;
+        }
+
+        // Auto re-authenticate seamlessly if "Remember me" was enabled
+        if (localStorage.getItem('athyx_chat_remember') === 'true') {
+          const autoU = localStorage.getItem('athyx_chat_saved_u');
+          const autoP = localStorage.getItem('athyx_chat_saved_p');
+          if (autoU && autoP && !authSubmit.disabled) {
+            try {
+              authSubmit.disabled = true;
+              authMessage.textContent = 'Restoring session...';
+              const email = usernameEmail(normalizeUsername(autoU));
+              const res = await signInWithEmailAndPassword(auth, email, atob(autoP));
+              user = res.user;
+              userName = autoU;
+              authMessage.textContent = '';
+              return;
+            } catch(e) {
+              console.warn('Auto-login could not complete:', e);
+              authSubmit.disabled = false;
+              authMessage.textContent = '';
+            }
+          }
+        }
         return;
       }
 
@@ -1200,6 +1409,18 @@
       });
     });
 
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to sign out of chat?')) {
+          localStorage.removeItem('athyx_chat_remember');
+          localStorage.removeItem('athyx_chat_saved_u');
+          localStorage.removeItem('athyx_chat_saved_p');
+          if (user) setPresence(false);
+          await signOut(auth);
+        }
+      });
+    }
+
     window.addEventListener("message", (event) => {
       if (event.data && event.data.action === "scrollToMessage") {
         const msgEl = document.querySelector(`.message[data-id="${event.data.messageId}"]`);
@@ -1211,6 +1432,10 @@
       }
     });
 
+    const initialSavedUser = localStorage.getItem('athyx_chat_username') || localStorage.getItem('athyx_chat_saved_u') || '';
+    if (initialSavedUser && authUsername) {
+      authUsername.value = initialSavedUser;
+    }
     memberCount.textContent = '0 people online';
     setAuthMode('login');
   </script>

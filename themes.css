@@ -50,6 +50,7 @@
   --accent-dim: rgba(10, 255, 206, 0.16);
   --accent-glow: rgba(10, 255, 206, 0.42);
   --accent-hover: rgb(0, 214, 174);
+  --accent-text: #050505;
   --dock-bg: rgba(18, 8, 12, 0.8);
   --dock-border: rgba(10, 255, 206, 0.2);
   --dock-btn-hover: rgba(10, 255, 206, 0.12);

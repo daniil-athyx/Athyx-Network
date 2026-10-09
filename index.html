@@ -21,8 +21,8 @@
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link rel="stylesheet" href="themes.css?v=4">
-  <script src="js/themes.js?v=4"></script>
+  <link rel="stylesheet" href="themes.css?v=5">
+  <script src="js/themes.js?v=5"></script>
 
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="shortcut icon" href="assets/favicon.ico">
@@ -547,6 +547,28 @@
 
 
     navigate("home");
+  </script>
+
+  <script>
+    (function initVisitorPulse() {
+      try {
+        let vid = sessionStorage.getItem('athyx_vid');
+        if (!vid) {
+          vid = 'v_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+          sessionStorage.setItem('athyx_vid', vid);
+        }
+        const endpoint = 'https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/site_presence/' + vid;
+        const pulse = () => {
+          fetch(endpoint, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fields: { lastSeen: { timestampValue: new Date().toISOString() } } })
+          }).catch(() => {});
+        };
+        pulse();
+        setInterval(pulse, 20000);
+      } catch(e) {}
+    })();
   </script>
 
   <script src="js/particle.js"></script>

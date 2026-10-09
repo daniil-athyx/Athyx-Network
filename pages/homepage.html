@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="../themes.css?v=4">
-  <script src="../js/themes.js?v=4"></script>
+  <link rel="stylesheet" href="../themes.css?v=5">
+  <script src="../js/themes.js?v=5"></script>
   <link rel="icon" type="image/png" href="../assets/favicon.png">
   <link rel="shortcut icon" href="../assets/favicon.ico">
 
@@ -448,69 +448,33 @@
       z-index: 2;
     }
 
-    .online-badge-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-top: -8px;
-      margin-bottom: 24px;
-      z-index: 2;
-      position: relative;
-    }
-
-    .online-status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 5px 14px 5px 10px;
-      font-size: 13px;
-      font-weight: 600;
+    .online-count-line {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
       color: var(--text-muted);
-      box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      cursor: default;
+      margin-top: -14px;
+      margin-bottom: 10px;
+      letter-spacing: 0.01em;
+      opacity: 0.85;
+      transition: color 0.2s ease, opacity 0.2s ease;
       user-select: none;
     }
 
-    .online-status-badge:hover {
-      border-color: var(--accent);
-      color: var(--text);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.6), 0 0 12px -2px var(--accent-dim);
+    .online-count-line:hover {
+      opacity: 1;
+      color: var(--text-main);
     }
 
-    .online-pulse-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 8px #22c55e;
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .online-pulse-dot::after {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      border: 1.5px solid #22c55e;
-      animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-    }
-
-    @keyframes pulse-ring {
-      0% {
-        transform: scale(0.8);
-        opacity: 0.9;
-      }
-      80%, 100% {
-        transform: scale(2.2);
-        opacity: 0;
-      }
+    .home-quote {
+      text-align: center;
+      color: var(--text-dim, #9aa0a6);
+      font-style: italic;
+      margin-top: 0;
+      margin-bottom: 28px;
+      font-size: 15px;
+      min-height: 20px;
+      z-index: 2;
     }
 
     @media (max-width: 600px) {
@@ -536,14 +500,10 @@
   <div class="container">
     
     <h1 class="title">Athyx Network</h1>
-    <p class="home-quote" id="homeQuote"></p>
-
-    <div class="online-badge-wrapper">
-      <div class="online-status-badge" id="onlineBadge" title="Live active users on Athyx Network">
-        <span class="online-pulse-dot"></span>
-        <span id="onlineCountText">Loading online users...</span>
-      </div>
+    <div class="online-count-line" id="onlineCountLine">
+      <span id="onlineCountText">Loading online users...</span>
     </div>
+    <p class="home-quote" id="homeQuote"></p>
 
     
     <div class="search-container">
@@ -637,7 +597,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getFirestore, collection, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { getFirestore, collection, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
     import { firebaseConfig } from './chat-config.js';
 
     const countText = document.getElementById('onlineCountText');
@@ -648,54 +608,92 @@
       countText.textContent = `${num} ${num === 1 ? 'user' : 'users'} online`;
     }
 
-    function isRecentlyActive(profile) {
-      const lastSeen = profile.lastSeen?.toDate ? profile.lastSeen.toDate() : (profile.lastSeen ? new Date(profile.lastSeen) : null);
-      return !!lastSeen && (Date.now() - lastSeen.getTime() <= 180000);
-    }
+    // Send heartbeat for visitor
+    try {
+      let vid = sessionStorage.getItem('athyx_vid');
+      if (!vid) {
+        vid = 'v_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
+        sessionStorage.setItem('athyx_vid', vid);
+      }
+      const pulseUrl = 'https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/site_presence/' + vid;
+      const sendPulse = () => {
+        fetch(pulseUrl, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fields: { lastSeen: { timestampValue: new Date().toISOString() } } })
+        }).catch(() => {});
+      };
+      sendPulse();
+      setInterval(sendPulse, 20000);
+    } catch(e) {}
 
-    async function fetchRestPresence() {
+    async function queryActiveVisitors() {
       try {
-        const res = await fetch('https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/users');
-        if (!res.ok) throw new Error('REST request failed');
-        const data = await res.json();
-        const docs = data.documents || [];
         const now = Date.now();
-        const active = docs.filter(doc => {
-          const isOnline = doc.fields?.online?.booleanValue === true;
-          const ts = doc.fields?.lastSeen?.timestampValue || doc.updateTime;
-          return isOnline && ts && (now - new Date(ts).getTime() <= 180000);
-        });
-        updateCount(active.length);
+        // 1. Query site_presence
+        const res = await fetch('https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/site_presence?pageSize=100');
+        let siteCount = 0;
+        if (res.ok) {
+          const data = await res.json();
+          const docs = data.documents || [];
+          siteCount = docs.filter(doc => {
+            const ts = doc.fields?.lastSeen?.timestampValue || doc.updateTime;
+            return ts && (now - new Date(ts).getTime() <= 50000);
+          }).length;
+        }
+
+        // 2. Query chat users
+        const chatRes = await fetch('https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/users?pageSize=100');
+        let chatCount = 0;
+        if (chatRes.ok) {
+          const chatData = await chatRes.json();
+          const chatDocs = chatData.documents || [];
+          chatCount = chatDocs.filter(doc => {
+            const isOnline = doc.fields?.online?.booleanValue === true;
+            const ts = doc.fields?.lastSeen?.timestampValue || doc.updateTime;
+            return isOnline && ts && (now - new Date(ts).getTime() <= 180000);
+          }).length;
+        }
+
+        const total = Math.max(1, siteCount, chatCount);
+        updateCount(total);
       } catch (e) {
         updateCount(1);
       }
     }
 
+    queryActiveVisitors();
+    setInterval(queryActiveVisitors, 15000);
+
+    // Realtime listener
     try {
       const app = initializeApp(firebaseConfig, 'homepage-presence');
       const db = getFirestore(app);
-      const usersRef = collection(db, 'users');
-      const onlineQuery = query(usersRef, where('online', '==', true));
-
-      onSnapshot(onlineQuery, (snapshot) => {
-        const active = snapshot.docs
-          .map(d => d.data())
-          .filter(isRecentlyActive);
-        updateCount(active.length);
-      }, (err) => {
-        fetchRestPresence();
+      const sitePresRef = collection(db, 'site_presence');
+      onSnapshot(sitePresRef, (snapshot) => {
+        const now = Date.now();
+        const active = snapshot.docs.filter(d => {
+          const data = d.data();
+          const ts = data.lastSeen?.toDate ? data.lastSeen.toDate() : (data.lastSeen ? new Date(data.lastSeen) : null);
+          return ts && (now - ts.getTime() <= 50000);
+        });
+        if (active.length > 0) {
+          updateCount(active.length);
+        } else {
+          queryActiveVisitors();
+        }
+      }, () => {
+        queryActiveVisitors();
       });
-    } catch (e) {
-      fetchRestPresence();
+    } catch(e) {
+      queryActiveVisitors();
     }
 
-    // Refresh fallback every 30s
-    setInterval(fetchRestPresence, 30000);
-
-    // Cross-frame sync if chat frame or parent is active
     window.addEventListener('message', (event) => {
       if (event.data && event.data.action === 'online_count_update' && typeof event.data.count === 'number') {
-        updateCount(event.data.count);
+        if (event.data.count > 0) {
+          updateCount(event.data.count);
+        }
       }
     });
   </script>

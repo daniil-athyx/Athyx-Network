@@ -738,6 +738,7 @@
     let knownMessageIds = new Set();
     let authMode = 'login';
     let blockedWords = [];
+    const deletedUserIds = new Set();
 
     async function loadBlockedWords() {
       try {
@@ -823,6 +824,7 @@
       const item = document.createElement('article');
       item.className = 'message' + (message.userId === user?.uid ? ' self' : '');
       item.dataset.id = message.id;
+      item.dataset.userId = message.userId;
       
       let textContent = escapeHtml(message.text || '');
       if (textContent) {
@@ -931,8 +933,19 @@
     async function setUserBan(targetUserId, banned) {
       if (!isAdminUser(user)) return;
       if (targetUserId === user.uid) return;
-      await setDoc(doc(usersRef, targetUserId), { banned }, { merge: true });
-      showAdminMessage(`${banned ? 'Banned' : 'Unbanned'} user.`);
+
+      // Optimistically update ban buttons in the UI
+      document.querySelectorAll(`[data-user-id="${targetUserId}"] [data-ban-btn]`).forEach(btn => {
+        btn.textContent = banned ? 'Unban' : 'Ban';
+      });
+
+      try {
+        await setDoc(doc(usersRef, targetUserId), { banned }, { merge: true });
+        showAdminMessage(`${banned ? 'Banned' : 'Unbanned'} user.`);
+      } catch(err) {
+        console.error('Ban failed:', err);
+        showAdminMessage('Failed to update ban status.', true);
+      }
     }
 
     async function deleteUserAccount(targetUserId, username) {
@@ -940,32 +953,66 @@
       if (targetUserId === user.uid) return;
       if (!confirm(`Are you sure you want to completely remove the account for ${username}? This cannot be undone.`)) return;
 
+      // 1. Immediately hide and remove the user everywhere from the DOM
+      deletedUserIds.add(targetUserId);
+
+      const targetCards = document.querySelectorAll(`[data-user-id="${targetUserId}"]`);
+      targetCards.forEach(card => {
+        card.style.transition = 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95) translateY(-4px)';
+        card.style.maxHeight = '0';
+        card.style.paddingTop = '0';
+        card.style.paddingBottom = '0';
+        card.style.marginTop = '0';
+        card.style.marginBottom = '0';
+        card.style.overflow = 'hidden';
+        setTimeout(() => {
+          card.remove();
+          if (adminUserList && !adminUserList.querySelector('.admin-user-item')) {
+            adminUserList.innerHTML = '<p class="notice">No users found.</p>';
+          }
+          if (adminAllUsersList && !adminAllUsersList.querySelector('.admin-user-item')) {
+            adminAllUsersList.innerHTML = '<p class="notice">No users found.</p>';
+          }
+          if (sidebarUsersList && !sidebarUsersList.querySelector('.sidebar-user')) {
+            sidebarUsersList.innerHTML = '<p class="notice" style="text-align: center; margin-top: 20px;">No one is online.</p>';
+          }
+        }, 260);
+      });
+
+      // Also hide any messages sent by this user
+      document.querySelectorAll(`.message[data-user-id="${targetUserId}"]`).forEach(msg => {
+        msg.style.transition = 'all 0.25s ease';
+        msg.style.opacity = '0';
+        setTimeout(() => msg.remove(), 250);
+      });
+
+      showAdminMessage(`Account ${escapeHtml(username)} removed.`);
+
       try {
         await deleteDoc(doc(usersRef, targetUserId));
         if (username) {
           await deleteDoc(doc(usernamesRef, username.toLowerCase()));
         }
-        showAdminMessage(`Account ${escapeHtml(username)} removed.`);
-        // Refresh all accounts list
-        const allUsersDocs = await getDocs(usersRef);
-        const allUsers = allUsersDocs.docs.map(d => ({ uid: d.id, ...d.data() }));
-        renderAdminUsers(allUsers, document.getElementById('admin-all-users-list'));
       } catch (error) {
         console.error('Delete failed:', error);
-        showAdminMessage('Failed to remove account.', true);
+        showAdminMessage('Failed to remove account on server.', true);
       }
     }
 
     function renderSidebarUsers(users) {
       if (!sidebarUsersList) return;
+      const activeUsers = (users || []).filter(p => !deletedUserIds.has(p.uid));
       sidebarUsersList.innerHTML = '';
-      if (!users.length) {
+      if (!activeUsers.length) {
         sidebarUsersList.innerHTML = '<p class="notice" style="text-align: center; margin-top: 20px;">No one is online.</p>';
         return;
       }
-      users.forEach(profile => {
+      activeUsers.forEach(profile => {
         const item = document.createElement('div');
         item.className = 'sidebar-user';
+        item.dataset.userId = profile.uid;
         const name = escapeHtml(profile.nickname || 'User');
         const initial = name.charAt(0).toUpperCase();
         item.innerHTML = `
@@ -980,17 +1027,20 @@
     }
 
     function renderAdminUsers(users, container = adminUserList) {
+      if (!container) return;
+      const activeUsers = (users || []).filter(p => !deletedUserIds.has(p.uid));
       container.innerHTML = '';
-      if (!users.length) {
+      if (!activeUsers.length) {
         container.innerHTML = '<p class="notice">No users found.</p>';
         return;
       }
 
       const isAdmin = isAdminUser(user);
-      users.forEach(profile => {
+      activeUsers.forEach(profile => {
         const item = document.createElement('div');
         const rank = profile.rank || 'member';
         item.className = 'admin-user-item';
+        item.dataset.userId = profile.uid;
         item.innerHTML = `
           <div class="admin-user-meta">
             <div class="admin-user-name">${escapeHtml(profile.nickname || 'User')}</div>

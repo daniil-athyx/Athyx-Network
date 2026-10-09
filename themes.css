@@ -1,5 +1,13 @@
 
 @font-face {
+  font-family: 'Maskdown';
+  src: url('assets/fonts/MaskdownOne-BWV7V.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Sabersong';
   src: url('assets/fonts/Sabersong-X38j2.ttf') format('truetype'),
        url('assets/fonts/Sabersong-L3Djy.otf') format('opentype');

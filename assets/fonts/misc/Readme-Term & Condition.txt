@@ -1,6 +1,6 @@
 Hello,
 
-Thank for downloading Sabersong.
+Thank for downloading Maskdown.
 
 ENGLISH:
 Be very careful and take the time to read any terms & conditions before deciding

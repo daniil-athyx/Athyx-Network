@@ -41,6 +41,30 @@ service cloud.firestore {
       allow update: if false;
     }
 
+    match /conversations/{convId} {
+      allow read: if signedIn() && (convId.matches('.*' + request.auth.uid + '.*') || (resource != null && resource.data.keys().hasAny(['participants']) && request.auth.uid in resource.data.participants) || isAdmin());
+      allow create, update: if signedIn()
+        && !get(/databases/$(database)/documents/users/$(request.auth.uid)).data.banned
+        && (convId.matches('.*' + request.auth.uid + '.*') || isAdmin());
+      allow delete: if isAdmin();
+
+      match /messages/{messageId} {
+        allow read: if signedIn() && (convId.matches('.*' + request.auth.uid + '.*') || isAdmin());
+        allow create: if signedIn()
+          && !get(/databases/$(database)/documents/users/$(request.auth.uid)).data.banned
+          && (convId.matches('.*' + request.auth.uid + '.*') || isAdmin())
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() >= 0
+          && request.resource.data.text.size() <= 500
+          && request.resource.data.nickname is string
+          && request.resource.data.nickname.size() >= 1
+          && request.resource.data.nickname.size() <= 20;
+        allow delete: if isAdmin() || (signedIn() && request.auth.uid == resource.data.userId);
+        allow update: if false;
+      }
+    }
+
     match /messageReports/{reportId} {
       allow read: if false;
       allow create: if false;

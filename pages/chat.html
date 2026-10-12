@@ -134,20 +134,186 @@
       display: none !important;
     }
     
-    .sidebar-header { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-    .sidebar-header h2 { margin: 0; font-size: 15px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); font-weight: 700; }
-    .sidebar-users { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--surface-hover); border: 1px solid var(--border-light); transition: 0.2s ease; }
-    .sidebar-user:hover { background: var(--surface-active); transform: translateY(-1px); }
-    .sidebar-user-avatar { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-dim); color: var(--accent); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+    .sidebar-header { padding: 18px 20px 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .sidebar-header h2 { margin: 0; font-size: 15px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text); font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .sidebar-header h2 i { color: var(--accent); }
+    .sidebar-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      padding: 14px 16px 6px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .channel-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      margin: 2px 10px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      user-select: none;
+      border: 1px solid transparent;
+    }
+    .channel-item:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+    .channel-item.active {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-color: var(--border);
+    }
+    .channel-item .channel-icon {
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+      opacity: 0.8;
+    }
+    .channel-badge {
+      margin-left: auto;
+      background: var(--accent);
+      color: var(--accent-text, #fff);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 999px;
+    }
+
+    .sidebar-users { flex: 1; overflow-y: auto; padding: 4px 6px 12px 6px; display: flex; flex-direction: column; gap: 4px; }
+    .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      margin: 1px 4px;
+      border-radius: 12px;
+      background: transparent;
+      border: 1px solid transparent;
+      transition: 0.18s ease;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+    }
+    .sidebar-user:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-light);
+    }
+    .sidebar-user.active {
+      background: var(--accent-dim);
+      border-color: var(--border);
+    }
+    .sidebar-user-avatar-wrap {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+    }
+    .sidebar-user-avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 10px;
+      background: var(--surface-hover);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .sidebar-user.active .sidebar-user-avatar {
+      background: var(--accent);
+      color: var(--accent-text, #fff);
+    }
+    .sidebar-user-indicator {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--muted);
+      border: 2px solid var(--surface);
+    }
+    .sidebar-user-indicator.online {
+      background: var(--success);
+      box-shadow: 0 0 6px rgba(52, 211, 153, 0.7);
+    }
     .sidebar-user-info { flex: 1; min-width: 0; }
     .sidebar-user-name { font-size: 13px; color: var(--text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .sidebar-user-status { font-size: 11px; color: var(--success); display: flex; align-items: center; gap: 4px; margin-top: 2px; }
-    .sidebar-user-status::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+    .sidebar-user-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+    .sidebar-user-badge {
+      background: var(--accent);
+      color: var(--accent-text, #fff);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 999px;
+      margin-left: 4px;
+      flex-shrink: 0;
+    }
 
+    .dm-back-btn {
+      padding: 8px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      transition: 0.2s ease;
+    }
+    .dm-back-btn:hover {
+      background: var(--surface-active);
+      border-color: var(--accent);
+    }
+    .msg-dm-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: 0.15s ease;
+      opacity: 0.65;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .msg-dm-btn:hover {
+      opacity: 1;
+      color: var(--accent);
+      background: var(--surface-hover);
+    }
+
+    .mobile-sidebar-toggle { display: none; }
     @media (max-width: 900px) {
       .app-shell { grid-template-columns: 1fr; }
       .sidebar { display: none !important; }
+      .sidebar.mobile-open {
+        display: flex !important;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 280px;
+        z-index: 100;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+      }
+      .mobile-sidebar-toggle { display: inline-flex; }
       .header, .chat-panel, .composer { grid-column: 1; }
     }
 
@@ -805,17 +971,34 @@
   <main class="app-shell no-sidebar" id="app-shell">
     <aside class="sidebar" id="sidebar" hidden>
       <div class="sidebar-header">
-        <h2>Online Now</h2>
+        <h2><i class="fa-solid fa-comments"></i> Athyx Chat</h2>
+      </div>
+      <div class="sidebar-section-title">Channels</div>
+      <div class="channel-item active" id="channel-global-btn" title="Public chat channel">
+        <span class="channel-icon"><i class="fa-solid fa-hashtag"></i></span>
+        <span class="channel-name">global-chat</span>
+        <span class="channel-badge" id="global-unread-badge" hidden>0</span>
+      </div>
+      <div class="sidebar-section-title" style="margin-top: 6px;">
+        <span>Direct Messages</span>
+        <span id="dm-online-count" style="font-size: 10px; opacity: 0.8;">0 online</span>
       </div>
       <div class="sidebar-users" id="sidebar-users-list"></div>
     </aside>
     <header class="header" id="chat-header" hidden>
-      <div class="brand">
-        <div class="brand-icon"><i class="fa-solid fa-comments"></i></div>
-        <h1>Community Chat</h1>
+      <div class="brand" id="chat-header-brand">
+        <button class="ghost-btn dm-back-btn" id="dm-back-btn" type="button" title="Back to Global Chat" hidden>
+          <i class="fa-solid fa-arrow-left"></i> <span>Global</span>
+        </button>
+        <div class="brand-icon" id="brand-icon"><i class="fa-solid fa-comments"></i></div>
+        <div>
+          <h1 id="chat-title">Community Chat</h1>
+          <div class="muted" id="chat-subtitle" style="font-size: 12px;">Public channel for everyone</div>
+        </div>
       </div>
       <div class="header-actions">
-        <span class="pill" aria-live="polite"><i class="fa-solid fa-people-group"></i> <span id="member-count">0 online</span></span>
+        <button class="ghost-btn mobile-sidebar-toggle" id="sidebar-toggle-btn" type="button" title="Toggle Users / DMs"><i class="fa-solid fa-users"></i></button>
+        <span class="pill" id="member-count-pill" aria-live="polite"><i class="fa-solid fa-people-group"></i> <span id="member-count">0 online</span></span>
         <button class="ghost-btn" id="rules-btn" type="button" title="View chat rules"><i class="fa-solid fa-scale-balanced"></i> Rules</button>
         <button class="ghost-btn" id="admin-btn" type="button" hidden><i class="fa-solid fa-shield-halved"></i> Admin</button>
         <button class="ghost-btn" id="logout-btn" type="button" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
@@ -977,11 +1160,21 @@
     const chatHeader = document.getElementById('chat-header');
     const chatPanel = document.getElementById('chat-panel');
     const memberCount = document.getElementById('member-count');
+    const memberCountPill = document.getElementById('member-count-pill');
     const appShell = document.getElementById('app-shell');
     const sidebar = document.getElementById('sidebar');
     const sidebarUsersList = document.getElementById('sidebar-users-list');
+    const channelGlobalBtn = document.getElementById('channel-global-btn');
+    const globalUnreadBadge = document.getElementById('global-unread-badge');
+    const dmOnlineCount = document.getElementById('dm-online-count');
+    const dmBackBtn = document.getElementById('dm-back-btn');
+    const brandIcon = document.getElementById('brand-icon');
+    const chatTitle = document.getElementById('chat-title');
+    const chatSubtitle = document.getElementById('chat-subtitle');
+    const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
     let unsubscribeMessages = null;
     let unsubscribePresence = null;
+    let unsubscribeConversations = null;
     let unsubscribeDeviceBan = null;
     let presenceInterval = null;
     let user = null;
@@ -994,6 +1187,14 @@
     let blockedRegexes = [];
     const deletedUserIds = new Set();
     const bannedDeviceIds = new Set();
+
+    // Direct Messages State
+    let currentChat = { type: 'global', targetUserId: null, targetNickname: '', convId: null };
+    const unreadDMs = new Map(); // convId -> count
+    let unreadGlobal = 0;
+    const allUsers = new Map(); // uid -> profile
+    let onlineUserUids = new Set();
+    const conversationsMap = new Map(); // convId -> conversation doc data
 
     async function loadBlockedWords() {
       try {
@@ -1087,9 +1288,12 @@
         const profiles = snapshot.docs
           .map(document => ({ uid: document.id, ...document.data() }))
           .filter(isRecentlyActive);
+        onlineUserUids = new Set(profiles.map(p => p.uid));
+        profiles.forEach(p => allUsers.set(p.uid, p));
         memberCount.textContent = formatOnlineCount(profiles.length);
+        if (dmOnlineCount) dmOnlineCount.textContent = `${profiles.length} online`;
         renderAdminUsers(profiles);
-        renderSidebarUsers(profiles);
+        renderSidebarUsers();
         try {
           if (window.parent && window.parent !== window) {
             window.parent.postMessage({ action: 'online_count_update', count: profiles.length }, '*');
@@ -1116,7 +1320,7 @@
       return new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' }).format(date);
     }
 
-    function renderMessage(message) {
+    function renderMessage(message, isDm = false) {
       const item = document.createElement('article');
       item.className = 'message' + (message.userId === user?.uid ? ' self' : '');
       item.dataset.id = message.id;
@@ -1134,9 +1338,14 @@
       let textHtml = message.text ? `<div class="message-text">${textContent}</div>` : '';
       let gifHtml = message.gifUrl ? `<img src="${escapeHtml(message.gifUrl)}" class="message-gif" loading="lazy" alt="GIF" onload="if (typeof window.scrollToBottomIfNearBottom === 'function') window.scrollToBottomIfNearBottom();">` : '';
       
+      const isSelf = message.userId === user?.uid;
+      const canDM = !isSelf && !isDm && message.userId;
+      const dmBtnHtml = canDM ? `<button class="msg-dm-btn" type="button" data-dm-uid="${message.userId}" data-dm-name="${escapeHtml(message.nickname || 'User')}" title="Direct message @${escapeHtml(message.nickname || 'User')}"><i class="fa-solid fa-paper-plane"></i> DM</button>` : '';
+
       item.innerHTML = `
         <div class="message-meta">
-          <span class="message-name">${escapeHtml(message.nickname || 'User')}</span>
+          <span class="message-name" style="${canDM ? 'cursor: pointer;' : ''}" ${canDM ? `data-dm-uid="${message.userId}" data-dm-name="${escapeHtml(message.nickname || 'User')}" title="Direct message @${escapeHtml(message.nickname || 'User')}"` : ''}>${escapeHtml(message.nickname || 'User')}</span>
+          ${dmBtnHtml}
           <span class="message-time">${escapeHtml(formatTime(message.createdAt))}</span>
         </div>
         ${textHtml}
@@ -1146,13 +1355,26 @@
     }
 
     function showEmptyState() {
-      messagesEl.innerHTML = `
-        <div class="empty-state">
-          <div>
-            <h2>No messages yet</h2>
-            <p class="notice">Be the first person to start the conversation.</p>
-          </div>
-        </div>`;
+      if (currentChat.type === 'dm') {
+        messagesEl.innerHTML = `
+          <div class="empty-state">
+            <div>
+              <div style="width: 52px; height: 52px; border-radius: 16px; background: var(--accent-dim); color: var(--accent); display: grid; place-items: center; font-size: 22px; margin: 0 auto 12px auto; border: 1px solid var(--border);">
+                ${escapeHtml((currentChat.targetNickname || 'U').charAt(0).toUpperCase())}
+              </div>
+              <h2>Direct Message</h2>
+              <p class="notice">This is the start of your direct message history with @${escapeHtml(currentChat.targetNickname)}.</p>
+            </div>
+          </div>`;
+      } else {
+        messagesEl.innerHTML = `
+          <div class="empty-state">
+            <div>
+              <h2>No messages yet</h2>
+              <p class="notice">Be the first person to start the conversation.</p>
+            </div>
+          </div>`;
+      }
     }
 
     function showError(message) {
@@ -1427,27 +1649,204 @@
       }
     }
 
-    function renderSidebarUsers(users) {
+    function getConversationId(uid1, uid2) {
+      if (!uid1 || !uid2) return '';
+      return [uid1, uid2].sort().join('_');
+    }
+
+    function openGlobalChat() {
+      if (currentChat.type === 'global') return;
+      currentChat = { type: 'global', targetUserId: null, targetNickname: '', convId: null };
+
+      if (dmBackBtn) dmBackBtn.hidden = true;
+      if (brandIcon) brandIcon.innerHTML = '<i class="fa-solid fa-comments"></i>';
+      if (chatTitle) chatTitle.textContent = 'Community Chat';
+      if (chatSubtitle) chatSubtitle.textContent = 'Public channel for everyone';
+      if (memberCountPill) memberCountPill.style.display = '';
+      if (input) input.placeholder = 'Type a message...';
+      if (channelGlobalBtn) channelGlobalBtn.classList.add('active');
+
+      unreadGlobal = 0;
+      if (globalUnreadBadge) globalUnreadBadge.hidden = true;
+
+      renderSidebarUsers();
+      subscribeToMessages();
+    }
+
+    function openDirectMessage(targetUserId, targetNickname) {
+      if (!user || !targetUserId || targetUserId === user.uid) return;
+      const convId = getConversationId(user.uid, targetUserId);
+      const nickname = targetNickname || allUsers.get(targetUserId)?.nickname || 'User';
+
+      currentChat = {
+        type: 'dm',
+        targetUserId,
+        targetNickname: nickname,
+        convId
+      };
+
+      if (dmBackBtn) dmBackBtn.hidden = false;
+      if (brandIcon) brandIcon.innerHTML = escapeHtml(nickname.charAt(0).toUpperCase());
+      if (chatTitle) chatTitle.textContent = '@' + nickname;
+
+      const isOnline = onlineUserUids.has(targetUserId);
+      if (chatSubtitle) chatSubtitle.textContent = isOnline ? 'Direct message • Online' : 'Direct message';
+      if (memberCountPill) memberCountPill.style.display = 'none';
+      if (input) input.placeholder = `Message @${nickname}...`;
+      if (channelGlobalBtn) channelGlobalBtn.classList.remove('active');
+
+      unreadDMs.delete(convId);
+      renderSidebarUsers();
+      subscribeToMessages();
+    }
+
+    function showDMNotification(senderName, text, senderUid) {
+      if (window.parent !== window) {
+        try {
+          window.parent.postMessage({
+            action: 'mention',
+            nickname: `DM from ${senderName}`,
+            text: (text || 'Sent an attachment').substring(0, 50) + '...'
+          }, '*');
+        } catch(e) {}
+      }
+
+      const container = document.getElementById('notification-container');
+      if (!container) return;
+      const notif = document.createElement('div');
+      notif.className = 'mention-notification';
+      notif.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+          <strong style="color:var(--accent)"><i class="fa-solid fa-envelope"></i> ${escapeHtml(senderName)}</strong>
+          <button class="notif-close-btn" style="background:transparent; border:none; color:var(--text); font-size:18px; cursor:pointer; padding:0 4px; margin:-2px -4px 0 0; line-height:1; opacity:0.6;">&times;</button>
+        </div>
+        <span style="color:var(--text); font-size:12px;">Sent you a direct message:</span><br>
+        <span style="font-size: 0.9em; color:var(--muted); opacity: 0.9">${escapeHtml((text || 'Sent an attachment').substring(0, 50))}</span>
+      `;
+
+      notif.addEventListener('click', (e) => {
+        if (e.target.closest('.notif-close-btn')) {
+          notif.remove();
+          return;
+        }
+        if (senderUid) {
+          openDirectMessage(senderUid, senderName);
+        }
+        notif.remove();
+      });
+
+      container.appendChild(notif);
+      setTimeout(() => { if (notif.parentNode) notif.remove(); }, 6000);
+    }
+
+    function subscribeToConversations() {
+      if (unsubscribeConversations) unsubscribeConversations();
+      if (!user) return;
+
+      const convQuery = query(collection(db, 'conversations'), where('participants', 'array-contains', user.uid));
+      unsubscribeConversations = onSnapshot(convQuery, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          const convData = { id: change.doc.id, ...change.doc.data() };
+          conversationsMap.set(convData.id, convData);
+
+          // Cache participant details
+          if (convData.participants && convData.participantNames) {
+            convData.participants.forEach(pUid => {
+              if (pUid !== user.uid && !allUsers.has(pUid)) {
+                allUsers.set(pUid, {
+                  uid: pUid,
+                  nickname: convData.participantNames[pUid] || 'User',
+                  online: false
+                });
+              }
+            });
+          }
+
+          if (change.type === 'added' || change.type === 'modified') {
+            if (convData.lastSenderId && convData.lastSenderId !== user.uid) {
+              if (currentChat.convId !== convData.id) {
+                const currentCount = unreadDMs.get(convData.id) || 0;
+                unreadDMs.set(convData.id, currentCount + 1);
+                const otherUid = (convData.participants || []).find(id => id !== user.uid);
+                const senderName = convData.participantNames?.[convData.lastSenderId] || 'Someone';
+                showDMNotification(senderName, convData.lastMessage, otherUid);
+              }
+            }
+          }
+        });
+        renderSidebarUsers();
+      }, (err) => {
+        console.error('Conversations listener error:', err);
+      });
+    }
+
+    function renderSidebarUsers() {
       if (!sidebarUsersList) return;
-      const activeUsers = (users || []).filter(p => !deletedUserIds.has(p.uid));
       sidebarUsersList.innerHTML = '';
-      if (!activeUsers.length) {
-        sidebarUsersList.innerHTML = '<p class="notice" style="text-align: center; margin-top: 20px;">No one is online.</p>';
+
+      const candidates = [];
+      allUsers.forEach((profile, uid) => {
+        if (uid !== user?.uid && !deletedUserIds.has(uid)) {
+          candidates.push(profile);
+        }
+      });
+
+      candidates.sort((a, b) => {
+        const convIdA = getConversationId(user?.uid || '', a.uid);
+        const convIdB = getConversationId(user?.uid || '', b.uid);
+        const unreadA = unreadDMs.get(convIdA) || 0;
+        const unreadB = unreadDMs.get(convIdB) || 0;
+        if (unreadA !== unreadB) return unreadB - unreadA;
+
+        const onlineA = onlineUserUids.has(a.uid);
+        const onlineB = onlineUserUids.has(b.uid);
+        if (onlineA !== onlineB) return onlineA ? -1 : 1;
+
+        return (a.nickname || '').localeCompare(b.nickname || '');
+      });
+
+      if (!candidates.length) {
+        sidebarUsersList.innerHTML = '<p class="notice" style="text-align: center; margin-top: 14px; font-size: 12px;">No other users yet.</p>';
         return;
       }
-      activeUsers.forEach(profile => {
+
+      candidates.forEach(profile => {
+        const isOnline = onlineUserUids.has(profile.uid);
+        const convId = getConversationId(user?.uid || '', profile.uid);
+        const unreadCount = unreadDMs.get(convId) || 0;
+        const isCurrent = currentChat.type === 'dm' && currentChat.targetUserId === profile.uid;
+        const convData = conversationsMap.get(convId);
+
         const item = document.createElement('div');
-        item.className = 'sidebar-user';
+        item.className = 'sidebar-user' + (isCurrent ? ' active' : '');
         item.dataset.userId = profile.uid;
         const name = escapeHtml(profile.nickname || 'User');
         const initial = name.charAt(0).toUpperCase();
+
+        let subText = isOnline ? 'Online' : 'Offline';
+        if (convData?.lastMessage) {
+          subText = escapeHtml(convData.lastMessage);
+        }
+
         item.innerHTML = `
-          <div class="sidebar-user-avatar">${initial}</div>
+          <div class="sidebar-user-avatar-wrap">
+            <div class="sidebar-user-avatar">${initial}</div>
+            <div class="sidebar-user-indicator ${isOnline ? 'online' : ''}" title="${isOnline ? 'Online' : 'Offline'}"></div>
+          </div>
           <div class="sidebar-user-info">
             <div class="sidebar-user-name">${name}</div>
-            <div class="sidebar-user-status">Online</div>
+            <div class="sidebar-user-sub">${subText}</div>
           </div>
+          ${unreadCount > 0 ? `<span class="sidebar-user-badge">${unreadCount}</span>` : ''}
         `;
+
+        item.addEventListener('click', () => {
+          openDirectMessage(profile.uid, profile.nickname);
+          if (sidebar && sidebar.classList.contains('mobile-open')) {
+            sidebar.classList.remove('mobile-open');
+          }
+        });
+
         sidebarUsersList.appendChild(item);
       });
     }
@@ -1588,7 +1987,10 @@
       knownMessageIds = new Set();
       messagesEl.innerHTML = '<div id="messages-bottom" style="height: 1px; width: 100%; pointer-events: none; flex-shrink: 0;"></div>';
       
-      const q = query(messagesRef, orderBy('createdAt', 'asc'));
+      const q = currentChat.type === 'dm'
+        ? query(collection(db, 'conversations', currentChat.convId, 'messages'), orderBy('createdAt', 'asc'))
+        : query(messagesRef, orderBy('createdAt', 'asc'));
+
       unsubscribeMessages = onSnapshot(q, (snapshot) => {
         const isInitialLoad = (lastMessageId === null);
         const isAtBottom = Math.abs(messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight) < 150;
@@ -1601,7 +2003,7 @@
             const messageData = { id: change.doc.id, ...change.doc.data() };
             if (!knownMessageIds.has(messageData.id)) {
               const bottomEl = document.getElementById('messages-bottom');
-              const msgNode = renderMessage(messageData);
+              const msgNode = renderMessage(messageData, currentChat.type === 'dm');
               if (bottomEl) {
                 messagesEl.insertBefore(msgNode, bottomEl);
               } else {
@@ -1612,7 +2014,7 @@
               lastNewMessage = messageData;
               
               if (!isInitialLoad && messageData.userId !== user?.uid) {
-                if (userName && messageData.text && messageData.text.toLowerCase().includes('@' + userName.toLowerCase())) {
+                if (currentChat.type === 'global' && userName && messageData.text && messageData.text.toLowerCase().includes('@' + userName.toLowerCase())) {
                   showNotification(messageData);
                 }
               }
@@ -1820,7 +2222,25 @@
         };
         if (gifUrl) msgData.gifUrl = gifUrl;
 
-        await addDoc(messagesRef, msgData);
+        if (currentChat.type === 'dm') {
+          const convMessagesRef = collection(db, 'conversations', currentChat.convId, 'messages');
+          await addDoc(convMessagesRef, msgData);
+
+          // Update conversation parent metadata
+          await setDoc(doc(db, 'conversations', currentChat.convId), {
+            participants: [user.uid, currentChat.targetUserId],
+            participantNames: {
+              [user.uid]: userName,
+              [currentChat.targetUserId]: currentChat.targetNickname
+            },
+            lastMessage: cleanText || (gifUrl ? 'Sent a GIF' : ''),
+            lastSenderId: user.uid,
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+        } else {
+          await addDoc(messagesRef, msgData);
+        }
+
         input.value = '';
         input.focus();
       } catch (error) {
@@ -1970,8 +2390,17 @@
 
       if (!currentUser) {
         memberCount.textContent = '0 people online';
+        if (dmOnlineCount) dmOnlineCount.textContent = '0 online';
         if (presenceInterval) clearInterval(presenceInterval);
         if (unsubscribePresence) unsubscribePresence();
+        if (unsubscribeConversations) {
+          unsubscribeConversations();
+          unsubscribeConversations = null;
+        }
+        conversationsMap.clear();
+        unreadDMs.clear();
+        allUsers.clear();
+        onlineUserUids.clear();
         setPresence(false);
 
         // Prepopulate remembered username
@@ -2031,9 +2460,17 @@
         }
       });
 
-      setUserProfile().then(() => {
+      setUserProfile().then(async () => {
+        try {
+          const usersSnap = await getDocs(usersRef);
+          usersSnap.docs.forEach(d => {
+            allUsers.set(d.id, { uid: d.id, ...d.data() });
+          });
+        } catch(e) {}
+
         subscribeToMessages();
         subscribeToPresence();
+        subscribeToConversations();
         updatePresenceHeartbeat();
         if (presenceInterval) clearInterval(presenceInterval);
         presenceInterval = setInterval(updatePresenceHeartbeat, 30000);
@@ -2042,6 +2479,40 @@
         showError(`Unable to load your profile. ${error.message || 'Check the console for details.'}`);
       });
     });
+
+    if (channelGlobalBtn) {
+      channelGlobalBtn.addEventListener('click', () => {
+        openGlobalChat();
+        if (sidebar && sidebar.classList.contains('mobile-open')) {
+          sidebar.classList.remove('mobile-open');
+        }
+      });
+    }
+
+    if (dmBackBtn) {
+      dmBackBtn.addEventListener('click', () => {
+        openGlobalChat();
+      });
+    }
+
+    if (sidebarToggleBtn) {
+      sidebarToggleBtn.addEventListener('click', () => {
+        if (sidebar) sidebar.classList.toggle('mobile-open');
+      });
+    }
+
+    if (messagesEl) {
+      messagesEl.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-dm-uid]');
+        if (target) {
+          const targetUid = target.dataset.dmUid;
+          const targetName = target.dataset.dmName;
+          if (targetUid && targetUid !== user?.uid) {
+            openDirectMessage(targetUid, targetName);
+          }
+        }
+      });
+    }
 
     if (logoutBtn) {
       logoutBtn.addEventListener('click', async () => {

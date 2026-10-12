@@ -363,6 +363,15 @@
     const iframe = document.getElementById("contentFrame");
     const chatFrame = document.getElementById("chatFrame");
     chatFrame.src = "pages/chat.html?v=" + Date.now();
+    chatFrame.addEventListener('load', () => {
+      setTimeout(() => {
+        try {
+          if (chatFrame && chatFrame.contentWindow) {
+            chatFrame.contentWindow.postMessage({ action: "scroll_bottom" }, "*");
+          }
+        } catch(e) {}
+      }, 150);
+    });
     const dockNav = document.getElementById("dockNav");
     const dockToggleBtn = document.getElementById("dockToggleBtn");
 
@@ -433,7 +442,9 @@
         requestAnimationFrame(triggerChatScroll);
         setTimeout(triggerChatScroll, 50);
         setTimeout(triggerChatScroll, 150);
-        setTimeout(triggerChatScroll, 400);
+        setTimeout(triggerChatScroll, 300);
+        setTimeout(triggerChatScroll, 600);
+        setTimeout(triggerChatScroll, 1000);
       } else {
         chatFrame.style.display = "none";
         chatFrame.style.zIndex = "0";

@@ -1,6 +1,9 @@
 {
   "updateId": "v1.5",
   "changes": [
-    "Add setting moderators on admin panels"
+    "Add setting moderators on admin panels",
+    "Added device unique ids for chat",
+    "Fixed chat starting at top instead of bottom",
+    "Added chat rules pop up"
   ]
 }

@@ -30,7 +30,8 @@ service cloud.firestore {
         && request.resource.data.nickname.size() <= 20
         && request.resource.data.role == 'member'
         && request.resource.data.banned is bool
-        && (!request.resource.data.keys().hasAny(['deviceId']) || (request.resource.data.deviceId is string && request.resource.data.deviceId.size() <= 100));
+        && (!request.resource.data.keys().hasAny(['deviceId']) || (request.resource.data.deviceId is string && request.resource.data.deviceId.size() <= 100))
+        && (!request.resource.data.keys().hasAny(['deviceId']) || !exists(/databases/$(database)/documents/banned_devices/$(request.resource.data.deviceId)));
     }
 
     match /messages/{messageId} {
@@ -83,6 +84,11 @@ service cloud.firestore {
 
     match /site_presence/{visitorId} {
       allow read, write: if true;
+    }
+
+    match /banned_devices/{deviceId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
     }
   }
 }

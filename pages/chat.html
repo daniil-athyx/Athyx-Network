@@ -891,6 +891,14 @@
         <div class="admin-user-list" id="admin-user-list"></div>
         <h3 style="margin-top: 24px; font-size: 14px; color: var(--muted);">All Accounts</h3>
         <div class="admin-user-list" id="admin-all-users-list"></div>
+        <h3 style="margin-top: 24px; font-size: 14px; color: var(--muted); display: flex; align-items: center; justify-content: space-between;">
+          <span><i class="fa-solid fa-fingerprint"></i> Banned Device UUIDs</span>
+        </h3>
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; margin-top: 8px;">
+          <input type="text" id="manual-ban-uuid" placeholder="Paste Device UUID to ban..." style="flex: 1; min-height: 36px; padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-active); color: var(--text); font-family: monospace; font-size: 12px; outline: none;" />
+          <button class="danger-btn" id="manual-ban-uuid-btn" type="button" style="white-space: nowrap; min-height: 36px;">Ban UUID</button>
+        </div>
+        <div class="admin-user-list" id="admin-banned-devices-list"></div>
       </div>
       <div class="admin-panel-footer">
         <button class="danger-btn" id="clear-chat-btn" type="button">Clear chat</button>
@@ -967,6 +975,9 @@
     const adminMessage = document.getElementById('admin-message');
     const clearChatBtn = document.getElementById('clear-chat-btn');
     const adminCloseBtn = document.getElementById('admin-close');
+    const adminBannedDevicesList = document.getElementById('admin-banned-devices-list');
+    const manualBanUuidInput = document.getElementById('manual-ban-uuid');
+    const manualBanUuidBtn = document.getElementById('manual-ban-uuid-btn');
     const customAlert = document.getElementById('custom-alert');
     const customAlertText = document.getElementById('custom-alert-text');
     const customAlertClose = document.getElementById('custom-alert-close');
@@ -982,6 +993,7 @@
     const sidebarUsersList = document.getElementById('sidebar-users-list');
     let unsubscribeMessages = null;
     let unsubscribePresence = null;
+    let unsubscribeDeviceBan = null;
     let presenceInterval = null;
     let user = null;
     let userName = '';
@@ -990,6 +1002,7 @@
     let authMode = 'login';
     let blockedWords = [];
     const deletedUserIds = new Set();
+    const bannedDeviceIds = new Set();
 
     async function loadBlockedWords() {
       try {
@@ -1011,6 +1024,7 @@
     const messagesRef = collection(db, 'messages');
     const usersRef = collection(db, 'users');
     const usernamesRef = collection(db, 'usernames');
+    const bannedDevicesRef = collection(db, 'banned_devices');
     const adminUsername = 'athyx';
 
     function isAdminUser(currentUser) {
@@ -1256,6 +1270,113 @@
       }
     }
 
+    async function toggleDeviceBan(deviceUuid, targetUserId, username) {
+      if (!isAdminUser(user)) return;
+      if (!deviceUuid || deviceUuid === 'Not recorded') {
+        showAdminMessage('No valid UUID recorded for this target.', true);
+        return;
+      }
+
+      const isBanned = bannedDeviceIds.has(deviceUuid);
+      try {
+        if (isBanned) {
+          await deleteDoc(doc(bannedDevicesRef, deviceUuid));
+          bannedDeviceIds.delete(deviceUuid);
+          showAdminMessage(`Unbanned device UUID: ${deviceUuid}`);
+        } else {
+          await setDoc(doc(bannedDevicesRef, deviceUuid), {
+            deviceId: deviceUuid,
+            bannedAt: serverTimestamp(),
+            bannedBy: user.uid,
+            lastUser: username || 'Unknown'
+          });
+          bannedDeviceIds.add(deviceUuid);
+
+          // Immediately ban the targeted user account
+          if (targetUserId && targetUserId !== user.uid) {
+            await setUserBan(targetUserId, true);
+          }
+
+          // Also automatically query all existing accounts sharing this deviceId and ban them
+          try {
+            const sharingQuery = query(usersRef, where('deviceId', '==', deviceUuid));
+            const sharingDocs = await getDocs(sharingQuery);
+            sharingDocs.docs.forEach(d => {
+              if (d.id !== user.uid) {
+                setDoc(doc(usersRef, d.id), { banned: true }, { merge: true }).catch(() => {});
+              }
+            });
+          } catch(e) {}
+
+          showAdminMessage(`Permanently banned device UUID: ${deviceUuid}. Any new accounts from this device will be blocked.`);
+        }
+
+        // Update any matching buttons in the DOM
+        document.querySelectorAll(`[data-device-uuid="${deviceUuid}"]`).forEach(btn => {
+          btn.textContent = bannedDeviceIds.has(deviceUuid) ? 'Unban UUID' : 'Ban UUID';
+        });
+
+        // Refresh banned devices list UI
+        loadBannedDevicesList();
+      } catch (err) {
+        console.error('Error toggling device ban:', err);
+        showAdminMessage('Failed to update device ban status.', true);
+      }
+    }
+
+    async function loadBannedDevicesList() {
+      if (!isAdminUser(user)) return;
+      try {
+        const bannedDocs = await getDocs(bannedDevicesRef);
+        bannedDeviceIds.clear();
+        const devices = [];
+        bannedDocs.forEach(d => {
+          bannedDeviceIds.add(d.id);
+          devices.push({ id: d.id, ...d.data() });
+        });
+        renderBannedDevices(devices);
+        document.querySelectorAll('[data-uuid-ban-btn]').forEach(btn => {
+          const u = btn.dataset.deviceUuid;
+          if (u) {
+            btn.textContent = bannedDeviceIds.has(u) ? 'Unban UUID' : 'Ban UUID';
+          }
+        });
+      } catch(e) {
+        console.error('Failed to load banned devices:', e);
+      }
+    }
+
+    function renderBannedDevices(devices) {
+      if (!adminBannedDevicesList) return;
+      adminBannedDevicesList.innerHTML = '';
+      if (!devices || devices.length === 0) {
+        adminBannedDevicesList.innerHTML = '<p class="notice">No banned device UUIDs.</p>';
+        return;
+      }
+      devices.forEach(dev => {
+        const item = document.createElement('div');
+        const uuidVal = dev.deviceId || dev.id;
+        item.className = 'admin-user-item';
+        item.innerHTML = `
+          <div class="admin-user-meta">
+            <div class="admin-user-name" style="font-family: monospace; font-size: 11.5px; color: #ef4444; word-break: break-all; display:flex; align-items:center; gap:6px;">
+              <i class="fa-solid fa-ban"></i> ${escapeHtml(uuidVal)}
+            </div>
+            <div class="admin-user-rank" style="margin-top: 3px; font-size: 11px;">
+              ${dev.lastUser ? 'Last associated user: ' + escapeHtml(dev.lastUser) : 'Device UUID'}
+            </div>
+          </div>
+          <div class="admin-user-actions">
+            <button class="danger-btn" data-unban-dev-btn type="button">Unban UUID</button>
+          </div>
+        `;
+        item.querySelector('[data-unban-dev-btn]').addEventListener('click', () => {
+          toggleDeviceBan(uuidVal);
+        });
+        adminBannedDevicesList.appendChild(item);
+      });
+    }
+
     async function deleteUserAccount(targetUserId, username) {
       if (!isAdminUser(user)) return;
       if (targetUserId === user.uid) return;
@@ -1378,6 +1499,7 @@
               <option value="moderator" ${role === 'moderator' ? 'selected' : ''}>Moderator</option>
             </select>
             <button class="danger-btn" data-ban-btn type="button">${profile.banned ? 'Unban' : 'Ban'}</button>
+            <button class="danger-btn" data-uuid-ban-btn data-device-uuid="${deviceUuid}" type="button">${bannedDeviceIds.has(deviceUuid) ? 'Unban UUID' : 'Ban UUID'}</button>
             <button class="danger-btn" data-delete-btn type="button" aria-label="Delete Account" title="Delete Account"><i class="fa-solid fa-trash"></i></button>
           ` : '')}</div>
         `;
@@ -1392,6 +1514,12 @@
           if (banBtn) {
             banBtn.addEventListener('click', () => {
               setUserBan(profile.uid, !profile.banned);
+            });
+          }
+          const uuidBanBtn = item.querySelector('[data-uuid-ban-btn]');
+          if (uuidBanBtn) {
+            uuidBanBtn.addEventListener('click', () => {
+              toggleDeviceBan(deviceUuid, profile.uid, profile.username || profile.nickname);
             });
           }
           const deleteBtn = item.querySelector('[data-delete-btn]');
@@ -1575,6 +1703,12 @@
       authMessage.textContent = '';
 
       try {
+        const deviceId = getDeviceId();
+        const deviceBanCheck = await getDoc(doc(bannedDevicesRef, deviceId));
+        if (deviceBanCheck.exists()) {
+          throw new Error('This device has been permanently banned from Athyx Chat. Account creation and login are blocked.');
+        }
+
         const username = normalizeUsername(authUsername.value);
         const password = authPassword.value;
         if (!username || username.length < 3 || username.length > 20) {
@@ -1801,6 +1935,7 @@
       adminPanel.setAttribute('aria-hidden', 'false');
       if (isAdminUser(user)) {
         try {
+          await loadBannedDevicesList();
           const allUsersDocs = await getDocs(usersRef);
           const allUsers = allUsersDocs.docs.map(doc => ({ uid: doc.id, ...doc.data() }));
           renderAdminUsers(allUsers, adminAllUsersList);
@@ -1809,6 +1944,18 @@
         }
       }
     });
+
+    if (manualBanUuidBtn && manualBanUuidInput) {
+      manualBanUuidBtn.addEventListener('click', async () => {
+        const val = manualBanUuidInput.value.trim();
+        if (!val) {
+          showAdminMessage('Please enter a UUID to ban.', true);
+          return;
+        }
+        manualBanUuidInput.value = '';
+        await toggleDeviceBan(val);
+      });
+    }
     adminCloseBtn.addEventListener('click', () => {
       adminPanel.classList.remove('open');
       adminPanel.setAttribute('aria-hidden', 'true');
@@ -1874,6 +2021,33 @@
         }
         return;
       }
+
+      // Check if current device is banned
+      const deviceId = getDeviceId();
+      try {
+        const deviceBanDoc = await getDoc(doc(bannedDevicesRef, deviceId));
+        if (deviceBanDoc.exists()) {
+          try {
+            await setDoc(doc(usersRef, currentUser.uid), { banned: true }, { merge: true });
+          } catch(e) {}
+          await signOut(auth);
+          showCustomAlert('Your device has been permanently banned from Athyx Network chat.');
+          showError('This device has been permanently banned from Athyx Chat.');
+          return;
+        }
+      } catch(e) {
+        console.warn('Error checking device ban:', e);
+      }
+
+      // Realtime listener for device ban
+      if (unsubscribeDeviceBan) unsubscribeDeviceBan();
+      unsubscribeDeviceBan = onSnapshot(doc(bannedDevicesRef, deviceId), (snap) => {
+        if (snap.exists()) {
+          signOut(auth).catch(() => {});
+          showCustomAlert('Your device has been permanently banned from Athyx Network chat.');
+          showError('This device has been permanently banned from Athyx Chat.');
+        }
+      });
 
       setUserProfile().then(() => {
         subscribeToMessages();

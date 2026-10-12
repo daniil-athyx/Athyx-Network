@@ -1,6 +1,7 @@
 {
-  "updateId": "v1.5",
+  "updateId": "v1.6",
   "changes": [
+    "Add device banning",
     "Add setting moderators on admin panels",
     "Added device unique ids for chat",
     "Fixed chat starting at top instead of bottom",

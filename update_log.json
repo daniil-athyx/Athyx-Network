@@ -1,6 +1,7 @@
 {
-  "updateId": "v1.6",
+  "updateId": "v1.7",
   "changes": [
+    "Update list of blocked words",
     "Add device banning",
     "Add setting moderators on admin panels",
     "Added device unique ids for chat",

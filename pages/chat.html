@@ -990,21 +990,63 @@
     let knownMessageIds = new Set();
     let authMode = 'login';
     let blockedWords = [];
+    let blockedPhrases = [];
+    let blockedRegexes = [];
     const deletedUserIds = new Set();
     const bannedDeviceIds = new Set();
 
     async function loadBlockedWords() {
       try {
-        const response = await fetch('../chat/blocked words.txt');
+        const response = await fetch('../chat/words.json');
+        let words = [];
         if (response.ok) {
-          const text = await response.text();
-          blockedWords = text.split('\n').map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
+          const list = await response.json();
+          words = Array.isArray(list) ? list : [];
+        } else {
+          const fallback = await fetch('../chat/blocked words.txt');
+          if (fallback.ok) {
+            const text = await fallback.text();
+            words = text.split('\n');
+          }
+        }
+        blockedWords = words.map(w => String(w).trim().toLowerCase()).filter(w => w.length > 0);
+
+        const wordTokens = [];
+        blockedPhrases = [];
+        for (const w of blockedWords) {
+          if (w.includes(' ') || /[^a-z0-9]/i.test(w)) {
+            blockedPhrases.push(w);
+          } else {
+            wordTokens.push(w);
+          }
+        }
+        blockedRegexes = [];
+        for (let i = 0; i < wordTokens.length; i += 300) {
+          const chunk = wordTokens.slice(i, i + 300);
+          try {
+            blockedRegexes.push(new RegExp('\\b(' + chunk.join('|') + ')\\b', 'i'));
+          } catch(e) {}
         }
       } catch (e) {
         console.error('Failed to load blocked words:', e);
       }
     }
     loadBlockedWords();
+
+    function isMessageFlagged(text) {
+      if (!text) return false;
+      const lower = text.toLowerCase();
+      for (const phrase of blockedPhrases) {
+        if (lower.includes(phrase)) return true;
+      }
+      for (const rx of blockedRegexes) {
+        if (rx.test(lower)) return true;
+      }
+      if (!blockedRegexes.length && blockedWords.length) {
+        return blockedWords.some(w => lower.includes(w));
+      }
+      return false;
+    }
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -1762,12 +1804,9 @@
       const nickname = userName.trim().substring(0, 20) || 'User';
 
       if (cleanText) {
-        const lowerText = cleanText.toLowerCase();
-        for (const word of blockedWords) {
-          if (lowerText.includes(word)) {
-            showCustomAlert('Message flagged: No swearing or slurs allowed under chat rules.');
-            return;
-          }
+        if (isMessageFlagged(cleanText)) {
+          showCustomAlert('Message flagged: No swearing or slurs allowed under chat rules.');
+          return;
         }
       }
 

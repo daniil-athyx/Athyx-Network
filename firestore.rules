@@ -29,7 +29,8 @@ service cloud.firestore {
         && request.resource.data.nickname.size() >= 1
         && request.resource.data.nickname.size() <= 20
         && request.resource.data.role == 'member'
-        && request.resource.data.banned is bool;
+        && request.resource.data.banned is bool
+        && (!request.resource.data.keys().hasAny(['deviceId']) || (request.resource.data.deviceId is string && request.resource.data.deviceId.size() <= 100));
     }
 
     match /messages/{messageId} {
@@ -58,23 +59,25 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isOwnUser(userId) && validOwnProfile();
       allow update: if (isOwnUser(userId)
-          && request.resource.data.keys().hasOnly(['nickname', 'username', 'role', 'banned', 'online', 'lastSeen', 'updatedAt'])
+          && request.resource.data.keys().hasOnly(['nickname', 'username', 'role', 'banned', 'online', 'lastSeen', 'updatedAt', 'deviceId'])
           && request.resource.data.nickname is string
           && request.resource.data.nickname.size() >= 1
           && request.resource.data.nickname.size() <= 20
           && request.resource.data.username == resource.data.username
           && request.resource.data.role == resource.data.role
           && request.resource.data.banned == resource.data.banned
+          && (!request.resource.data.keys().hasAny(['deviceId']) || (request.resource.data.deviceId is string && request.resource.data.deviceId.size() <= 100))
           && (!request.resource.data.keys().hasAny(['online']) || request.resource.data.online is bool)
           && (!request.resource.data.keys().hasAny(['lastSeen']) || request.resource.data.lastSeen is timestamp)
           && (!request.resource.data.keys().hasAny(['updatedAt']) || request.resource.data.updatedAt is timestamp))
-        || (isAdmin() && request.resource.data.keys().hasOnly(['nickname', 'username', 'role', 'banned', 'online', 'lastSeen', 'updatedAt'])
+        || (isAdmin() && request.resource.data.keys().hasOnly(['nickname', 'username', 'role', 'banned', 'online', 'lastSeen', 'updatedAt', 'deviceId'])
           && (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role in ['member', 'moderator', 'admin'])
           && (!request.resource.data.keys().hasAny(['banned']) || request.resource.data.banned is bool)
           && (!request.resource.data.keys().hasAny(['online']) || request.resource.data.online is bool)
           && (!request.resource.data.keys().hasAny(['lastSeen']) || request.resource.data.lastSeen is timestamp)
           && (!request.resource.data.keys().hasAny(['nickname']) || request.resource.data.nickname is string)
-          && (!request.resource.data.keys().hasAny(['username']) || request.resource.data.username is string));
+          && (!request.resource.data.keys().hasAny(['username']) || request.resource.data.username is string)
+          && (!request.resource.data.keys().hasAny(['deviceId']) || request.resource.data.deviceId is string));
       allow delete: if false;
     }
 

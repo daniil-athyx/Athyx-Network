@@ -16,13 +16,13 @@
       --bg: var(--bg, #0b0508);
       --surface: var(--surface, rgba(28, 12, 16, 0.82));
       --card: var(--surface-hover, rgba(42, 18, 24, 0.9));
-      --border: var(--border, rgba(10, 255, 206, 0.16));
-      --text: var(--text-main, #fff5f6);
-      --muted: var(--text-muted, #f7c6ce);
-      --accent: var(--accent, rgb(10, 255, 206));
-      --accent-hover: var(--accent-hover, rgb(0, 214, 174));
-      --accent-text: var(--accent-text, #050505);
-      --danger: rgb(10, 255, 206);
+      --border: var(--border, rgba(255, 255, 255, 0.12));
+      --text: var(--text-main, #ffffff);
+      --muted: var(--text-muted, #a1a1aa);
+      --accent: var(--accent, #3b82f6);
+      --accent-hover: var(--accent-hover, #2563eb);
+      --accent-text: var(--accent-text, #ffffff);
+      --danger: #ef4444;
       --success: #34d399;
       --shadow: rgba(0, 0, 0, 0.45);
     }
@@ -92,7 +92,7 @@
       animation: highlightFlash 2s;
     }
     @keyframes highlightFlash {
-      0% { background: rgba(10, 255, 206, 0.3); }
+      0% { background: var(--accent-dim, rgba(255, 255, 255, 0.15)); }
       100% { background: transparent; }
     }
 
@@ -186,8 +186,17 @@
       cursor: pointer; color: var(--text); padding: 10px 14px; font-weight: 600;
     }
     .ghost-btn { background: var(--surface-hover); }
-    .primary-btn { background: var(--accent) !important; color: var(--accent-text, #050505) !important; border-color: transparent !important; font-weight: 700; }
-    .danger-btn { background: rgba(10, 255, 206, 0.12); color: #f7c6ce; border-color: rgba(10, 255, 206, 0.2); }
+    .primary-btn { background: var(--accent) !important; color: var(--accent-text, #ffffff) !important; border-color: transparent !important; font-weight: 700; }
+    .danger-btn {
+      background: var(--surface-hover);
+      color: #ef4444;
+      border: 1px solid var(--border);
+    }
+    .danger-btn:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #f87171;
+    }
     button:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.06); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -210,7 +219,7 @@
 
     #messages {
       flex: 1; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
-      scroll-behavior: smooth;
+      overflow-anchor: auto;
     }
 
     .message {
@@ -539,10 +548,141 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
+    /* Auth rules badge */
+    .auth-rules-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--surface-hover) 85%, var(--accent) 15%);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12.5px;
+      margin: 8px 0 2px 0;
+    }
+    .auth-rules-badge i {
+      color: var(--accent);
+    }
+    .auth-rules-badge strong {
+      color: var(--accent);
+    }
+
+    /* Rules Modal */
+    .rules-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .rules-modal.open {
+      display: flex;
+      animation: alertFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .rules-modal-card {
+      width: min(440px, 92vw);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .rules-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .rules-modal-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .rules-modal-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      border: 1px solid var(--border);
+    }
+    .rules-modal-title {
+      margin: 0;
+      font-size: 18px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .rules-modal-subtitle {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .rules-modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .rule-card {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 14px;
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .rule-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .rule-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .rule-name {
+      font-weight: 700;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .rule-description {
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .rules-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .rules-modal-footer button {
+      width: 100%;
+    }
+
     .mention {
       color: var(--accent);
       font-weight: 700;
-      background: rgba(10, 255, 206, 0.15);
+      background: var(--accent-dim, rgba(255, 255, 255, 0.12));
       padding: 0 4px;
       border-radius: 4px;
     }
@@ -675,6 +815,7 @@
       </div>
       <div class="header-actions">
         <span class="pill" aria-live="polite"><i class="fa-solid fa-people-group"></i> <span id="member-count">0 online</span></span>
+        <button class="ghost-btn" id="rules-btn" type="button" title="View chat rules"><i class="fa-solid fa-scale-balanced"></i> Rules</button>
         <button class="ghost-btn" id="admin-btn" type="button" hidden><i class="fa-solid fa-shield-halved"></i> Admin</button>
         <button class="ghost-btn" id="logout-btn" type="button" title="Sign out"><i class="fa-solid fa-right-from-bracket"></i></button>
       </div>
@@ -688,6 +829,10 @@
         <div>
           <h2 class="auth-title">Community Chat</h2>
           <p class="auth-subtitle">Sign in or create an account to start chatting</p>
+          <div class="auth-rules-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Chat Rules: <strong>No Swearing/Slurs</strong></span>
+          </div>
         </div>
         <div class="auth-tabs" aria-label="Authentication options">
           <button class="active" id="login-tab" type="button">Log in</button>
@@ -763,6 +908,35 @@
     </div>
   </section>
 
+  <section class="rules-modal" id="rules-modal" aria-hidden="true">
+    <div class="rules-modal-card">
+      <div class="rules-modal-header">
+        <div class="rules-modal-title-wrap">
+          <div class="rules-modal-icon">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+          <div>
+            <h3 class="rules-modal-title">Chat Rules</h3>
+            <p class="rules-modal-subtitle">Community Guidelines</p>
+          </div>
+        </div>
+        <button class="ghost-btn" id="rules-close" type="button" aria-label="Close rules modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="rules-modal-body">
+        <div class="rule-card">
+          <div class="rule-badge"><i class="fa-solid fa-ban"></i></div>
+          <div class="rule-details">
+            <span class="rule-name">No Swearing / Slurs</span>
+            <span class="rule-description">Keep the community friendly and clean. Swearing, profanity, slurs, hate speech, and harassment are strictly prohibited. Messages containing blocked words cannot be sent.</span>
+          </div>
+        </div>
+      </div>
+      <div class="rules-modal-footer">
+        <button class="primary-btn" id="rules-ack-btn" type="button">Understood</button>
+      </div>
+    </div>
+  </section>
+
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
@@ -795,6 +969,10 @@
     const customAlert = document.getElementById('custom-alert');
     const customAlertText = document.getElementById('custom-alert-text');
     const customAlertClose = document.getElementById('custom-alert-close');
+    const rulesBtn = document.getElementById('rules-btn');
+    const rulesModal = document.getElementById('rules-modal');
+    const rulesClose = document.getElementById('rules-close');
+    const rulesAckBtn = document.getElementById('rules-ack-btn');
     const chatHeader = document.getElementById('chat-header');
     const chatPanel = document.getElementById('chat-panel');
     const memberCount = document.getElementById('member-count');
@@ -908,7 +1086,7 @@
       }
       
       let textHtml = message.text ? `<div class="message-text">${textContent}</div>` : '';
-      let gifHtml = message.gifUrl ? `<img src="${escapeHtml(message.gifUrl)}" class="message-gif" loading="lazy" alt="GIF">` : '';
+      let gifHtml = message.gifUrl ? `<img src="${escapeHtml(message.gifUrl)}" class="message-gif" loading="lazy" alt="GIF" onload="if (typeof window.scrollToBottomIfNearBottom === 'function') window.scrollToBottomIfNearBottom();">` : '';
       
       item.innerHTML = `
         <div class="message-meta">
@@ -957,6 +1135,37 @@
         customAlert.setAttribute('aria-hidden', 'true');
       });
     }
+
+    function openRulesModal() {
+      if (rulesModal) {
+        rulesModal.classList.add('open');
+        rulesModal.setAttribute('aria-hidden', 'false');
+      }
+    }
+    function closeRulesModal() {
+      if (rulesModal) {
+        rulesModal.classList.remove('open');
+        rulesModal.setAttribute('aria-hidden', 'true');
+        try {
+          localStorage.setItem('athyx_chat_rules_seen', 'true');
+        } catch(e) {}
+      }
+    }
+    if (rulesBtn) rulesBtn.addEventListener('click', openRulesModal);
+    if (rulesClose) rulesClose.addEventListener('click', closeRulesModal);
+    if (rulesAckBtn) rulesAckBtn.addEventListener('click', closeRulesModal);
+    if (rulesModal) {
+      rulesModal.addEventListener('click', (e) => {
+        if (e.target === rulesModal) closeRulesModal();
+      });
+    }
+
+    // Automatically show rules popup on first chat visit
+    try {
+      if (!localStorage.getItem('athyx_chat_rules_seen')) {
+        setTimeout(openRulesModal, 350);
+      }
+    } catch(e) {}
 
     function showAdminMessage(message, isError = false) {
       adminMessage.textContent = message;
@@ -1012,11 +1221,20 @@
       showAdminMessage(`Cleared ${messageDocs.size} message${messageDocs.size === 1 ? '' : 's'}.`);
     }
 
-    async function setUserRank(targetUserId, rank) {
+    async function setUserRank(targetUserId, role) {
       if (!isAdminUser(user)) return;
       if (targetUserId === user.uid) return;
-      await setDoc(doc(usersRef, targetUserId), { rank }, { merge: true });
-      showAdminMessage(`Updated rank to ${escapeHtml(rank)}.`);
+      try {
+        await setDoc(doc(usersRef, targetUserId), { role }, { merge: true });
+        const roleLabel = role === 'moderator' ? 'Moderator' : 'Member';
+        document.querySelectorAll(`[data-user-id="${targetUserId}"] .admin-user-rank`).forEach(el => {
+          el.textContent = roleLabel;
+        });
+        showAdminMessage(`Updated role to ${roleLabel}.`);
+      } catch (err) {
+        console.error('Failed to update role:', err);
+        showAdminMessage('Failed to update user role.', true);
+      }
     }
 
     async function setUserBan(targetUserId, banned) {
@@ -1127,34 +1345,60 @@
       const isAdmin = isAdminUser(user);
       activeUsers.forEach(profile => {
         const item = document.createElement('div');
-        const rank = profile.rank || 'member';
+        const role = profile.role || profile.rank || 'member';
+        const isSelf = profile.uid === user?.uid;
+        const deviceUuid = profile.deviceId || 'Not recorded';
         item.className = 'admin-user-item';
         item.dataset.userId = profile.uid;
+
+        let roleDisplay = 'Member';
+        if (role === 'admin' || isSelf || (profile.email && profile.email.toLowerCase() === `${adminUsername}@athyx-network.local`)) {
+          roleDisplay = 'Admin';
+        } else if (role === 'moderator') {
+          roleDisplay = 'Moderator';
+        }
+
         item.innerHTML = `
           <div class="admin-user-meta">
             <div class="admin-user-name">${escapeHtml(profile.nickname || 'User')}</div>
-            <div class="admin-user-rank">${escapeHtml(rank === 'member' ? 'Member' : rank)}</div>
+            <div class="admin-user-rank">${escapeHtml(roleDisplay)}</div>
+            <div class="admin-user-uuid" style="margin-top: 4px; font-size: 11px; font-family: monospace; color: var(--muted); display: flex; align-items: center; gap: 6px; word-break: break-all;">
+              <span style="opacity: 0.7;"><i class="fa-solid fa-fingerprint" style="color: var(--muted);"></i> UUID:</span>
+              <span style="color: var(--text); background: var(--surface-hover); padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border); user-select: all;" title="Device UUID">${escapeHtml(deviceUuid)}</span>
+            </div>
           </div>
-          <div class="admin-user-actions">${isAdmin ? `
-            <select data-rank-select aria-label="Choose rank">
-              <option value="member" ${rank === 'member' ? 'selected' : ''}>Member</option>
-              <option value="moderator" ${rank === 'moderator' ? 'selected' : ''}>Moderator</option>
-              <option value="admin" ${rank === 'admin' ? 'selected' : ''}>Admin</option>
+          <div class="admin-user-actions">${isSelf ? `
+            <span style="font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--surface-hover); border: 1px solid var(--border); color: var(--text); display: inline-flex; align-items: center; gap: 5px;">
+              <i class="fa-solid fa-crown" style="color: var(--accent);"></i> You (Admin)
+            </span>
+          ` : (isAdmin ? `
+            <select data-rank-select aria-label="Choose role">
+              <option value="member" ${role === 'member' ? 'selected' : ''}>Member</option>
+              <option value="moderator" ${role === 'moderator' ? 'selected' : ''}>Moderator</option>
             </select>
             <button class="danger-btn" data-ban-btn type="button">${profile.banned ? 'Unban' : 'Ban'}</button>
             <button class="danger-btn" data-delete-btn type="button" aria-label="Delete Account" title="Delete Account"><i class="fa-solid fa-trash"></i></button>
-          ` : ''}</div>
+          ` : '')}</div>
         `;
-        if (isAdmin) {
-          item.querySelector('[data-rank-select]').addEventListener('change', (event) => {
-            setUserRank(profile.uid, event.target.value);
-          });
-          item.querySelector('[data-ban-btn]').addEventListener('click', () => {
-            setUserBan(profile.uid, !profile.banned);
-          });
-          item.querySelector('[data-delete-btn]').addEventListener('click', () => {
-            deleteUserAccount(profile.uid, profile.username || profile.nickname);
-          });
+        if (isAdmin && !isSelf) {
+          const rankSelect = item.querySelector('[data-rank-select]');
+          if (rankSelect) {
+            rankSelect.addEventListener('change', (event) => {
+              setUserRank(profile.uid, event.target.value);
+            });
+          }
+          const banBtn = item.querySelector('[data-ban-btn]');
+          if (banBtn) {
+            banBtn.addEventListener('click', () => {
+              setUserBan(profile.uid, !profile.banned);
+            });
+          }
+          const deleteBtn = item.querySelector('[data-delete-btn]');
+          if (deleteBtn) {
+            deleteBtn.addEventListener('click', () => {
+              deleteUserAccount(profile.uid, profile.username || profile.nickname);
+            });
+          }
         }
         container.appendChild(item);
       });
@@ -1206,16 +1450,59 @@
           showEmptyState();
         }
 
+    function isNearBottom() {
+      if (!messagesEl) return true;
+      return (messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight) < 250;
+    }
+
+    function scrollToBottom(smooth = false) {
+      if (!messagesEl) return;
+      if (smooth) {
+        messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+      } else {
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+    }
+
+    function forceScrollToBottom(smooth = false) {
+      if (!messagesEl) return;
+      scrollToBottom(smooth);
+      requestAnimationFrame(() => scrollToBottom(false));
+      setTimeout(() => scrollToBottom(false), 40);
+      setTimeout(() => scrollToBottom(false), 120);
+      setTimeout(() => scrollToBottom(false), 300);
+      setTimeout(() => scrollToBottom(false), 600);
+    }
+
+    window.scrollToBottomIfNearBottom = () => {
+      if (!messagesEl) return;
+      if (isNearBottom() || !hasInitiallyScrolled) {
+        forceScrollToBottom(false);
+      }
+    };
+
+    let hasInitiallyScrolled = false;
+    if (typeof ResizeObserver !== 'undefined' && messagesEl) {
+      const chatResizeObserver = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.contentRect && entry.contentRect.height > 50) {
+            if (!hasInitiallyScrolled || isNearBottom()) {
+              forceScrollToBottom(false);
+              hasInitiallyScrolled = true;
+            }
+          }
+        }
+      });
+      chatResizeObserver.observe(messagesEl);
+      if (chatPanel) chatResizeObserver.observe(chatPanel);
+    }
+
         if (hasNewMessages) {
           const isOwnNewMessage = lastNewMessage && lastNewMessage.userId === user?.uid;
           
-          if (isInitialLoad || isAtBottom || isOwnNewMessage) {
-            // Scroll to bottom immediately
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-            // Also scroll after a slight delay in case images load
-            setTimeout(() => {
-              messagesEl.scrollTop = messagesEl.scrollHeight;
-            }, 100);
+          if (!hasInitiallyScrolled || isAtBottom || isOwnNewMessage) {
+            forceScrollToBottom(isOwnNewMessage);
+            hasInitiallyScrolled = true;
           }
           
           if (lastNewMessage) {
@@ -1246,6 +1533,17 @@
       authUsername.focus();
     }
 
+    function getDeviceId() {
+      let id = localStorage.getItem('athyx_device_id');
+      if (!id) {
+        id = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : ('uuid-' + Math.random().toString(36).substring(2, 10) + '-' + Date.now().toString(36));
+        try {
+          localStorage.setItem('athyx_device_id', id);
+        } catch(e) {}
+      }
+      return id;
+    }
+
     async function setUserProfile() {
       if (!user) return;
       const profileRef = doc(usersRef, user.uid);
@@ -1255,6 +1553,7 @@
       userName = requestedName.substring(0, 20);
       await setDoc(profileRef, {
         nickname: userName,
+        deviceId: getDeviceId(),
         updatedAt: serverTimestamp()
       }, { merge: true });
       localStorage.setItem('athyx_chat_name', userName);
@@ -1291,6 +1590,7 @@
             username,
             role: 'member',
             banned: false,
+            deviceId: getDeviceId(),
             updatedAt: serverTimestamp()
           }, { merge: true });
           await setDoc(usernameRef, {
@@ -1366,7 +1666,7 @@
         const lowerText = cleanText.toLowerCase();
         for (const word of blockedWords) {
           if (lowerText.includes(word)) {
-            showCustomAlert('message flagged cant send this message');
+            showCustomAlert('Message flagged: No swearing or slurs allowed under chat rules.');
             return;
           }
         }
@@ -1513,6 +1813,12 @@
       authForm.hidden = !!currentUser;
       composer.hidden = !currentUser;
       chatPanel.hidden = !currentUser;
+
+      if (currentUser) {
+        requestAnimationFrame(() => scrollToBottom(false));
+        setTimeout(() => scrollToBottom(false), 100);
+        setTimeout(() => scrollToBottom(false), 300);
+      }
       chatHeader.hidden = !currentUser;
       adminBtn.hidden = !isAdminUser(currentUser);
       sidebar.hidden = !currentUser;
@@ -1584,6 +1890,10 @@
     }
 
     window.addEventListener("message", (event) => {
+      if (event.data && (event.data.action === "scroll_bottom" || event.data.action === "scrollToBottom")) {
+        forceScrollToBottom(false);
+        hasInitiallyScrolled = true;
+      }
       if (event.data && event.data.action === "scrollToMessage") {
         const msgEl = document.querySelector(`.message[data-id="${event.data.messageId}"]`);
         if (msgEl) {
@@ -1591,6 +1901,24 @@
           msgEl.classList.add('highlight-flash');
           setTimeout(() => msgEl.classList.remove('highlight-flash'), 2000);
         }
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (!hasInitiallyScrolled || isNearBottom()) {
+        forceScrollToBottom(false);
+      }
+    });
+
+    window.addEventListener("focus", () => {
+      if (!hasInitiallyScrolled || isNearBottom()) {
+        forceScrollToBottom(false);
+      }
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && (!hasInitiallyScrolled || isNearBottom())) {
+        forceScrollToBottom(false);
       }
     });
 

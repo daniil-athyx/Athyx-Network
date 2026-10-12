@@ -421,6 +421,19 @@
         chatFrame.style.zIndex = "1";
         iframe.style.display = "none";
         iframe.style.zIndex = "0";
+
+        const triggerChatScroll = () => {
+          try {
+            if (chatFrame && chatFrame.contentWindow) {
+              chatFrame.contentWindow.postMessage({ action: "scroll_bottom" }, "*");
+            }
+          } catch(e) {}
+        };
+        triggerChatScroll();
+        requestAnimationFrame(triggerChatScroll);
+        setTimeout(triggerChatScroll, 50);
+        setTimeout(triggerChatScroll, 150);
+        setTimeout(triggerChatScroll, 400);
       } else {
         chatFrame.style.display = "none";
         chatFrame.style.zIndex = "0";

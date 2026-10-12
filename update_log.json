@@ -1,9 +1,6 @@
 {
-  "updateId": "v1.1",
+  "updateId": "v1.5",
   "changes": [
-    "Removed all red default colors for anonymous users",
-    "Set pure white theme as the absolute default",
-    "Added a beautiful internal site popup for flagged messages",
-    "Added an automatic update changelog so you always know what's new"
+    "Add setting moderators on admin panels"
   ]
 }

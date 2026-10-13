@@ -814,7 +814,7 @@
     .auth-card {
       grid-row: 1 / 4;
       grid-column: 1 / -1;
-      display: flex !important;
+      display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
@@ -822,6 +822,9 @@
       min-height: 100vh;
       background: var(--discord-bg-rail);
       z-index: 100;
+    }
+    .auth-card[hidden] {
+      display: none !important;
     }
     .auth-box {
       width: min(440px, 92vw);
@@ -867,10 +870,15 @@
       background: var(--discord-blurple);
       color: #fff;
     }
-    .auth-card form {
+    .auth-card form,
+    #auth-form {
       display: flex;
       flex-direction: column;
       gap: 14px;
+      width: 100%;
+    }
+    #auth-form[hidden] {
+      display: none !important;
     }
     .input-wrap {
       position: relative;
@@ -2248,6 +2256,10 @@
       registerTab.classList.toggle('active', registration);
       authSubmit.textContent = registration ? 'Create account' : 'Log in';
       authMessage.textContent = '';
+      if (authForm) {
+        authForm.hidden = false;
+        authForm.style.display = 'flex';
+      }
       authUsername.focus();
     }
 
@@ -2558,6 +2570,9 @@
       authCard.hidden = !!currentUser;
       authCard.style.display = currentUser ? 'none' : 'flex';
       authForm.hidden = !!currentUser;
+      if (authForm) {
+        authForm.style.display = currentUser ? 'none' : 'flex';
+      }
       composer.hidden = !currentUser;
       chatPanel.hidden = !currentUser;
 

@@ -683,6 +683,294 @@
       line-height: 1.4;
     }
 
+    /* Direct Messages Hub */
+    .dm-hub-panel {
+      grid-row: 2 / 4;
+      grid-column: 2;
+      background: var(--discord-bg-chat);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 48px);
+      overflow-y: auto;
+      padding: 24px 28px;
+    }
+    .dm-hub-panel[hidden] {
+      display: none !important;
+    }
+    .dm-hub-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .dm-hub-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .dm-hub-icon-pill {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(88, 101, 242, 0.15);
+      color: var(--discord-blurple);
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .dm-hub-title {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--discord-text-header);
+    }
+    .dm-hub-subtitle {
+      margin: 3px 0 0 0;
+      font-size: 13.5px;
+      color: var(--discord-text-muted);
+    }
+    .dm-new-btn {
+      background: var(--discord-blurple);
+      color: #fff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .dm-new-btn:hover {
+      background: var(--discord-blurple-hover);
+    }
+    .dm-new-btn:active {
+      transform: scale(0.98);
+    }
+    .dm-hub-search-wrap {
+      position: relative;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .dm-hub-search-wrap i {
+      position: absolute;
+      left: 14px;
+      color: var(--discord-text-muted);
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .dm-hub-search-wrap input {
+      width: 100%;
+      padding: 10px 14px 10px 40px;
+      background: var(--discord-bg-rail);
+      border: 1px solid var(--discord-border);
+      border-radius: 6px;
+      color: var(--discord-text-header);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .dm-hub-search-wrap input:focus {
+      border-color: var(--discord-blurple);
+    }
+    .dm-hub-search-wrap input::placeholder {
+      color: var(--discord-text-muted);
+    }
+    .dm-hub-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 12px;
+    }
+    .dm-user-card {
+      background: var(--discord-bg-sidebar);
+      border: 1px solid var(--discord-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s, transform 0.1s;
+      position: relative;
+    }
+    .dm-user-card:hover {
+      background: var(--discord-bg-hover);
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+    .dm-card-avatar-wrap {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+    }
+    .dm-card-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--discord-blurple);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 17px;
+      user-select: none;
+    }
+    .dm-card-status-dot {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--discord-bg-sidebar);
+      background: #80848e;
+    }
+    .dm-card-status-dot.online {
+      background: var(--discord-green);
+    }
+    .dm-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .dm-card-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 2px;
+    }
+    .dm-card-name {
+      font-weight: 600;
+      color: var(--discord-text-header);
+      font-size: 14.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dm-card-time {
+      font-size: 11px;
+      color: var(--discord-text-muted);
+      white-space: nowrap;
+    }
+    .dm-card-msg {
+      font-size: 12.5px;
+      color: var(--discord-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dm-card-action {
+      background: transparent;
+      border: none;
+      color: var(--discord-text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 14px;
+      flex-shrink: 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .dm-user-card:hover .dm-card-action {
+      background: var(--discord-bg-input);
+      color: var(--discord-text-header);
+    }
+    .dm-hub-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--discord-text-muted);
+      grid-column: 1 / -1;
+    }
+    .dm-hub-empty-icon {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      background: var(--discord-bg-sidebar);
+      color: var(--discord-text-muted);
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      margin: 0 auto 16px auto;
+    }
+    .dm-hub-empty h3 {
+      font-size: 18px;
+      color: var(--discord-text-header);
+      margin: 0 0 6px 0;
+    }
+    .dm-hub-empty p {
+      margin: 0 0 20px 0;
+      font-size: 14px;
+      max-width: 340px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.4;
+    }
+
+    /* New DM Modal */
+    .new-dm-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.75);
+    }
+    .new-dm-modal.open { display: flex; }
+    .new-dm-card {
+      width: min(440px, 92vw);
+      background: var(--discord-bg-chat);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+    }
+    .new-dm-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .new-dm-header h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--discord-text-header);
+    }
+    .new-dm-subtitle {
+      margin: 0 0 16px 0;
+      font-size: 13.5px;
+      color: var(--discord-text-muted);
+      line-height: 1.4;
+    }
+    .new-dm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .new-dm-actions .ghost-btn {
+      background: transparent;
+      border: none;
+      color: var(--discord-text-header);
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+    }
+    .new-dm-actions .ghost-btn:hover {
+      text-decoration: underline;
+    }
+
     /* Discord Floating Composer */
     .composer {
       grid-row: 3;
@@ -1105,7 +1393,7 @@
         box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
       }
       .mobile-sidebar-toggle { display: grid; }
-      .header, .chat-panel, .composer { grid-column: 1; }
+      .header, .chat-panel, .composer, .dm-hub-panel { grid-column: 1; }
     }
   </style>
 </head>
@@ -1121,15 +1409,20 @@
       </div>
       <div class="sidebar-scroll">
         <div class="category-header">
-          <span>Text Channels</span>
+          <span>Options</span>
         </div>
         <div class="channel-item active" id="channel-global-btn" title="#global-chat">
           <span class="channel-hash"><i class="fa-solid fa-hashtag"></i></span>
           <span class="channel-name">global-chat</span>
           <span class="channel-unread-badge" id="global-unread-badge" hidden>0</span>
         </div>
+        <div class="channel-item" id="channel-dms-hub-btn" title="Direct Messages">
+          <span class="channel-hash"><i class="fa-solid fa-message"></i></span>
+          <span class="channel-name">Direct Messages</span>
+          <span class="channel-unread-badge" id="dms-hub-unread-badge" hidden>0</span>
+        </div>
         <div class="category-header" style="margin-top: 10px;">
-          <span>Direct Messages</span>
+          <span>Active Users</span>
           <span class="category-count" id="dm-online-count">0 online</span>
         </div>
         <div class="sidebar-users" id="sidebar-users-list"></div>
@@ -1155,8 +1448,8 @@
 
     <header class="header" id="chat-header" hidden>
       <div class="discord-header-left">
-        <button class="dm-back-btn" id="dm-back-btn" type="button" title="Back to #global-chat" hidden>
-          <i class="fa-solid fa-arrow-left"></i> <span>global-chat</span>
+        <button class="dm-back-btn" id="dm-back-btn" type="button" title="Back to Direct Messages" hidden>
+          <i class="fa-solid fa-arrow-left"></i> <span>Direct Messages</span>
         </button>
         <span class="discord-header-hash" id="header-type-icon"><i class="fa-solid fa-hashtag"></i></span>
         <h1 class="discord-header-title" id="chat-title">global-chat</h1>
@@ -1164,6 +1457,7 @@
         <div class="discord-header-topic" id="chat-subtitle">Welcome to the Athyx community chat channel!</div>
       </div>
       <div class="discord-header-right">
+        <button class="discord-icon-btn" id="header-new-dm-btn" type="button" title="Start a Direct Message (+)" style="display: none;"><i class="fa-solid fa-plus"></i></button>
         <button class="discord-icon-btn mobile-sidebar-toggle" id="sidebar-toggle-btn" type="button" title="Toggle Channels & Users"><i class="fa-solid fa-bars"></i></button>
         <div class="discord-online-pill" id="member-count-pill" aria-live="polite">
           <span class="discord-dot"></span>
@@ -1207,6 +1501,28 @@
 
     <section class="chat-panel" id="chat-panel" aria-live="polite" hidden>
       <div id="messages"><div id="messages-bottom" style="height: 1px; width: 100%; pointer-events: none; flex-shrink: 0;"></div></div>
+    </section>
+
+    <section class="dm-hub-panel" id="dm-hub-panel" hidden>
+      <div class="dm-hub-top">
+        <div class="dm-hub-title-wrap">
+          <div class="dm-hub-icon-pill"><i class="fa-solid fa-envelope-open-text"></i></div>
+          <div>
+            <h2 class="dm-hub-title">Direct Messages</h2>
+            <p class="dm-hub-subtitle">Conversations with your community members</p>
+          </div>
+        </div>
+        <button class="dm-new-btn" id="dm-new-chat-btn" type="button" title="Start a Direct Message">
+          <i class="fa-solid fa-plus"></i> <span>New DM</span>
+        </button>
+      </div>
+
+      <div class="dm-hub-search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="dm-hub-search-input" placeholder="Search direct messages..." autocomplete="off" />
+      </div>
+
+      <div class="dm-hub-cards-grid" id="dm-hub-cards-list"></div>
     </section>
 
     <form class="composer" id="composer" novalidate hidden>
@@ -1287,6 +1603,27 @@
     </div>
   </section>
 
+  <section class="new-dm-modal" id="new-dm-modal" aria-hidden="true">
+    <div class="new-dm-card">
+      <div class="new-dm-header">
+        <h3>New Direct Message</h3>
+        <button class="ghost-btn" id="new-dm-close" type="button" aria-label="Close modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p class="new-dm-subtitle">Enter the username of the user you want to message.</p>
+      <form id="new-dm-form" novalidate>
+        <div class="input-wrap">
+          <i class="fa-solid fa-at input-icon"></i>
+          <input id="new-dm-username-input" type="text" minlength="3" maxlength="20" placeholder="Type a username..." autocomplete="off" required />
+        </div>
+        <p class="new-dm-error" id="new-dm-error" style="margin: 8px 0 0 0; font-size: 13px; color: var(--discord-red); display: none;"></p>
+        <div class="new-dm-actions">
+          <button class="ghost-btn" id="new-dm-cancel-btn" type="button">Cancel</button>
+          <button class="primary-btn" id="new-dm-submit-btn" type="submit">Start Message</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, setPersistence, browserLocalPersistence } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
@@ -1334,6 +1671,20 @@
     const globalUnreadBadge = document.getElementById('global-unread-badge');
     const dmOnlineCount = document.getElementById('dm-online-count');
     const dmBackBtn = document.getElementById('dm-back-btn');
+    const channelDmsHubBtn = document.getElementById('channel-dms-hub-btn');
+    const dmsHubUnreadBadge = document.getElementById('dms-hub-unread-badge');
+    const headerNewDmBtn = document.getElementById('header-new-dm-btn');
+    const dmHubPanel = document.getElementById('dm-hub-panel');
+    const dmNewChatBtn = document.getElementById('dm-new-chat-btn');
+    const dmHubSearchInput = document.getElementById('dm-hub-search-input');
+    const dmHubCardsList = document.getElementById('dm-hub-cards-list');
+    const newDmModal = document.getElementById('new-dm-modal');
+    const newDmCloseBtn = document.getElementById('new-dm-close');
+    const newDmCancelBtn = document.getElementById('new-dm-cancel-btn');
+    const newDmForm = document.getElementById('new-dm-form');
+    const newDmUsernameInput = document.getElementById('new-dm-username-input');
+    const newDmError = document.getElementById('new-dm-error');
+    const newDmSubmitBtn = document.getElementById('new-dm-submit-btn');
     const headerTypeIcon = document.getElementById('header-type-icon');
     const footerUserAvatar = document.getElementById('footer-user-avatar');
     const footerUserName = document.getElementById('footer-user-name');
@@ -1464,6 +1815,7 @@
         if (dmOnlineCount) dmOnlineCount.textContent = `${profiles.length} online`;
         renderAdminUsers(profiles);
         renderSidebarUsers();
+        if (currentChat.type === 'dms_hub') renderDMHub();
         try {
           if (window.parent && window.parent !== window) {
             window.parent.postMessage({ action: 'online_count_update', count: profiles.length }, '*');
@@ -1843,6 +2195,19 @@
       return [uid1, uid2].sort().join('_');
     }
 
+    function updateDMsBadge() {
+      let totalUnread = 0;
+      unreadDMs.forEach(count => totalUnread += count);
+      if (dmsHubUnreadBadge) {
+        if (totalUnread > 0) {
+          dmsHubUnreadBadge.textContent = totalUnread;
+          dmsHubUnreadBadge.hidden = false;
+        } else {
+          dmsHubUnreadBadge.hidden = true;
+        }
+      }
+    }
+
     function openGlobalChat() {
       if (currentChat.type === 'global') return;
       currentChat = { type: 'global', targetUserId: null, targetNickname: '', convId: null };
@@ -1852,14 +2217,44 @@
       if (chatTitle) chatTitle.textContent = 'global-chat';
       if (chatSubtitle) chatSubtitle.textContent = 'Welcome to the Athyx community chat channel!';
       if (memberCountPill) memberCountPill.style.display = '';
+      if (headerNewDmBtn) headerNewDmBtn.style.display = 'none';
+      if (dmHubPanel) dmHubPanel.hidden = true;
+      if (chatPanel) chatPanel.hidden = false;
+      if (composer) composer.hidden = false;
       if (input) input.placeholder = 'Message #global-chat';
       if (channelGlobalBtn) channelGlobalBtn.classList.add('active');
+      if (channelDmsHubBtn) channelDmsHubBtn.classList.remove('active');
 
       unreadGlobal = 0;
       if (globalUnreadBadge) globalUnreadBadge.hidden = true;
 
       renderSidebarUsers();
       subscribeToMessages();
+    }
+
+    function openDMsHub() {
+      if (currentChat.type === 'dms_hub') return;
+      currentChat = { type: 'dms_hub', targetUserId: null, targetNickname: '', convId: null };
+
+      if (dmBackBtn) dmBackBtn.hidden = true;
+      if (headerTypeIcon) headerTypeIcon.innerHTML = '<i class="fa-solid fa-message"></i>';
+      if (chatTitle) chatTitle.textContent = 'Direct Messages';
+      if (chatSubtitle) chatSubtitle.textContent = 'All your direct conversations';
+      if (memberCountPill) memberCountPill.style.display = 'none';
+      if (headerNewDmBtn) headerNewDmBtn.style.display = 'grid';
+      if (dmHubPanel) dmHubPanel.hidden = false;
+      if (chatPanel) chatPanel.hidden = true;
+      if (composer) composer.hidden = true;
+      if (channelGlobalBtn) channelGlobalBtn.classList.remove('active');
+      if (channelDmsHubBtn) channelDmsHubBtn.classList.add('active');
+
+      if (unsubscribeMessages) {
+        unsubscribeMessages();
+        unsubscribeMessages = null;
+      }
+
+      renderDMHub();
+      renderSidebarUsers();
     }
 
     function openDirectMessage(targetUserId, targetNickname) {
@@ -1874,19 +2269,224 @@
         convId
       };
 
-      if (dmBackBtn) dmBackBtn.hidden = false;
+      if (dmBackBtn) {
+        dmBackBtn.hidden = false;
+        dmBackBtn.innerHTML = '<i class="fa-solid fa-arrow-left"></i> <span>Direct Messages</span>';
+      }
       if (headerTypeIcon) headerTypeIcon.innerHTML = '@';
       if (chatTitle) chatTitle.textContent = nickname;
 
       const isOnline = onlineUserUids.has(targetUserId);
       if (chatSubtitle) chatSubtitle.textContent = isOnline ? 'Direct message • Online' : 'Direct message • Offline';
       if (memberCountPill) memberCountPill.style.display = 'none';
+      if (headerNewDmBtn) headerNewDmBtn.style.display = 'none';
+      if (dmHubPanel) dmHubPanel.hidden = true;
+      if (chatPanel) chatPanel.hidden = false;
+      if (composer) composer.hidden = false;
       if (input) input.placeholder = `Message @${nickname}`;
       if (channelGlobalBtn) channelGlobalBtn.classList.remove('active');
+      if (channelDmsHubBtn) channelDmsHubBtn.classList.remove('active');
 
       unreadDMs.delete(convId);
+      updateDMsBadge();
       renderSidebarUsers();
       subscribeToMessages();
+    }
+
+    function renderDMHub(searchFilter = '') {
+      if (!dmHubCardsList) return;
+      dmHubCardsList.innerHTML = '';
+
+      if (!user) return;
+
+      const filterText = (searchFilter || dmHubSearchInput?.value || '').trim().toLowerCase();
+      const dmedUsers = [];
+
+      conversationsMap.forEach((convData) => {
+        if (!convData.participants || !convData.participants.includes(user.uid)) return;
+        const otherUid = convData.participants.find(id => id !== user.uid);
+        if (!otherUid || deletedUserIds.has(otherUid)) return;
+
+        const profile = allUsers.get(otherUid);
+        const name = convData.participantNames?.[otherUid] || profile?.nickname || profile?.username || 'User';
+        const isOnline = onlineUserUids.has(otherUid);
+        const lastMsg = convData.lastMessage || 'No messages yet';
+        const updatedAt = convData.updatedAt?.toDate ? convData.updatedAt.toDate() : (convData.updatedAt ? new Date(convData.updatedAt) : new Date(0));
+
+        if (filterText) {
+          if (!name.toLowerCase().includes(filterText) && !lastMsg.toLowerCase().includes(filterText)) {
+            return;
+          }
+        }
+
+        dmedUsers.push({
+          uid: otherUid,
+          nickname: name,
+          isOnline,
+          lastMsg,
+          updatedAt
+        });
+      });
+
+      dmedUsers.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+
+      if (dmedUsers.length === 0) {
+        if (filterText) {
+          dmHubCardsList.innerHTML = `
+            <div class="dm-hub-empty">
+              <div class="dm-hub-empty-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+              <h3>No conversations found</h3>
+              <p>No direct messages matching "${escapeHtml(filterText)}".</p>
+            </div>
+          `;
+        } else {
+          dmHubCardsList.innerHTML = `
+            <div class="dm-hub-empty">
+              <div class="dm-hub-empty-icon"><i class="fa-solid fa-comments"></i></div>
+              <h3>No direct messages yet</h3>
+              <p>Direct message anyone in the Athyx community! Click the button below to message someone using their username.</p>
+              <button class="dm-new-btn" id="empty-start-dm-btn" type="button">
+                <i class="fa-solid fa-plus"></i> <span>Start a Direct Message</span>
+              </button>
+            </div>
+          `;
+          const emptyBtn = document.getElementById('empty-start-dm-btn');
+          if (emptyBtn) emptyBtn.addEventListener('click', openNewDmModal);
+        }
+        return;
+      }
+
+      dmedUsers.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'dm-user-card';
+        const initial = (item.nickname.charAt(0) || 'U').toUpperCase();
+        const timeStr = item.updatedAt.getTime() > 0 ? formatDiscordTime(item.updatedAt) : '';
+
+        card.innerHTML = `
+          <div class="dm-card-avatar-wrap">
+            <div class="dm-card-avatar">${escapeHtml(initial)}</div>
+            <div class="dm-card-status-dot ${item.isOnline ? 'online' : ''}" title="${item.isOnline ? 'Online' : 'Offline'}"></div>
+          </div>
+          <div class="dm-card-info">
+            <div class="dm-card-name-row">
+              <span class="dm-card-name">${escapeHtml(item.nickname)}</span>
+              ${timeStr ? `<span class="dm-card-time">${escapeHtml(timeStr)}</span>` : ''}
+            </div>
+            <div class="dm-card-msg">${escapeHtml(item.lastMsg)}</div>
+          </div>
+          <button class="dm-card-action" type="button" title="Message @${escapeHtml(item.nickname)}">
+            <i class="fa-solid fa-message"></i>
+          </button>
+        `;
+
+        card.addEventListener('click', () => {
+          openDirectMessage(item.uid, item.nickname);
+          if (sidebar && sidebar.classList.contains('mobile-open')) {
+            sidebar.classList.remove('mobile-open');
+          }
+        });
+
+        dmHubCardsList.appendChild(card);
+      });
+    }
+
+    function openNewDmModal() {
+      if (!newDmModal) return;
+      newDmModal.classList.add('open');
+      newDmModal.setAttribute('aria-hidden', 'false');
+      if (newDmError) {
+        newDmError.textContent = '';
+        newDmError.style.display = 'none';
+      }
+      if (newDmUsernameInput) {
+        newDmUsernameInput.value = '';
+        setTimeout(() => newDmUsernameInput.focus(), 60);
+      }
+    }
+
+    function closeNewDmModal() {
+      if (!newDmModal) return;
+      newDmModal.classList.remove('open');
+      newDmModal.setAttribute('aria-hidden', 'true');
+    }
+
+    if (newDmCloseBtn) newDmCloseBtn.addEventListener('click', closeNewDmModal);
+    if (newDmCancelBtn) newDmCancelBtn.addEventListener('click', closeNewDmModal);
+    if (dmNewChatBtn) dmNewChatBtn.addEventListener('click', openNewDmModal);
+    if (headerNewDmBtn) headerNewDmBtn.addEventListener('click', openNewDmModal);
+
+    if (newDmModal) {
+      newDmModal.addEventListener('click', (e) => {
+        if (e.target === newDmModal) closeNewDmModal();
+      });
+    }
+
+    if (dmHubSearchInput) {
+      dmHubSearchInput.addEventListener('input', (e) => {
+        renderDMHub(e.target.value);
+      });
+    }
+
+    if (newDmForm) {
+      newDmForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const targetUsername = normalizeUsername(newDmUsernameInput.value);
+        if (!targetUsername) {
+          if (newDmError) {
+            newDmError.textContent = 'Please enter a valid username.';
+            newDmError.style.display = 'block';
+          }
+          return;
+        }
+
+        if (targetUsername === normalizeUsername(userName)) {
+          if (newDmError) {
+            newDmError.textContent = 'You cannot direct message yourself.';
+            newDmError.style.display = 'block';
+          }
+          return;
+        }
+
+        if (newDmSubmitBtn) newDmSubmitBtn.disabled = true;
+
+        try {
+          const uDoc = await getDoc(doc(usernamesRef, targetUsername));
+          let targetUid = null;
+          let targetNick = targetUsername;
+
+          if (uDoc.exists()) {
+            targetUid = uDoc.data().uid;
+          } else {
+            for (const [uid, prof] of allUsers.entries()) {
+              if (normalizeUsername(prof.username || prof.nickname || '') === targetUsername) {
+                targetUid = uid;
+                targetNick = prof.nickname || prof.username || targetUsername;
+                break;
+              }
+            }
+          }
+
+          if (!targetUid) {
+            if (newDmError) {
+              newDmError.textContent = `User "@${targetUsername}" not found. Please check spelling.`;
+              newDmError.style.display = 'block';
+            }
+            if (newDmSubmitBtn) newDmSubmitBtn.disabled = false;
+            return;
+          }
+
+          closeNewDmModal();
+          openDirectMessage(targetUid, targetNick);
+        } catch(err) {
+          console.error('Error finding user for DM:', err);
+          if (newDmError) {
+            newDmError.textContent = 'Error connecting to user. Please try again.';
+            newDmError.style.display = 'block';
+          }
+        } finally {
+          if (newDmSubmitBtn) newDmSubmitBtn.disabled = false;
+        }
+      });
     }
 
     function showDMNotification(senderName, text, senderUid) {
@@ -1956,6 +2556,7 @@
               if (currentChat.convId !== convData.id) {
                 const currentCount = unreadDMs.get(convData.id) || 0;
                 unreadDMs.set(convData.id, currentCount + 1);
+                updateDMsBadge();
                 const otherUid = (convData.participants || []).find(id => id !== user.uid);
                 const senderName = convData.participantNames?.[convData.lastSenderId] || 'Someone';
                 showDMNotification(senderName, convData.lastMessage, otherUid);
@@ -1963,7 +2564,11 @@
             }
           }
         });
+        updateDMsBadge();
         renderSidebarUsers();
+        if (currentChat.type === 'dms_hub') {
+          renderDMHub();
+        }
       }, (err) => {
         console.error('Conversations listener error:', err);
       });
@@ -2575,6 +3180,7 @@
       }
       composer.hidden = !currentUser;
       chatPanel.hidden = !currentUser;
+      if (dmHubPanel) dmHubPanel.hidden = true;
 
       if (currentUser) {
         requestAnimationFrame(() => scrollToBottom(false));
@@ -2692,9 +3298,18 @@
       });
     }
 
+    if (channelDmsHubBtn) {
+      channelDmsHubBtn.addEventListener('click', () => {
+        openDMsHub();
+        if (sidebar && sidebar.classList.contains('mobile-open')) {
+          sidebar.classList.remove('mobile-open');
+        }
+      });
+    }
+
     if (dmBackBtn) {
       dmBackBtn.addEventListener('click', () => {
-        openGlobalChat();
+        openDMsHub();
       });
     }
 

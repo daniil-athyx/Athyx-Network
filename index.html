@@ -639,6 +639,7 @@
         }
         const endpoint = 'https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/site_presence/' + vid;
         const pulse = () => {
+          if (document.hidden) return;
           fetch(endpoint, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -646,7 +647,7 @@
           }).catch(() => {});
         };
         pulse();
-        setInterval(pulse, 20000);
+        setInterval(pulse, 300000); // 5 minutes
       } catch(e) {}
     })();
   </script>

@@ -640,7 +640,7 @@
       countText.textContent = `${num} ${num === 1 ? 'user' : 'users'} online`;
     }
 
-    // Send heartbeat for visitor
+    // Send heartbeat for visitor (5 minute interval)
     try {
       let vid = sessionStorage.getItem('athyx_vid');
       if (!vid) {
@@ -649,6 +649,7 @@
       }
       const pulseUrl = 'https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/site_presence/' + vid;
       const sendPulse = () => {
+        if (document.hidden) return;
         fetch(pulseUrl, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -656,7 +657,7 @@
         }).catch(() => {});
       };
       sendPulse();
-      setInterval(sendPulse, 20000);
+      setInterval(sendPulse, 300000); // 5 minutes
     } catch(e) {}
 
     async function queryActiveVisitors() {
@@ -670,7 +671,7 @@
           const docs = data.documents || [];
           siteCount = docs.filter(doc => {
             const ts = doc.fields?.lastSeen?.timestampValue || doc.updateTime;
-            return ts && (now - new Date(ts).getTime() <= 50000);
+            return ts && (now - new Date(ts).getTime() <= 360000); // within 6 minutes
           }).length;
         }
 
@@ -683,7 +684,7 @@
           chatCount = chatDocs.filter(doc => {
             const isOnline = doc.fields?.online?.booleanValue === true;
             const ts = doc.fields?.lastSeen?.timestampValue || doc.updateTime;
-            return isOnline && ts && (now - new Date(ts).getTime() <= 180000);
+            return isOnline && ts && (now - new Date(ts).getTime() <= 360000);
           }).length;
         }
 
@@ -695,7 +696,7 @@
     }
 
     queryActiveVisitors();
-    setInterval(queryActiveVisitors, 15000);
+    setInterval(queryActiveVisitors, 300000); // 5 minutes
 
     // Realtime listener
     try {

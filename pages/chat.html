@@ -1246,6 +1246,38 @@
       letter-spacing: 0.04em;
       box-shadow: 0 0 10px var(--accent-dim);
     }
+    .dm-banned-badge {
+      font-size: 9.5px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      letter-spacing: 0.04em;
+      display: inline-block;
+      margin-left: 6px;
+    }
+    .dm-card-delete-btn {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 12px;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .dm-card-delete-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      transform: scale(1.08);
+    }
     .dm-hub-empty {
       text-align: center;
       padding: 60px 20px;
@@ -2193,9 +2225,14 @@
             <p class="dm-hub-subtitle">Conversations with your community members</p>
           </div>
         </div>
-        <button class="dm-new-btn" id="dm-new-chat-btn" type="button" title="Start a Direct Message">
-          <i class="fa-solid fa-plus"></i> <span>New DM</span>
-        </button>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="ghost-btn" id="dm-mark-all-read-btn" type="button" title="Mark all direct messages as read" style="font-size: 13px; font-weight: 600; padding: 9px 14px; border-radius: 12px; display: inline-flex; align-items: center; gap: 7px; background: var(--surface); border: 1px solid var(--border);">
+            <i class="fa-solid fa-check-double" style="color: var(--accent);"></i> <span>Mark All Read</span>
+          </button>
+          <button class="dm-new-btn" id="dm-new-chat-btn" type="button" title="Start a Direct Message">
+            <i class="fa-solid fa-plus"></i> <span>New DM</span>
+          </button>
+        </div>
       </div>
 
       <div class="dm-hub-search-wrap">
@@ -2372,6 +2409,7 @@
     const headerNewDmBtn = document.getElementById('header-new-dm-btn');
     const dmHubPanel = document.getElementById('dm-hub-panel');
     const dmNewChatBtn = document.getElementById('dm-new-chat-btn');
+    const dmMarkAllReadBtn = document.getElementById('dm-mark-all-read-btn');
     const dmHubSearchInput = document.getElementById('dm-hub-search-input');
     const dmHubCardsList = document.getElementById('dm-hub-cards-list');
     const newDmModal = document.getElementById('new-dm-modal');
@@ -3273,6 +3311,16 @@
 
       showAdminMessage(`Account ${escapeHtml(username)} removed.`);
 
+      // Also clean up any DM conversation with current user
+      const userConvId = getConversationId(user.uid, targetUserId);
+      if (userConvId) {
+        conversationsMap.delete(userConvId);
+        unreadDMs.delete(userConvId);
+        localStorage.removeItem('athyx_dm_last_read_' + userConvId);
+        deleteDoc(doc(db, 'conversations', userConvId)).catch(() => {});
+        updateDMsBadge();
+      }
+
       try {
         await deleteDoc(doc(usersRef, targetUserId));
         if (username) {
@@ -3309,6 +3357,13 @@
             }
             allUsers.delete(targetUid);
             onlineUserUids.delete(targetUid);
+            const convId = getConversationId(user.uid, targetUid);
+            if (convId) {
+              conversationsMap.delete(convId);
+              unreadDMs.delete(convId);
+              localStorage.removeItem('athyx_dm_last_read_' + convId);
+              deleteDoc(doc(db, 'conversations', convId)).catch(() => {});
+            }
             document.querySelectorAll(`[data-user-id="${targetUid}"]`).forEach(el => el.remove());
             document.querySelectorAll(`.message[data-user-id="${targetUid}"]`).forEach(el => el.remove());
             purgedCount++;
@@ -3368,6 +3423,13 @@
             }
             allUsers.delete(targetUid);
             onlineUserUids.delete(targetUid);
+            const convId = getConversationId(user.uid, targetUid);
+            if (convId) {
+              conversationsMap.delete(convId);
+              unreadDMs.delete(convId);
+              localStorage.removeItem('athyx_dm_last_read_' + convId);
+              deleteDoc(doc(db, 'conversations', convId)).catch(() => {});
+            }
             document.querySelectorAll(`[data-user-id="${targetUid}"]`).forEach(el => el.remove());
             document.querySelectorAll(`.message[data-user-id="${targetUid}"]`).forEach(el => el.remove());
             purgedCount++;
@@ -3516,13 +3578,11 @@
       conversationsMap.forEach((convData) => {
         if (!convData.participants || !convData.participants.includes(user.uid)) return;
         const otherUid = convData.participants.find(id => id !== user.uid);
-        if (!otherUid || deletedUserIds.has(otherUid)) return;
+        if (!otherUid) return;
 
         const profile = allUsers.get(otherUid);
-        const name = convData.participantNames?.[otherUid] || profile?.nickname || profile?.username || 'User';
-        const hasSpace = /\s/.test(name) || (profile && ((profile.username && /\s/.test(profile.username)) || (profile.nickname && /\s/.test(profile.nickname))));
-        const hasNoUuid = profile && profile.role !== 'admin' && (!profile.deviceId || profile.deviceId === 'Not recorded' || profile.deviceId === 'No UUID collected');
-        if (hasSpace || hasNoUuid) return;
+        const isBanned = deletedUserIds.has(otherUid) || !!profile?.banned || !profile;
+        let name = convData.participantNames?.[otherUid] || profile?.nickname || profile?.username || 'User';
 
         const isOnline = onlineUserUids.has(otherUid);
         const lastMsg = convData.lastMessage || 'No messages yet';
@@ -3538,6 +3598,7 @@
             convId: convData.id,
             uid: otherUid,
             nickname: name,
+            isBanned,
             unreadCount,
             lastMsg,
             updatedAt
@@ -3554,6 +3615,7 @@
           convId: convData.id,
           uid: otherUid,
           nickname: name,
+          isBanned,
           isOnline,
           lastMsg,
           updatedAt,
@@ -3582,7 +3644,7 @@
             ${unreadList.map(u => `
               <button class="dm-unread-chip" type="button" data-chip-uid="${u.uid}" data-chip-name="${escapeHtml(u.nickname)}" title="Open message from @${escapeHtml(u.nickname)}">
                 <span class="chip-avatar">${escapeHtml((u.nickname.charAt(0) || 'U').toUpperCase())}</span>
-                <span class="chip-name">@${escapeHtml(u.nickname)}</span>
+                <span class="chip-name">@${escapeHtml(u.nickname)}${u.isBanned ? ' [Banned]' : ''}</span>
                 <span class="chip-count">${u.unreadCount} NEW</span>
               </button>
             `).join('')}
@@ -3638,7 +3700,10 @@
           </div>
           <div class="dm-card-info">
             <div class="dm-card-name-row">
-              <span class="dm-card-name">${escapeHtml(item.nickname)}</span>
+              <div style="display: flex; align-items: center; gap: 4px; min-width: 0;">
+                <span class="dm-card-name">${escapeHtml(item.nickname)}</span>
+                ${item.isBanned ? '<span class="dm-banned-badge">BANNED</span>' : ''}
+              </div>
               <div style="display: flex; align-items: center; gap: 8px;">
                 ${item.isUnread ? `<span class="dm-card-unread-badge">${item.unreadCount} NEW</span>` : ''}
                 ${timeStr ? `<span class="dm-card-time">${escapeHtml(timeStr)}</span>` : ''}
@@ -3646,10 +3711,34 @@
             </div>
             <div class="dm-card-msg">${item.isUnread ? '<strong style="color:var(--accent);">Unread:</strong> ' : ''}${escapeHtml(item.lastMsg)}</div>
           </div>
-          <button class="dm-card-action" type="button" title="Message @${escapeHtml(item.nickname)}">
-            <i class="fa-solid fa-message"></i>
-          </button>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button class="dm-card-delete-btn" type="button" data-delete-conv-id="${item.convId}" title="Delete conversation">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <button class="dm-card-action" type="button" title="Message @${escapeHtml(item.nickname)}">
+              <i class="fa-solid fa-message"></i>
+            </button>
+          </div>
         `;
+
+        const delBtn = card.querySelector('.dm-card-delete-btn');
+        if (delBtn) {
+          delBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (!confirm(`Delete conversation with @${item.nickname}? This will remove it permanently.`)) return;
+            unreadDMs.delete(item.convId);
+            conversationsMap.delete(item.convId);
+            localStorage.removeItem('athyx_dm_last_read_' + item.convId);
+            updateDMsBadge();
+            renderDMHub();
+            renderSidebarUsers();
+            try {
+              await deleteDoc(doc(db, 'conversations', item.convId));
+            } catch(err) {
+              console.error('Failed to delete conversation from server:', err);
+            }
+          });
+        }
 
         card.addEventListener('click', () => {
           openDirectMessage(item.uid, item.nickname);
@@ -3686,6 +3775,30 @@
     if (newDmCancelBtn) newDmCancelBtn.addEventListener('click', closeNewDmModal);
     if (dmNewChatBtn) dmNewChatBtn.addEventListener('click', openNewDmModal);
     if (headerNewDmBtn) headerNewDmBtn.addEventListener('click', openNewDmModal);
+
+    if (dmMarkAllReadBtn) {
+      dmMarkAllReadBtn.addEventListener('click', async () => {
+        unreadDMs.clear();
+        const now = Date.now();
+        const promises = [];
+        conversationsMap.forEach((convData, cid) => {
+          localStorage.setItem('athyx_dm_last_read_' + cid, now);
+          if (user && db) {
+            try {
+              promises.push(setDoc(doc(db, 'conversations', cid), {
+                readBy: { [user.uid]: serverTimestamp() }
+              }, { merge: true }).catch(() => {}));
+            } catch(e) {}
+          }
+        });
+        updateDMsBadge();
+        renderDMHub();
+        renderSidebarUsers();
+        try {
+          await Promise.all(promises);
+        } catch(e) {}
+      });
+    }
 
     if (newDmModal) {
       newDmModal.addEventListener('click', (e) => {
@@ -3824,6 +3937,13 @@
       const convQuery = query(collection(db, 'conversations'), where('participants', 'array-contains', user.uid));
       unsubscribeConversations = onSnapshot(convQuery, (snapshot) => {
         snapshot.docChanges().forEach((change) => {
+          if (change.type === 'removed') {
+            conversationsMap.delete(change.doc.id);
+            unreadDMs.delete(change.doc.id);
+            localStorage.removeItem('athyx_dm_last_read_' + change.doc.id);
+            return;
+          }
+
           const convData = { id: change.doc.id, ...change.doc.data() };
           conversationsMap.set(convData.id, convData);
 

@@ -11,7 +11,8 @@ service cloud.firestore {
 
     function isAdmin() {
       return signedIn()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        && (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+            || (request.auth.token.keys().hasAny(['email']) && request.auth.token.email.matches('athyx@athyx-network\\.local')));
     }
 
     function validMessage() {
@@ -103,7 +104,7 @@ service cloud.firestore {
           && (!request.resource.data.keys().hasAny(['online']) || request.resource.data.online is bool)
           && (!request.resource.data.keys().hasAny(['lastSeen']) || request.resource.data.lastSeen is timestamp)
           && (!request.resource.data.keys().hasAny(['updatedAt']) || request.resource.data.updatedAt is timestamp))
-        || (isAdmin() && request.resource.data.keys().hasOnly(['nickname', 'username', 'role', 'banned', 'online', 'lastSeen', 'updatedAt', 'deviceId'])
+        || (isAdmin()
           && (!request.resource.data.keys().hasAny(['role']) || request.resource.data.role in ['member', 'moderator', 'admin'])
           && (!request.resource.data.keys().hasAny(['banned']) || request.resource.data.banned is bool)
           && (!request.resource.data.keys().hasAny(['online']) || request.resource.data.online is bool)

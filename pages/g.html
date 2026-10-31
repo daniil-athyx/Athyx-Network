@@ -969,7 +969,6 @@ html, body {
   width: 100% !important;
   height: 100% !important;
   overflow: hidden !important;
-  background: #000 !important;
 }
 *::-webkit-scrollbar {
   display: none !important;
@@ -1002,28 +1001,37 @@ iframe {
 
         window.lastGameHtml = cleanHtml;
 
-        const launchMode = localStorage.getItem("athyx_game_launch_mode") === "iframe" ? "iframe" : "about:blank";
+        const launchMode = localStorage.getItem("athyx_game_launch_mode") === "about:blank" ? "about:blank" : "iframe";
 
+        gameStageIframe.removeAttribute("src");
         if (launchMode === "about:blank") {
-          gameStageIframe.removeAttribute("srcdoc");
+          gameStageIframe.srcdoc = "";
           gameStageIframe.src = "about:blank";
           gameStage.classList.add("show");
 
-          gameStageIframe.contentWindow.document.open();
-          gameStageIframe.contentWindow.document.write(cleanHtml);
-          gameStageIframe.contentWindow.document.close();
-
-          try {
-            window.parent.postMessage({ action: "athyx_game_active", active: true }, "*");
-          } catch (e) { }
+          requestAnimationFrame(() => {
+            try {
+              const doc = gameStageIframe.contentWindow && gameStageIframe.contentWindow.document;
+              if (doc) {
+                doc.open();
+                doc.write(cleanHtml);
+                doc.close();
+              } else {
+                gameStageIframe.srcdoc = cleanHtml;
+              }
+            } catch (e) {
+              console.warn("Fallback document.write failed; using srcdoc instead.", e);
+              gameStageIframe.srcdoc = cleanHtml;
+            }
+          });
         } else {
-          gameStageIframe.removeAttribute("src");
           gameStageIframe.srcdoc = cleanHtml;
           gameStage.classList.add("show");
-          try {
-            window.parent.postMessage({ action: "athyx_game_active", active: true }, "*");
-          } catch (e) { }
         }
+
+        try {
+          window.parent.postMessage({ action: "athyx_game_active", active: true }, "*");
+        } catch (e) { }
       } catch (err) {
         console.error("Failed to launch game:", err);
         alert(`Could not launch "${game.name}". Please check your internet connection.`);
@@ -1119,4 +1127,3 @@ iframe {
 </body>
 
 </html>
-

@@ -1810,7 +1810,7 @@
       }
 
       // Game Launch Mode state
-      const launchMode = localStorage.getItem("athyx_game_launch_mode") === "iframe" ? "iframe" : "about:blank";
+      const launchMode = localStorage.getItem("athyx_game_launch_mode") === "about:blank" ? "about:blank" : "iframe";
       const segContainer = document.getElementById("gameLaunchSegmented");
       const segSrcdoc = document.getElementById("seg-srcdoc");
       const segBlank = document.getElementById("seg-blank");

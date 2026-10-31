@@ -720,7 +720,7 @@
       let gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
 
       try {
-        const res = await fetch(gameUrl);
+        const res = await fetch(gameUrl, { cache: "no-store" });
         if (!res.ok) throw new Error("Status " + res.status);
         let html = await res.text();
 

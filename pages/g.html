@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../themes.css?v=4">
   <script src="../js/themes.js?v=4"></script>
+  <script src="../js/image-cache.js?v=1"></script>
   <link rel="icon" type="image/png" href="../assets/favicon.png">
   <link rel="shortcut icon" href="../assets/favicon.ico">
 
@@ -528,18 +529,25 @@
       if (!img.dataset.retried) {
         img.dataset.retried = "true";
         let url = new URL(img.src, window.location.href);
+        let nextUrl = "";
         if (url.pathname.endsWith(".png")) {
           url.pathname = url.pathname.replace(/\.png$/i, ".jpg");
-          img.src = url.href;
-          return;
+          nextUrl = url.href;
         } else if (url.pathname.endsWith(".jpg")) {
           url.pathname = url.pathname.replace(/\.jpg$/i, ".png");
-          img.src = url.href;
+          nextUrl = url.href;
+        }
+        if (nextUrl) {
+          if (window.AthyxImageCache) {
+            window.AthyxImageCache.applyToImage(img, nextUrl);
+          } else {
+            img.src = nextUrl;
+          }
           return;
         }
       }
       img.style.display = "none";
-      img.nextElementSibling.style.display = "block";
+      if (img.nextElementSibling) img.nextElementSibling.style.display = "block";
     };
 
     let allGames = [];
@@ -640,6 +648,14 @@
       if (countPill) countPill.textContent = `${allGames.length} Games`;
       renderGames();
 
+      if (window.AthyxImageCache) {
+        const iconUrls = allGames
+          .map(g => g.icon ? (g.icon.startsWith("http") ? g.icon : REPO_BASE + encodeURI(g.icon)) : "")
+          .filter(Boolean);
+        window.AthyxImageCache.precacheImages(iconUrls);
+      }
+
+
       const autoLaunch = sessionStorage.getItem("athyx_launch_game");
       if (autoLaunch) {
         sessionStorage.removeItem("athyx_launch_game");
@@ -689,21 +705,28 @@
 
       list.forEach(game => {
         const rawIcon = game.icon ? (game.icon.startsWith("http") ? game.icon : REPO_BASE + encodeURI(game.icon)) : "";
-        const iconUrl = rawIcon ? (rawIcon + (rawIcon.includes("?") ? "&" : "?") + "t=" + Date.now()) : "";
 
         const card = document.createElement("div");
         card.className = "game-card";
 
         card.innerHTML = `
           <div class="thumb-wrapper">
-            ${iconUrl ? `<img class="game-thumb" src="${iconUrl}" alt="${game.name}" loading="lazy" onerror="window.handleIconFallback(this);">` : ""}
-            <i class="fa-solid fa-gamepad thumb-fallback" style="${iconUrl ? 'display:none;' : ''}"></i>
-
+            ${rawIcon ? `<img class="game-thumb" alt="${game.name}" loading="lazy" onerror="window.handleIconFallback(this);">` : ""}
+            <i class="fa-solid fa-gamepad thumb-fallback" style="${rawIcon ? 'display:none;' : ''}"></i>
           </div>
           <div class="game-info">
             <span class="game-title" title="${game.name}">${game.name}</span>
           </div>
         `;
+
+        const imgEl = card.querySelector(".game-thumb");
+        if (imgEl) {
+          if (window.AthyxImageCache) {
+            window.AthyxImageCache.applyToImage(imgEl, rawIcon);
+          } else {
+            imgEl.src = rawIcon;
+          }
+        }
 
         card.onclick = () => launchGame(game);
 

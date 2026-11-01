@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../themes.css?v=4">
   <script src="../js/themes.js?v=4"></script>
+  <script src="../js/image-cache.js?v=1"></script>
   <link rel="icon" type="image/png" href="../assets/favicon.png">
   <link rel="shortcut icon" href="../assets/favicon.ico">
 
@@ -512,18 +513,25 @@
       if (!img.dataset.retried) {
         img.dataset.retried = "true";
         let url = new URL(img.src, window.location.href);
+        let nextUrl = "";
         if (url.pathname.endsWith(".png")) {
           url.pathname = url.pathname.replace(/\.png$/i, ".jpg");
-          img.src = url.href;
-          return;
+          nextUrl = url.href;
         } else if (url.pathname.endsWith(".jpg")) {
           url.pathname = url.pathname.replace(/\.jpg$/i, ".png");
-          img.src = url.href;
+          nextUrl = url.href;
+        }
+        if (nextUrl) {
+          if (window.AthyxImageCache) {
+            window.AthyxImageCache.applyToImage(img, nextUrl);
+          } else {
+            img.src = nextUrl;
+          }
           return;
         }
       }
       img.style.display = "none";
-      img.nextElementSibling.style.display = "block";
+      if (img.nextElementSibling) img.nextElementSibling.style.display = "block";
     };
 
     const APPS_JSON_URL = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/apps.json";
@@ -597,18 +605,25 @@
         const card = document.createElement("div");
         card.className = "app-card";
         const rawIcon = app.icon ? (app.icon.startsWith("http") ? app.icon : APP_ICONS_BASE + app.icon.replace(/^app_icons\//, '').replace(/^icons\//, '')) : "";
-        const iconUrl = rawIcon ? (rawIcon + (rawIcon.includes("?") ? "&" : "?") + "t=" + Date.now()) : "";
 
         card.innerHTML = `
           <div class="thumb-wrapper">
-            ${iconUrl ? `<img class="app-thumb" src="${iconUrl}" alt="${app.name}" loading="lazy" onerror="window.handleIconFallback(this);">` : ""}
-            <i class="fa-solid fa-shapes thumb-fallback" style="${iconUrl ? 'display:none;' : ''}"></i>
-
+            ${rawIcon ? `<img class="app-thumb" alt="${app.name}" loading="lazy" onerror="window.handleIconFallback(this);">` : ""}
+            <i class="fa-solid fa-shapes thumb-fallback" style="${rawIcon ? 'display:none;' : ''}"></i>
           </div>
           <div class="app-info">
-            <span class="app-title" title="${app.name}">${app.name}</span>
+            <span class="game-title" title="${app.name}">${app.name}</span>
           </div>
         `;
+
+        const imgEl = card.querySelector(".app-thumb");
+        if (imgEl) {
+          if (window.AthyxImageCache) {
+            window.AthyxImageCache.applyToImage(imgEl, rawIcon);
+          } else {
+            imgEl.src = rawIcon;
+          }
+        }
 
         card.onclick = () => launchApp(app);
         grid.appendChild(card);

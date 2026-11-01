@@ -2,6 +2,7 @@
   "updateId": "v2.1",
   "changes": [
     "Added Escape Road 2 and FNAF World",
+    "Updated Noomi Clone to latest WebGL port (v1.7.5)",
     "Added persistent browser image caching (CacheStorage & Blob memory cache) for instant icon and game card loading",
     "Enabled 30-day CDN cache headers for static images and assets"
   ]

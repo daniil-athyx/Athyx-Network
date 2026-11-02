@@ -992,6 +992,7 @@ html, body {
   width: 100% !important;
   height: 100% !important;
   overflow: hidden !important;
+  background: #000 !important;
 }
 *::-webkit-scrollbar {
   display: none !important;
@@ -1006,6 +1007,27 @@ iframe {
   height: 100% !important;
   border: none !important;
   display: block !important;
+}
+#unity-container.unity-desktop, #unity-container {
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+#unity-canvas {
+  width: 100vw !important;
+  height: 100vh !important;
+  display: block !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+#unity-footer {
+  display: none !important;
 }
 </style>`;
 

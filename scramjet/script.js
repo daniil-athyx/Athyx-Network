@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
     
     // Send the WISP URL to the service worker once ready or if controller already exists
-    const wispUrl = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://ok.worldmicroscope.com/wisp/");
+    const wispUrl = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://new-server.baylib.top/connection/");
     const adblockEnabled = localStorage.getItem('adblockEnabled') === 'true';
     const configMessage = {
         type: "config",
@@ -674,7 +674,7 @@ async function loadWispServers() {
         if (container) {
             container.innerHTML = '';
             
-            const currentUrl = localStorage.getItem('proxServer') || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://ok.worldmicroscope.com/wisp/");
+            const currentUrl = localStorage.getItem('proxServer') || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://new-server.baylib.top/connection/");
             
             urls.sort((a, b) => {
                 if (a === currentUrl) return -1;

@@ -1536,19 +1536,11 @@
     }
 
     // Wisp Management
-    const DEFAULT_WISP = "wss://ok.worldmicroscope.com/wisp/";
+    const DEFAULT_WISP = "wss://new-server.baylib.top/connection/";
     let DEFAULT_WISP_SERVERS = [
-      { name: "Escala Humana Wisp", url: "wss://math.soyescalahumana.cl/wisp/" },
-      { name: "Gressvik BMX Wisp", url: "wss://school.gressvikbmx.no/wisp/" },
-      { name: "Lervs Wisp", url: "wss://eyes.lervs.ro/wisp/" },
-      { name: "SimplySweet Wisp", url: "wss://sp2.simplysweetcakesoc.com/wisp/" },
-      { name: "TribeOfTwo Wisp", url: "wss://keep.tribeoftwo.com/wisp/" },
-      { name: "BitDS Wisp", url: "wss://secure.bitds.eu/wisp/" },
-      { name: "Sahur Wisp", url: "wss://sahur.anymor.org/wisp/" },
-      { name: "Baylib Wisp", url: "wss://new-server.baylib.top/connection/" },
-      { name: "Mercury Workshop Wisp", url: "wss://wisp.mercurywork.shop/" },
+      { name: "Baylib Fast Wisp (Unblocked)", url: "wss://new-server.baylib.top/connection/" },
       { name: "Space Wisp", url: "wss://gointospace.app/wisp/" },
-      { name: "Lunarr Wisp", url: "wss://lunarrr.eminescusm.ro/w/" }
+      { name: "Mercury Workshop Wisp", url: "wss://wisp.mercurywork.shop/" }
     ];
 
     function getStoredWisps() {
@@ -1572,7 +1564,13 @@
     }
 
     function getActiveWispUrl() {
-      return localStorage.getItem("proxServer") || DEFAULT_WISP;
+      let saved = localStorage.getItem("proxServer");
+      const deadDomains = ["worldmicroscope.com", "soyescalahumana.cl", "gressvikbmx.no", "lervs.ro", "simplysweetcakesoc.com", "tribeoftwo.com", "bitds.eu", "anymor.org", "eminescusm.ro"];
+      if (saved && deadDomains.some(d => saved.includes(d))) {
+        saved = null;
+        localStorage.removeItem("proxServer");
+      }
+      return saved || DEFAULT_WISP;
     }
 
     async function pingWisp(url, timeout = 2500) {

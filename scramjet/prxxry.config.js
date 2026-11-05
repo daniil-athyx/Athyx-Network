@@ -1,13 +1,25 @@
 // Dynamic WISP URL Configuration
-// Default WISP URL: wss://ok.worldmicroscope.com/wisp/
+// Default WISP URL: wss://new-server.baylib.top/connection/
 // This can be changed via the settings UI which updates localStorage 'proxServer' key
 
 window.basePath = window.basePath || (typeof location !== 'undefined' ? location.pathname.replace(/[^/]*$/, '') : '/');
 var basePath = window.basePath;
 
-const DEFAULT_WISP = "wss://math.soyescalahumana.cl/wisp/";
+const DEFAULT_WISP = "wss://new-server.baylib.top/connection/";
 let savedWisp = localStorage.getItem("proxServer");
-if (savedWisp && (savedWisp.includes("ok.worldmicroscope.com") || savedWisp.includes("keep.tribeoftwo.com") || savedWisp.includes("secure.bitds.eu"))) {
+const DEAD_WISP_PATTERNS = [
+    "worldmicroscope.com",
+    "soyescalahumana.cl",
+    "gressvikbmx.no",
+    "lervs.ro",
+    "simplysweetcakesoc.com",
+    "tribeoftwo.com",
+    "bitds.eu",
+    "anymor.org",
+    "eminescusm.ro"
+];
+
+if (savedWisp && DEAD_WISP_PATTERNS.some(dead => savedWisp.includes(dead))) {
     savedWisp = null;
     localStorage.removeItem("proxServer");
 }

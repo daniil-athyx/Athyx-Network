@@ -631,7 +631,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-    import { getFirestore, collection, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+    import { getFirestore, collection, getDocs, query, where, Timestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
     import { firebaseConfig } from './chat-config.js';
 
     const countText = document.getElementById('onlineCountText');
@@ -642,87 +642,57 @@
       countText.textContent = `${num} ${num === 1 ? 'user' : 'users'} online`;
     }
 
-    // Send heartbeat for visitor (5 minute interval)
-    try {
-      let vid = sessionStorage.getItem('athyx_vid');
-      if (!vid) {
-        vid = 'v_' + Math.random().toString(36).substring(2, 9) + Date.now().toString(36);
-        sessionStorage.setItem('athyx_vid', vid);
-      }
-      const pulseUrl = 'https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/site_presence/' + vid;
-      const sendPulse = () => {
-        if (document.hidden) return;
-        fetch(pulseUrl, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ fields: { lastSeen: { timestampValue: new Date().toISOString() } } })
-        }).catch(() => {});
-      };
-      sendPulse();
-      setInterval(sendPulse, 300000); // 5 minutes
-    } catch(e) {}
+    const app = initializeApp(firebaseConfig, 'homepage-presence');
+    const db = getFirestore(app);
+    const CACHE_KEY = 'athyx_online_cache_v1';
+    const CACHE_TTL_MS = 180000; // 3 minutes
+    let quotaCooldownUntil = 0;
 
-    async function queryActiveVisitors() {
+    async function queryActiveVisitors(force = false) {
+      if (document.hidden && !force) return;
+      const now = Date.now();
+      if (now < quotaCooldownUntil) return;
+
       try {
-        const now = Date.now();
-        // 1. Query site_presence
-        const res = await fetch('https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/site_presence?pageSize=100');
-        let siteCount = 0;
-        if (res.ok) {
-          const data = await res.json();
-          const docs = data.documents || [];
-          siteCount = docs.filter(doc => {
-            const ts = doc.fields?.lastSeen?.timestampValue || doc.updateTime;
-            return ts && (now - new Date(ts).getTime() <= 360000); // within 6 minutes
-          }).length;
+        const cachedRaw = sessionStorage.getItem(CACHE_KEY);
+        if (!force && cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          if (cached && typeof cached.count === 'number' && (now - cached.ts) < CACHE_TTL_MS) {
+            updateCount(cached.count);
+            return;
+          }
         }
+      } catch (e) {}
 
-        // 2. Query chat users
-        const chatRes = await fetch('https://firestore.googleapis.com/v1/projects/athyx-network/databases/(default)/documents/users?pageSize=100');
+      try {
+        const cutoff = Timestamp.fromMillis(now - 360000); // within 6 minutes
+        const [siteSnap, chatSnap] = await Promise.all([
+          getDocs(query(collection(db, 'site_presence'), where('lastSeen', '>=', cutoff))),
+          getDocs(query(collection(db, 'users'), where('online', '==', true)))
+        ]);
+
+        const siteCount = siteSnap.size;
         let chatCount = 0;
-        if (chatRes.ok) {
-          const chatData = await chatRes.json();
-          const chatDocs = chatData.documents || [];
-          chatCount = chatDocs.filter(doc => {
-            const isOnline = doc.fields?.online?.booleanValue === true;
-            const ts = doc.fields?.lastSeen?.timestampValue || doc.updateTime;
-            return isOnline && ts && (now - new Date(ts).getTime() <= 360000);
-          }).length;
-        }
+        chatSnap.forEach(d => {
+          const data = d.data();
+          const ts = data.lastSeen?.toDate ? data.lastSeen.toDate().getTime() : (data.lastSeen ? new Date(data.lastSeen).getTime() : 0);
+          if (ts && (now - ts <= 360000)) chatCount++;
+        });
 
         const total = Math.max(1, siteCount, chatCount);
         updateCount(total);
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify({ count: total, ts: now }));
+        } catch (e) {}
       } catch (e) {
+        // Back off for 10 minutes on quota/429 errors instead of retrying in a loop
+        quotaCooldownUntil = Date.now() + 600000;
         updateCount(1);
       }
     }
 
-    queryActiveVisitors();
-    setInterval(queryActiveVisitors, 300000); // 5 minutes
-
-    // Realtime listener
-    try {
-      const app = initializeApp(firebaseConfig, 'homepage-presence');
-      const db = getFirestore(app);
-      const sitePresRef = collection(db, 'site_presence');
-      onSnapshot(sitePresRef, (snapshot) => {
-        const now = Date.now();
-        const active = snapshot.docs.filter(d => {
-          const data = d.data();
-          const ts = data.lastSeen?.toDate ? data.lastSeen.toDate() : (data.lastSeen ? new Date(data.lastSeen) : null);
-          return ts && (now - ts.getTime() <= 50000);
-        });
-        if (active.length > 0) {
-          updateCount(active.length);
-        } else {
-          queryActiveVisitors();
-        }
-      }, () => {
-        queryActiveVisitors();
-      });
-    } catch(e) {
-      queryActiveVisitors();
-    }
+    queryActiveVisitors(false);
+    setInterval(() => queryActiveVisitors(false), 300000); // 5 minutes
 
     window.addEventListener('message', (event) => {
       if (event.data && event.data.action === 'online_count_update' && typeof event.data.count === 'number') {

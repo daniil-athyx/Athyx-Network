@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script>
+    // Prevent proxy-inside-proxy recursion
+    try {
+      if (window.self !== window.top && window.parent && window.parent.location && window.parent.location.pathname.indexOf('/scramjet/') !== -1) {
+        window.stop && window.stop();
+        document.documentElement.innerHTML = '<body style="background:#0d0e15;color:#94a3b8;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;"><p>Blocked nested proxy page.</p></body>';
+        throw new Error('Blocked nested proxy recursion');
+      }
+    } catch (e) {
+      if (e.message === 'Blocked nested proxy recursion') throw e;
+    }
+  </script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Athyx Network | Browser</title>

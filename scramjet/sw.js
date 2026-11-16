@@ -195,7 +195,7 @@ scramjet.addEventListener("request", async (e) => {
 		try {
 			return await scramjet.client.fetch(e.url, fetchOpts);
 		} catch (err) {
-			if (err instanceof TypeError) {
+			if (err instanceof TypeError || (err && /no bare clients/i.test(err.message))) {
 				scramjet.client = null;
 				const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
 				await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);

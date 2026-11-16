@@ -193,7 +193,7 @@ scramjet.addEventListener("request", async (e) => {
 		const fetchOpts = {
             method: e.method,
             body: e.body,
-            headers: e.requestHeaders,
+            headers: new Headers(e.requestHeaders || {}),
             credentials: "omit",
             mode: e.mode === "cors" ? e.mode : "same-origin",
             cache: e.cache,

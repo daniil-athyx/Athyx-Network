@@ -462,6 +462,14 @@
         iframe.style.opacity = "0.7";
         iframe.src = url;
         setTimeout(() => { iframe.style.opacity = "1"; }, 100);
+        if (tabKey === 'ai' && !window.__aiPreloadedOnce) {
+          window.__aiPreloadedOnce = true;
+          setTimeout(() => {
+            if (iframe.src && iframe.src.includes('scramjet/index.html')) {
+              iframe.src = url;
+            }
+          }, 700);
+        }
       }
 
       setActiveTab(tabKey);

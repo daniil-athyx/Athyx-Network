@@ -753,11 +753,18 @@
       loadingModalText.textContent = `Loading ${game.name}...`;
       loadingModal.classList.add("show");
 
+      const rawUrl = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/" + encodeURI(game.path);
       let gameUrl = REPO_BASE + encodeURI(game.path);
       let gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
 
       try {
-        const res = await fetch(gameUrl, { cache: "no-store" });
+        let res;
+        try {
+          res = await fetch(rawUrl + "?v=" + Date.now(), { cache: "no-store" });
+          if (!res.ok) throw new Error("Raw failed");
+        } catch (_) {
+          res = await fetch(gameUrl + "?v=" + Date.now(), { cache: "no-store" });
+        }
         if (!res.ok) throw new Error("Status " + res.status);
         let html = await res.text();
 

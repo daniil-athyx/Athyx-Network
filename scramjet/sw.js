@@ -186,7 +186,10 @@ scramjet.addEventListener("request", async (e) => {
 			scramjet.client = connection;
 		}
 
-		// Simplified fetch logic without the inspector parts for clarity
+		// Wait briefly for scramjet.client.fetch to be ready on first load
+		for (let i = 0; i < 30 && (!scramjet.client || typeof scramjet.client.fetch !== "function"); i++) {
+			await new Promise(r => setTimeout(r, 100));
+		}
 		return await scramjet.client.fetch(e.url, {
             method: e.method,
             body: e.body,

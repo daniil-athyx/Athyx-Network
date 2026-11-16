@@ -690,7 +690,7 @@
         // Match common acronyms and aliases (e.g., GTA matches Grand Theft Auto, FNAF matches Five Nights at Freddy's)
         const acronym = name.replace(/[^a-z0-9 ]/gi, '').split(/\s+/).map(w => w[0]).join('');
         if (acronym.includes(query)) return true;
-        if ((query.includes('gta') || query === 'gta 3' || query === 'gta iii') && name.includes('grand theft auto')) return true;
+        if ((query.includes('grand theft auto') || query.includes('gta') || query.includes('gta 3') || query.includes('gta iii')) && (name.includes('grand theft auto') || name.startsWith('gta'))) return true;
         if (query.includes('fnaf') && name.includes('five nights')) return true;
         return false;
       });

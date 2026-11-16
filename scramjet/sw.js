@@ -183,7 +183,7 @@ scramjet.addEventListener("request", async (e) => {
 
             const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
 			await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
-			scramjet.client = connection;
+			scramjet.client = new BareMux.BareClient(connection);
 		}
 
 		// Wait briefly for scramjet.client.fetch to be ready on first load

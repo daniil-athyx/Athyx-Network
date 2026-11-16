@@ -509,7 +509,7 @@
       return url + sep + "_nc=" + Date.now();
     }
 
-    const APP_ICONS_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/";
+    const APP_ICONS_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-apps@master/icons/";
 
     window.handleIconFallback = function(img) {
       if (!img.dataset.retried) {
@@ -536,7 +536,7 @@
       if (img.nextElementSibling) img.nextElementSibling.style.display = "block";
     };
 
-    const APPS_JSON_URL = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/apps.json";
+    const APPS_JSON_URL = "https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-apps@master/apps.json";
 
     const fallbackApps = [
       { name: "TurboWarp", file: "turbowarp.html", icon: "turbowarp.png", tag: "Creative" },
@@ -638,7 +638,7 @@
       loadingModal.classList.add("show");
 
       try {
-        const response = await fetch(withNoCache(`apps/${app.file}`), {
+        const response = await fetch(withNoCache(`https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-apps@master/${app.file}`), {
           cache: "no-store",
           headers: {
             "Cache-Control": "no-cache, no-store, must-revalidate",

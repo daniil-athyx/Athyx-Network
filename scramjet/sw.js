@@ -182,8 +182,7 @@ scramjet.addEventListener("request", async (e) => {
 			}
 		}
 
-		// Simplified fetch logic without the inspector parts for clarity
-		return await scramjet.client.fetch(e.url, {
+		const fetchOpts = {
             method: e.method,
             body: e.body,
             headers: e.requestHeaders,
@@ -192,6 +191,18 @@ scramjet.addEventListener("request", async (e) => {
             cache: e.cache,
             redirect: "manual",
             duplex: "half",
-        });
+        };
+		try {
+			return await scramjet.client.fetch(e.url, fetchOpts);
+		} catch (err) {
+			if (err instanceof TypeError) {
+				scramjet.client = null;
+				const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
+				await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
+				scramjet.client = connection;
+				return await scramjet.client.fetch(e.url, fetchOpts);
+			}
+			throw err;
+		}
 	})();
 });

@@ -512,10 +512,6 @@
         iframe.contentWindow.postMessage({ action: "athyx_theme_change", themeId }, "*");
       } catch (e) { }
     });
-      try {
-        const themeId = localStorage.getItem("athyx_theme") || "white";
-      } catch (e) { }
-    });
 
 
     function updateTabTitleAndIcon(title, icon) {

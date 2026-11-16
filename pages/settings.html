@@ -978,6 +978,7 @@
                 <div class="segment-highlighter"></div>
                 <div class="segment" id="seg-srcdoc" onclick="setGameLaunchMode('iframe')">about:srcdoc</div>
                 <div class="segment" id="seg-blank" onclick="setGameLaunchMode('about:blank')">about:blank</div>
+                <div class="segment" id="seg-blob" onclick="setGameLaunchMode('blob')">blob:</div>
               </div>
             </div>
           </div>
@@ -1512,8 +1513,9 @@
     function setGameLaunchMode(mode) {
       localStorage.setItem("athyx_game_launch_mode", mode);
       document.getElementById("gameLaunchSegmented").setAttribute("data-mode", mode);
-      document.getElementById("seg-srcdoc").classList.toggle("active", mode !== "about:blank");
+      document.getElementById("seg-srcdoc").classList.toggle("active", mode !== "about:blank" && mode !== "blob");
       document.getElementById("seg-blank").classList.toggle("active", mode === "about:blank");
+      document.getElementById("seg-blob").classList.toggle("active", mode === "blob");
       showToast("Game launch mode: " + mode);
     }
 

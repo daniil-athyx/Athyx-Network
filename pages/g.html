@@ -1058,10 +1058,14 @@ iframe {
 
         window.lastGameHtml = cleanHtml;
 
-        const launchMode = localStorage.getItem("athyx_game_launch_mode") === "about:blank" ? "about:blank" : "iframe";
+        const launchMode = localStorage.getItem("athyx_game_launch_mode") || "iframe";
 
         gameStageIframe.removeAttribute("src");
-        if (launchMode === "about:blank") {
+        if (launchMode === "blob") {
+          const blob = new Blob([cleanHtml], { type: "text/html" });
+          gameStageIframe.srcdoc = "";
+          gameStageIframe.src = URL.createObjectURL(blob);
+        } else if (launchMode === "about:blank") {
           gameStageIframe.srcdoc = "";
           gameStageIframe.src = "about:blank";
           gameStage.classList.add("show");

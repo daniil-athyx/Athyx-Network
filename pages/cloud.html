@@ -14,27 +14,88 @@
       background: transparent;
       color: var(--text-main, #fff5f6);
       font-family: 'Outfit', system-ui, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
-    .empty-state {
-      text-align: center;
-      padding: 32px;
-      background: var(--surface, rgba(20, 20, 28, 0.75));
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 24px 96px;
+    }
+    h1 {
+      margin: 0 0 18px;
+      font-size: 26px;
+      font-weight: 700;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--surface, rgba(20, 20, 28, 0.78));
       border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-      border-radius: 18px;
-      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
-    h1 { margin: 0 0 8px; font-size: 24px; }
-    p { margin: 0; opacity: 0.75; font-size: 14px; }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent, #ff4d6d);
+    }
+    .card img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 10px;
+      filter: invert(1);
+    }
+    .card-name {
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+    }
+    .card-tag {
+      font-size: 11px;
+      opacity: 0.7;
+    }
   </style>
   <script src="../js/themes.js"></script>
 </head>
 <body>
-  <div class="empty-state">
+  <div class="container">
     <h1>Proxy / Cloud Games</h1>
-    <p>Cloud &amp; proxied games will appear here.</p>
+    <div class="grid" id="cloudGrid">Loading...</div>
   </div>
+  <script>
+    const BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-cloud-games@main/";
+    async function loadCloudGames() {
+      const grid = document.getElementById("cloudGrid");
+      try {
+        const res = await fetch(BASE + "games.json?v=" + Date.now());
+        const games = await res.json();
+        grid.innerHTML = "";
+        games.forEach(g => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.onclick = () => {
+            const origin = window.location.origin;
+            window.location.href = origin + "/scramjet/index.html?v=" + Date.now() + "#" + g.url;
+          };
+          const iconSrc = g.icon.startsWith("http") ? g.icon : BASE + g.icon;
+          card.innerHTML = `<img src="${iconSrc}" alt="${g.name}"><div class="card-name">${g.name}</div><div class="card-tag">${g.tag || "Cloud"}</div>`;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        grid.textContent = "Failed to load cloud games.";
+      }
+    }
+    loadCloudGames();
+  </script>
 </body>
 </html>

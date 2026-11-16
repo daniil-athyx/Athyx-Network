@@ -530,7 +530,8 @@
 
   <script>
     const REPO_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/";
-    const GAMES_JSON_URL = REPO_BASE + "games.json";
+    const PRIMARY_GAMES_JSON = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/games.json";
+    const FALLBACK_GAMES_JSON = REPO_BASE + "games.json";
 
     window.handleIconFallback = function (img) {
       if (!img.dataset.retried) {
@@ -644,7 +645,13 @@
 
     async function fetchGameLibrary() {
       try {
-        const res = await fetch(GAMES_JSON_URL + "?v=" + Date.now(), { cache: "no-cache" });
+        let res;
+        try {
+          res = await fetch(PRIMARY_GAMES_JSON + "?v=" + Date.now(), { cache: "no-cache" });
+          if (!res.ok) throw new Error("Primary failed");
+        } catch (_) {
+          res = await fetch(FALLBACK_GAMES_JSON + "?v=" + Date.now(), { cache: "no-cache" });
+        }
         if (!res.ok) throw new Error("Could not load games.json");
         allGames = await res.json();
       } catch (err) {

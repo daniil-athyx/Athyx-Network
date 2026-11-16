@@ -75,11 +75,18 @@
     <div class="grid" id="cloudGrid">Loading...</div>
   </div>
   <script>
-    const BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-cloud-games@main/";
+    const RAW_BASE = "https://raw.githubusercontent.com/daniil-athyx/athyx-cloud-games/main/";
+    const CDN_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-cloud-games@main/";
     async function loadCloudGames() {
       const grid = document.getElementById("cloudGrid");
       try {
-        const res = await fetch(BASE + "games.json?v=" + Date.now());
+        let res;
+        try {
+          res = await fetch(RAW_BASE + "games.json?v=" + Date.now(), { cache: "no-cache" });
+          if (!res.ok) throw new Error("Raw failed");
+        } catch (_) {
+          res = await fetch(CDN_BASE + "games.json?v=" + Date.now(), { cache: "no-cache" });
+        }
         const games = await res.json();
         grid.innerHTML = "";
         games.forEach(g => {
@@ -89,7 +96,7 @@
             const origin = window.location.origin;
             window.location.href = origin + "/scramjet/index.html?v=" + Date.now() + "#" + g.url;
           };
-          const iconSrc = g.icon.startsWith("http") ? g.icon : BASE + g.icon;
+          const iconSrc = g.icon.startsWith("http") ? g.icon : CDN_BASE + g.icon;
           card.innerHTML = `<img src="${iconSrc}" alt="${g.name}"><div class="card-name">${g.name}</div><div class="card-tag">${g.tag || "Cloud"}</div>`;
           grid.appendChild(card);
         });

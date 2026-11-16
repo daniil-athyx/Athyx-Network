@@ -1063,7 +1063,7 @@ iframe {
         gameStageIframe.removeAttribute("src");
         if (launchMode === "blob") {
           const blob = new Blob([cleanHtml], { type: "text/html" });
-          gameStageIframe.srcdoc = "";
+          gameStageIframe.removeAttribute("srcdoc");
           gameStageIframe.src = URL.createObjectURL(blob);
         } else if (launchMode === "about:blank") {
           gameStageIframe.srcdoc = "";

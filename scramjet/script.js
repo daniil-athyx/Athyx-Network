@@ -420,7 +420,7 @@ function updateAddressBar() {
     const addressBar = document.getElementById("address-bar");
     const activeTab = getActiveTab();
     if (addressBar) {
-        addressBar.value = activeTab ? unwrapScramjetUrl(activeTab.url) : "";
+        const clean = activeTab ? unwrapScramjetUrl(activeTab.url) : ""; addressBar.value = (!clean || clean.endsWith("NT.html") || clean === "about:blank") ? "scram://hometab" : clean;
     }
 }
 function isSameOrigin(url) {

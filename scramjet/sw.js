@@ -160,29 +160,22 @@ scramjet.addEventListener("request", async (e) => {
 
 	e.response = (async () => {
 		// Use a single, persistent client instance on the scramjet object.
-		if (!scramjet.client || typeof scramjet.client.fetch !== "function") {
-			if (!self.__scramjetClientPromise) {
-				self.__scramjetClientPromise = (async () => {
-					await configReadyPromise;
+		if (!scramjet.client) {
+            // Wait for the WISP URL to be sent from the main page.
+            await configReadyPromise;
 
-					if (!wispConfig.wispurl) {
-						console.error("WISP URL is missing. Cannot configure BareMux.");
-						return null;
-					}
+            if (!wispConfig.wispurl) {
+                 console.error("WISP URL is missing. Cannot configure BareMux.");
+                 return new Response("WISP URL configuration failed in SW.", { status: 500, statusText: "Internal Server Error" });
+            }
 
-					const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
-					await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
-					scramjet.client = connection;
-					return connection;
-				})().finally(() => { self.__scramjetClientPromise = null; });
-			}
-			const conn = await self.__scramjetClientPromise;
-			if (!conn) {
-				return new Response("WISP URL configuration failed in SW.", { status: 500, statusText: "Internal Server Error" });
-			}
+            const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
+			await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
+			scramjet.client = connection;
 		}
 
-		const fetchOpts = {
+		// Simplified fetch logic without the inspector parts for clarity
+		return await scramjet.client.fetch(e.url, {
             method: e.method,
             body: e.body,
             headers: e.requestHeaders,
@@ -191,17 +184,6 @@ scramjet.addEventListener("request", async (e) => {
             cache: e.cache,
             redirect: "manual",
             duplex: "half",
-        };
-		try {
-			return await scramjet.client.fetch(e.url, fetchOpts);
-		} catch (err) {
-			if (err instanceof TypeError || (err && /no bare clients/i.test(err.message))) {
-				const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
-				await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
-				scramjet.client = connection;
-				return await connection.fetch(e.url, fetchOpts);
-			}
-			throw err;
-		}
+        });
 	})();
 });

@@ -58,6 +58,18 @@ self.addEventListener("fetch", (event) => {
 
             await scramjet.loadConfig();
             if (scramjet.route(event)) {
+                const prefix = `${self.location.origin}${basePath}JS/scramjet/`;
+                if (event.request.url.startsWith(prefix)) {
+                    try {
+                        let inner = decodeURIComponent(event.request.url.slice(prefix.length));
+                        if (inner.startsWith(prefix)) {
+                            while (inner.startsWith(prefix)) {
+                                inner = decodeURIComponent(inner.slice(prefix.length));
+                            }
+                            return Response.redirect(`${prefix}${encodeURIComponent(inner)}`, 302);
+                        }
+                    } catch (e) {}
+                }
                 try {
                     return await scramjet.fetch(event);
                 } catch (err) {

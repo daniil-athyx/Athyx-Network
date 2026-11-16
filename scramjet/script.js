@@ -400,11 +400,27 @@ function updateTabsUI() {
         }
     });
 }
+function unwrapScramjetUrl(url) {
+    if (!url || typeof url !== "string") return url;
+    const marker = "/scramjet/JS/scramjet/";
+    let current = url;
+    while (current.includes(marker)) {
+        const idx = current.indexOf(marker);
+        const rest = current.slice(idx + marker.length);
+        try {
+            current = decodeURIComponent(rest);
+        } catch (e) {
+            current = rest;
+        }
+    }
+    return current;
+}
+
 function updateAddressBar() {
     const addressBar = document.getElementById("address-bar");
     const activeTab = getActiveTab();
     if (addressBar) {
-        addressBar.value = activeTab ? activeTab.url : "";
+        addressBar.value = activeTab ? unwrapScramjetUrl(activeTab.url) : "";
     }
 }
 function isSameOrigin(url) {

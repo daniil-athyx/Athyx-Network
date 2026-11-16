@@ -667,9 +667,9 @@
       toast.id = 'proxy-register-toast';
       toast.style.cssText = [
         'position:fixed', 'bottom:20px', 'left:20px', 'z-index:9999',
-        'background:rgba(15,15,22,0.9)', 'backdrop-filter:blur(12px)',
-        'border:1px solid rgba(255,255,255,0.12)', 'border-radius:12px',
-        'padding:10px 14px', 'min-width:210px', 'color:#fff5f6',
+        'background:var(--surface, rgba(15,15,22,0.9))', 'backdrop-filter:blur(12px)',
+        'border:1px solid var(--border, rgba(255,255,255,0.12))', 'border-radius:12px',
+        'padding:10px 14px', 'min-width:210px', 'color:var(--text-main, #fff5f6)',
         'font-family:Outfit,system-ui,sans-serif', 'font-size:13px',
         'box-shadow:0 12px 32px rgba(0,0,0,0.45)',
         'transition:opacity 0.35s ease, transform 0.35s ease'
@@ -680,10 +680,10 @@
       label.style.cssText = 'margin-bottom:6px; font-weight:600; letter-spacing:0.2px;';
 
       const track = document.createElement('div');
-      track.style.cssText = 'width:100%; height:4px; background:rgba(255,255,255,0.12); border-radius:999px; overflow:hidden;';
+      track.style.cssText = 'width:100%; height:4px; background:var(--border, rgba(255,255,255,0.12)); border-radius:999px; overflow:hidden;';
 
       const bar = document.createElement('div');
-      bar.style.cssText = 'width:30%; height:100%; background:linear-gradient(90deg,#ff4d6d,#ff8fa3); border-radius:999px; transition:width 0.35s ease;';
+      bar.style.cssText = 'width:30%; height:100%; background:var(--accent, #ff4d6d); border-radius:999px; transition:width 0.35s ease;';
 
       track.appendChild(bar);
       toast.appendChild(label);
@@ -701,16 +701,24 @@
       };
 
       const base = window.location.pathname.replace(/[^\/]*$/, '');
-      navigator.serviceWorker.register(base + 'scramjet/sw.js', { scope: base + 'scramjet/' })
-        .then(() => {
-          bar.style.width = '75%';
-          return Promise.race([
-            navigator.serviceWorker.ready,
-            new Promise(r => setTimeout(r, 4000))
-          ]);
-        })
-        .then(() => finish('Proxy ready'))
-        .catch(() => finish('Proxy ready'));
+      const preloadFrame = document.createElement('iframe');
+      preloadFrame.style.cssText = 'position:fixed; width:0; height:0; border:0; opacity:0; pointer-events:none;';
+      preloadFrame.src = base + 'scramjet/index.html?v=' + Date.now();
+      document.body.appendChild(preloadFrame);
+
+      let done = false;
+      const complete = () => {
+        if (done) return;
+        done = true;
+        bar.style.width = '85%';
+        setTimeout(() => {
+          preloadFrame.remove();
+          finish('Proxy ready');
+        }, 500);
+      };
+
+      preloadFrame.addEventListener('load', complete);
+      setTimeout(complete, 6000);
     })();
   </script>
 

@@ -420,7 +420,7 @@ function updateAddressBar() {
     const addressBar = document.getElementById("address-bar");
     const activeTab = getActiveTab();
     if (addressBar) {
-        const clean = activeTab ? unwrapScramjetUrl(activeTab.url) : ""; addressBar.value = (!clean || clean.endsWith("NT.html") || clean === "about:blank") ? "scram://hometab" : clean;
+        const clean = activeTab ? unwrapScramjetUrl(activeTab.url) : ""; if (!clean || clean.endsWith("NT.html") || clean === "about:blank") { addressBar.value = ""; addressBar.placeholder = "scram://hometab"; } else if (clean.endsWith("settings.html")) { addressBar.value = ""; addressBar.placeholder = "scram://settings"; } else { addressBar.placeholder = "Search or enter URL..."; addressBar.value = clean; }
     }
 }
 function isSameOrigin(url) {

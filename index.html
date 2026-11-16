@@ -337,6 +337,10 @@
       <i class="fa-solid fa-robot"></i>
       <span>AI</span>
     </button>
+    <button class="dock-item" data-tab="cloud" onclick="navigate('cloud')" title="Proxy/Cloud Games">
+      <i class="fa-solid fa-cloud"></i>
+      <span>Proxy/Cloud Games</span>
+    </button>
     <div class="dock-separator"></div>
     <button class="dock-item" data-tab="settings" onclick="navigate('settings')" title="Settings">
       <i class="fa-solid fa-sliders"></i>
@@ -402,6 +406,7 @@
         const path = 'scramjet/index.html?v=';
         return window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + path + Date.now() + '#https://toolbaz.com/writer/chat-gpt-alternative';
       },
+      cloud: () => 'pages/cloud.html?v=' + Date.now(),
       settings: () => "pages/settings.html?v=" + Date.now()
     };
 

@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0">
   <title>Apps Hub &bull; Athyx Network</title>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6960985165305491"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,7 +56,7 @@
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     }
 
-    
+
     #topBar {
       position: sticky;
       top: 0;
@@ -74,7 +74,7 @@
       z-index: 100;
     }
 
-    
+
     .search-wrapper {
       position: relative;
       width: 100%;
@@ -135,7 +135,7 @@
       color: var(--accent);
     }
 
-    
+
     .main-content {
       max-width: 1400px;
       margin: 0 auto;
@@ -252,7 +252,7 @@
       color: #fff;
     }
 
-    
+
     .state-message {
       grid-column: 1 / -1;
       text-align: center;
@@ -269,7 +269,7 @@
       font-size: 32px;
     }
 
-    
+
     #appStage {
       position: fixed;
       inset: 0;
@@ -352,7 +352,7 @@
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .game-fab-main:hover {
@@ -436,25 +436,25 @@
       }
     }
 
-      @media (max-width: 600px) {
-        #topBar {
-          padding: 12px 16px;
-        }
-
-        .main-content {
-          padding: 20px 16px 120px;
-        }
-
-        .apps-grid {
-          grid-template-columns: 1fr;
-        }
+    @media (max-width: 600px) {
+      #topBar {
+        padding: 12px 16px;
       }
+
+      .main-content {
+        padding: 20px 16px 120px;
+      }
+
+      .apps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
 <body>
 
-  
+
   <header id="topBar">
     <div class="search-wrapper">
       <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -463,12 +463,12 @@
     </div>
   </header>
 
-  
+
   <main class="main-content">
     <div class="apps-grid" id="appsGrid"></div>
   </main>
 
-  
+
   <div id="appStage">
     <div class="game-fab-container">
       <button class="game-fab-main" title="App Options">
@@ -494,7 +494,7 @@
       scrolling="no"></iframe>
   </div>
 
-  
+
   <div id="loadingModal">
     <div class="loading-spinner"></div>
     <div id="loadingModalText">Initializing application...</div>
@@ -511,7 +511,7 @@
 
     const APP_ICONS_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-apps@master/icons/";
 
-    window.handleIconFallback = function(img) {
+    window.handleIconFallback = function (img) {
       if (!img.dataset.retried) {
         img.dataset.retried = "true";
         let url = new URL(img.src, window.location.href);
@@ -638,25 +638,19 @@
       loadingModal.classList.add("show");
 
       try {
-        const response = await fetch(withNoCache(`https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-apps@master/${app.file}`), {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            "Pragma": "no-cache",
-            "Expires": "0"
-          }
-        });
+        const response = await fetch(withNoCache(`https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-apps@master/${app.file}`));
         if (!response.ok) throw new Error("Status " + response.status);
         const html = await response.text();
 
         document.body.classList.add("app-active");
 
-        
+        const baseDir = app.file.includes("/") ? app.file.substring(0, app.file.lastIndexOf("/") + 1) : "";
+        const baseTag = `<base href="https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-apps@master/${baseDir}">`;
         const noCacheMeta = `<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0">`;
         const hideScrollCss = `<style>html, body { overflow: hidden !important; margin: 0; padding: 0; width: 100%; height: 100%; } *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }</style>`;
         const cleanHtml = html.includes("<head>")
-          ? html.replace("<head>", "<head>" + noCacheMeta + hideScrollCss)
-          : "<head>" + noCacheMeta + hideScrollCss + "</head>" + html;
+          ? html.replace("<head>", "<head>" + baseTag + noCacheMeta + hideScrollCss)
+          : "<head>" + baseTag + noCacheMeta + hideScrollCss + "</head>" + html;
 
         window.lastAppHtml = cleanHtml;
 
@@ -666,14 +660,14 @@
           appStageIframe.removeAttribute("srcdoc");
           appStageIframe.src = "about:blank";
           appStage.classList.add("show");
-          
+
           appStageIframe.contentWindow.document.open();
           appStageIframe.contentWindow.document.write(cleanHtml);
           appStageIframe.contentWindow.document.close();
-          
+
           try {
             window.parent.postMessage({ action: "athyx_game_active", active: true }, "*");
-          } catch(e) {}
+          } catch (e) { }
         } else {
           appStageIframe.removeAttribute("src");
           appStageIframe.srcdoc = cleanHtml;
@@ -699,18 +693,18 @@
       try {
         const title = localStorage.getItem("athyx_tab_title") || "Athyx Network";
         const icon = localStorage.getItem("athyx_tab_icon") || "https://ssl.gstatic.com/classroom/favicon.png";
-        
+
         let content = "";
         if (appStageIframe.src && appStageIframe.src !== "about:blank" && !appStageIframe.src.startsWith("blob:")) {
-           window.open(appStageIframe.src, "_blank");
-           closeActiveApp();
-           return;
+          window.open(appStageIframe.src, "_blank");
+          closeActiveApp();
+          return;
         } else if (window.lastAppHtml) {
-           content = window.lastAppHtml;
+          content = window.lastAppHtml;
         } else {
-           content = appStageIframe.srcdoc || "";
+          content = appStageIframe.srcdoc || "";
         }
-        
+
         const win = window.open("about:blank", "_blank");
         if (win) {
           win.document.open();
@@ -786,12 +780,12 @@
         console.warn("Using fallback app database:", err);
         allApps = fallbackApps;
       }
-      
+
       // Inject TikTok if it hasn't been added to apps.json yet
       if (!allApps.some(app => app.name === "TikTok")) {
         allApps.push({ name: "TikTok", file: "tiktok.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/tiktok.png", tag: "Social" });
       }
-      
+
       // Inject Tubi
       if (!allApps.some(app => app.name === "Tubi")) {
         allApps.push({ name: "Tubi", file: "tubi.html", icon: "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/app_icons/tubi.png", tag: "Movies" });
@@ -819,4 +813,3 @@
 </body>
 
 </html>
-

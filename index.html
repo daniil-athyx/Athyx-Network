@@ -364,12 +364,9 @@
   <script>
     const iframe = document.getElementById("contentFrame");
     const chatFrame = document.getElementById("chatFrame");
-    chatFrame.src = "pages/chat.html?v=" + Date.now();
-    chatFrame.addEventListener('load', () => {
       setTimeout(() => {
         try {
           if (chatFrame && chatFrame.contentWindow) {
-            chatFrame.contentWindow.postMessage({ action: "scroll_bottom" }, "*");
           }
         } catch(e) {}
       }, 150);
@@ -427,15 +424,12 @@
       if (!target) return;
 
       if (tabKey === 'chat') {
-        chatFrame.style.display = "block";
-        chatFrame.style.zIndex = "1";
         iframe.style.display = "none";
         iframe.style.zIndex = "0";
 
         const triggerChatScroll = () => {
           try {
             if (chatFrame && chatFrame.contentWindow) {
-              chatFrame.contentWindow.postMessage({ action: "scroll_bottom" }, "*");
             }
           } catch(e) {}
         };
@@ -447,8 +441,6 @@
         setTimeout(triggerChatScroll, 600);
         setTimeout(triggerChatScroll, 1000);
       } else {
-        chatFrame.style.display = "none";
-        chatFrame.style.zIndex = "0";
         iframe.style.display = "block";
         iframe.style.zIndex = "1";
         
@@ -512,7 +504,6 @@
               return;
             }
             navigate('chat');
-            chatFrame.contentWindow.postMessage({ action: 'scrollToMessage', messageId: event.data.messageId }, '*');
             notif.remove();
           });
           
@@ -529,10 +520,8 @@
         iframe.contentWindow.postMessage({ action: "athyx_theme_change", themeId }, "*");
       } catch (e) { }
     });
-    chatFrame.addEventListener("load", () => {
       try {
         const themeId = localStorage.getItem("athyx_theme") || "white";
-        chatFrame.contentWindow.postMessage({ action: "athyx_theme_change", themeId }, "*");
       } catch (e) { }
     });
 

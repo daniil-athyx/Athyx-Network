@@ -68,7 +68,7 @@ self.addEventListener("fetch", (event) => {
                             }
                             return Response.redirect(`${prefix}${encodeURIComponent(inner)}`, 302);
                         }
-                    } catch (e) {}
+                    } catch (e) { }
                 }
                 try {
                     return await scramjet.fetch(event);
@@ -96,15 +96,15 @@ self.addEventListener("fetch", (event) => {
 let wispConfig = {};
 
 const AD_DOMAINS = [
-  'doubleclick.net', 'google-analytics.com', 'googlesyndication.com', 
-  'adservice.google.com', 'amazon-adsystem.com', 'criteo.com',
-  'outbrain.com', 'taboola.com', 'adtech.de', 'advertising.com',
-  'scorecardresearch.com', 'quantserve.com', 'zedo.com', 'yieldmanager.com',
-  'adnxs.com', 'rubiconproject.com', 'openx.net', 'casalemedia.com',
-  'pubmatic.com', 'smartadserver.com', 'exponential.com',
-  'serving-sys.com', 'adblade.com', 'adroll.com', 'media.net',
-  'moatads.com', 'adsrvr.org', 'spotxchange.com', 'turn.com',
-  'mathtag.com', 'adnexus.net', 'fastclick.net'
+    'doubleclick.net', 'google-analytics.com', 'googlesyndication.com',
+    'adservice.google.com', 'amazon-adsystem.com', 'criteo.com',
+    'outbrain.com', 'taboola.com', 'adtech.de', 'advertising.com',
+    'scorecardresearch.com', 'quantserve.com', 'zedo.com', 'yieldmanager.com',
+    'adnxs.com', 'rubiconproject.com', 'openx.net', 'casalemedia.com',
+    'pubmatic.com', 'smartadserver.com', 'exponential.com',
+    'serving-sys.com', 'adblade.com', 'adroll.com', 'media.net',
+    'moatads.com', 'adsrvr.org', 'spotxchange.com', 'turn.com',
+    'mathtag.com', 'adnexus.net', 'fastclick.net'
 ];
 
 function isAdDomain(hostname) {
@@ -125,7 +125,7 @@ const configReadyPromise = new Promise(resolve => {
 });
 
 self.addEventListener("message", ({ data }) => {
-	if (data.type === "config") {
+    if (data.type === "config") {
         if (data.wispurl) {
             const oldWisp = wispConfig.wispurl;
             wispConfig.wispurl = data.wispurl;
@@ -155,7 +155,7 @@ self.addEventListener("message", ({ data }) => {
         if (data.hasOwnProperty('reducedFeature')) {
             wispConfig.reducedFeature = data.reducedFeature;
         }
-	}
+    }
 });
 
 // The main Scramjet listener where the proxying logic happens.
@@ -167,30 +167,30 @@ scramjet.addEventListener("request", async (e) => {
                 e.response = new Response("Blocked by Adblocker", { status: 403 });
                 return;
             }
-        } catch(err) {}
+        } catch (err) { }
     }
 
-	e.response = (async () => {
-		// Use a single, persistent client instance on the scramjet object.
-		if (!scramjet.client) {
+    e.response = (async () => {
+        // Use a single, persistent client instance on the scramjet object.
+        if (!scramjet.client) {
             // Wait for the WISP URL to be sent from the main page.
             await configReadyPromise;
 
             if (!wispConfig.wispurl) {
-                 console.error("WISP URL is missing. Cannot configure BareMux.");
-                 return new Response("WISP URL configuration failed in SW.", { status: 500, statusText: "Internal Server Error" });
+                console.error("WISP URL is missing. Cannot configure BareMux.");
+                return new Response("WISP URL configuration failed in SW.", { status: 500, statusText: "Internal Server Error" });
             }
 
             const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
-			await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
-			scramjet.client = new BareMux.BareClient(`${basePath}B/worker.js`);
-		}
+            await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
+            scramjet.client = new BareMux.BareClient(`${basePath}B/worker.js`);
+        }
 
-		// Wait briefly for scramjet.client.fetch to be ready on first load
-		for (let i = 0; i < 30 && (!scramjet.client || typeof scramjet.client.fetch !== "function"); i++) {
-			await new Promise(r => setTimeout(r, 100));
-		}
-		const fetchOpts = {
+        // Wait briefly for scramjet.client.fetch to be ready on first load
+        for (let i = 0; i < 30 && (!scramjet.client || typeof scramjet.client.fetch !== "function"); i++) {
+            await new Promise(r => setTimeout(r, 100));
+        }
+        const fetchOpts = {
             method: e.method,
             body: e.body,
             headers: new Headers(e.requestHeaders || {}),
@@ -200,17 +200,17 @@ scramjet.addEventListener("request", async (e) => {
             redirect: "manual",
             duplex: "half",
         };
-		try {
-			return await scramjet.client.fetch(e.url, fetchOpts);
-		} catch (err) {
-			if (err && /no bare clients/i.test(err.message)) {
-				await configReadyPromise;
-				const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
-				await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
-				scramjet.client = new BareMux.BareClient(`${basePath}B/worker.js`);
-				return await scramjet.client.fetch(e.url, fetchOpts);
-			}
-			throw err;
-		}
-	})();
+        try {
+            return await scramjet.client.fetch(e.url, fetchOpts);
+        } catch (err) {
+            if (err && /no bare clients/i.test(err.message)) {
+                await configReadyPromise;
+                const connection = new BareMux.BareMuxConnection(`${basePath}B/worker.js`);
+                await connection.setTransport(`${basePath}Ep/index.mjs`, [{ wisp: wispConfig.wispurl }]);
+                scramjet.client = new BareMux.BareClient(`${basePath}B/worker.js`);
+                return await scramjet.client.fetch(e.url, fetchOpts);
+            }
+            throw err;
+        }
+    })();
 });

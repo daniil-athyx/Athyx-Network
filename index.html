@@ -350,7 +350,6 @@
 
   <iframe id="contentFrame" title="Athyx Content"
     allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; cross-origin-isolated"></iframe>
-  <iframe id="chatFrame" style="display:none; width:100%; height:100%; position:absolute; top:0; left:0; border:none; z-index:0;" title="Chat"></iframe>
   <div id="global-notification-container" style="position:fixed; top:20px; left:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
 
   <div id="update-modal" class="custom-alert" aria-hidden="true">
@@ -405,7 +404,6 @@
       home: () => "pages/homepage.html?v=" + Date.now(),
       games: () => "pages/g.html?v=" + Date.now(),
       apps: () => "pages/apps.html?v=" + Date.now(),
-      chat: () => "pages/chat.html?v=" + Date.now(),
 
       proxy: () => {
         const path = 'scramjet/index.html?v=';

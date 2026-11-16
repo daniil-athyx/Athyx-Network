@@ -632,6 +632,15 @@
     .segmented-control[data-mode="ultraviolet"] .segment-highlighter {
       transform: translateX(100%);
     }
+    #gameLaunchSegmented {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    #gameLaunchSegmented .segment-highlighter {
+      width: calc(33.333% - 2.67px);
+    }
+    #gameLaunchSegmented[data-mode="blob"] .segment-highlighter {
+      transform: translateX(200%);
+    }
     .segmented-control .segment {
       padding: 6px 12px;
       font-size: 13px;

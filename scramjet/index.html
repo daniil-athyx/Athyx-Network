@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script>
     // Prevent proxy-inside-proxy recursion
@@ -13,23 +14,27 @@
       if (e.message === 'Blocked nested proxy recursion') throw e;
     }
   </script>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Athyx Network | Browser</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous"/>
-  <link rel="stylesheet" href="../themes.css?v=4"/>
-  <link rel="stylesheet" href="style.css?v=4"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    crossorigin="anonymous" />
+  <link rel="stylesheet" href="../themes.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=4" />
   <script src="../js/themes.js?v=4"></script>
   <script src="../js/cdn-config.js?v=1"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script src="JS/scramjet.all.js?v=3"></script>
+  <script src="JS/scramjet.all.js?v=4"></script>
   <script src="B/index.js"></script>
   <script src="prxxry.config.js"></script>
   <script src="script.js"></script>
 </head>
+
 <body>
   <div id="app"></div>
 
@@ -40,7 +45,7 @@
         <h3>Settings</h3>
         <button class="modal-close-btn" id="close-wisp-modal" title="Close Settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="M18 6 6 18M6 6l12 12"/>
+            <path d="M18 6 6 18M6 6l12 12" />
           </svg>
         </button>
       </div>
@@ -48,18 +53,18 @@
       <div class="modal-body">
         <span id="current-wisp-url" style="display:none;"></span>
         <span id="wisp-status-indicator" style="display:none;"></span>
-          <div class="wisp-section" style="margin-top: 0;">
-            <div class="switch-container" style="display:flex;align-items:center;margin-bottom:8px;">
-              <label class="switch">
-                <input type="checkbox" id="auto-wisp-switch" />
-                <span class="slider"></span>
-              </label>
-              <span class="switch-label">Auto-select Fastest</span>
-            </div>
-            <div class="predefined-wisps" id="dynamic-wisps-container">
-              <div class="wisp-status" id="wisp-loading-status">Loading WISP servers...</div>
-            </div>
+        <div class="wisp-section" style="margin-top: 0;">
+          <div class="switch-container" style="display:flex;align-items:center;margin-bottom:8px;">
+            <label class="switch">
+              <input type="checkbox" id="auto-wisp-switch" />
+              <span class="slider"></span>
+            </label>
+            <span class="switch-label">Auto-select Fastest</span>
           </div>
+          <div class="predefined-wisps" id="dynamic-wisps-container">
+            <div class="wisp-status" id="wisp-loading-status">Loading WISP servers...</div>
+          </div>
+        </div>
       </div>
 
       <div class="modal-footer">
@@ -69,5 +74,5 @@
     </div>
   </div>
 </body>
-</html>
 
+</html>

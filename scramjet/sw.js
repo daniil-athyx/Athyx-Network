@@ -13,7 +13,7 @@ self.$scramjet = {
 };
 
 // Load ALL required scripts at the top level.
-importScripts(`${basePath}JS/scramjet.all.js?v=3`);
+importScripts(`${basePath}JS/scramjet.all.js?v=4`);
 importScripts(`${basePath}B/index.js`);
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
@@ -126,8 +126,9 @@ self.addEventListener("fetch", (event) => {
                 try {
                     return await scramjet.fetch(event);
                 } catch (err) {
+                    console.error('[Scramjet SW] Proxy request failed:', err);
                     if (!requestFallbackEnabled) {
-                        return new Response('Proxy request failed', { status: 502, statusText: 'Bad Gateway' });
+                        return new Response('Proxy request failed: ' + (err?.message || err), { status: 502, statusText: 'Bad Gateway' });
                     }
                     return fetch(event.request, { mode: 'cors', redirect: 'manual' });
                 }

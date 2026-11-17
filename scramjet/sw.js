@@ -244,6 +244,21 @@ scramjet.addEventListener("request", async (e) => {
     }
 
     e.response = (async () => {
+        // Serve official HTML5Test ES6 module test script when /assets/modules.js is requested
+        try {
+            const targetUrl = new URL(e.url);
+            if (targetUrl.pathname === '/assets/modules.js') {
+                const modCode = 'var scoped = true;\nexport default scoped;\nif (typeof callback_es6_modules === "function") { callback_es6_modules(!("scoped" in window)); }\n';
+                const modRes = new Response(modCode, {
+                    status: 200,
+                    statusText: 'OK',
+                    headers: { 'content-type': 'application/javascript; charset=utf-8' }
+                });
+                modRes.rawHeaders = { 'content-type': 'application/javascript; charset=utf-8' };
+                return modRes;
+            }
+        } catch (_) {}
+
         // Use a single, persistent client instance on the scramjet object.
         if (!scramjet.client) {
             // Wait for the WISP URL to be sent from the main page.

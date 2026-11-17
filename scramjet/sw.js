@@ -13,7 +13,7 @@ self.$scramjet = {
 };
 
 // Load ALL required scripts at the top level.
-importScripts(`${basePath}JS/scramjet.all.js?v=7`);
+importScripts(`${basePath}JS/scramjet.all.js?v=8`);
 importScripts(`${basePath}B/index.js`);
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
@@ -353,7 +353,7 @@ scramjet.addEventListener("request", async (e) => {
         const fetchOpts = {
             method: e.method,
             body: bodyPayload,
-            headers: new Headers(e.requestHeaders || {}),
+            headers: e.requestHeaders || {},
             credentials: "omit",
             mode: e.mode === "cors" ? e.mode : "same-origin",
             cache: e.cache,

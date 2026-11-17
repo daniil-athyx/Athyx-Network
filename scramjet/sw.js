@@ -13,7 +13,7 @@ self.$scramjet = {
 };
 
 // Load ALL required scripts at the top level.
-importScripts(`${basePath}JS/scramjet.all.js?v=4`);
+importScripts(`${basePath}JS/scramjet.all.js?v=5`);
 importScripts(`${basePath}B/index.js`);
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();

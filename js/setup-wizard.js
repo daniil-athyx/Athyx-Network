@@ -39,7 +39,7 @@
     {
       id: 'statically',
       name: 'Statically Multi-CDN',
-      badge: 'Proxy',
+      badge: 'Multi-CDN',
       origin: 'https://cdn.statically.io',
       icon: 'fa-cloud'
     }
@@ -162,189 +162,196 @@
         position: fixed;
         inset: 0;
         z-index: 999999;
-        background: radial-gradient(circle at 50% 20%, rgba(18, 10, 22, 0.94), rgba(8, 4, 10, 0.98));
-        backdrop-filter: blur(28px);
-        -webkit-backdrop-filter: blur(28px);
+        background: rgba(8, 6, 10, 0.78);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 20px;
         opacity: 0;
-        transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-        color: #fff;
+        transition: opacity 0.25s ease;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        color: var(--text, #f1f5f9);
       }
       #athyx-setup-overlay.active {
         opacity: 1;
       }
       .athyx-setup-modal {
-        background: rgba(22, 12, 18, 0.88);
-        border: 1px solid rgba(10, 255, 206, 0.28);
-        border-radius: 24px;
-        max-width: 860px;
+        background: var(--surface, #121215);
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+        border-radius: 16px;
+        max-width: 820px;
         width: 100%;
-        max-height: 92vh;
+        max-height: 90vh;
         overflow-y: auto;
-        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(10, 255, 206, 0.18);
-        padding: 36px 40px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+        padding: 28px 32px;
         display: flex;
         flex-direction: column;
-        gap: 24px;
-        transform: scale(0.95) translateY(20px);
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        gap: 20px;
+        transform: scale(0.98);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       }
       #athyx-setup-overlay.active .athyx-setup-modal {
-        transform: scale(1) translateY(0);
+        transform: scale(1);
       }
       .athyx-setup-header {
-        text-align: center;
         display: flex;
         flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        align-items: flex-start;
+        gap: 6px;
       }
-      .athyx-setup-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 18px;
-        background: linear-gradient(135deg, rgba(10, 255, 206, 0.2), rgba(10, 255, 206, 0.05));
-        border: 1px solid rgba(10, 255, 206, 0.4);
-        display: flex;
+      .athyx-setup-tag {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        font-size: 26px;
-        color: #0affce;
-        box-shadow: 0 8px 24px rgba(10, 255, 206, 0.25);
-        margin-bottom: 6px;
-        animation: athyxPulse 2.5s infinite ease-in-out;
-      }
-      @keyframes athyxPulse {
-        0%, 100% { box-shadow: 0 0 15px rgba(10, 255, 206, 0.2); }
-        50% { box-shadow: 0 0 30px rgba(10, 255, 206, 0.45); }
+        gap: 6px;
+        font-size: 11.5px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--accent, #0affce);
+        background: var(--accent-dim, rgba(10, 255, 206, 0.12));
+        border: 1px solid var(--border, rgba(10, 255, 206, 0.2));
+        padding: 4px 10px;
+        border-radius: 6px;
+        margin-bottom: 2px;
       }
       .athyx-setup-title {
         font-family: 'Outfit', sans-serif;
-        font-size: 28px;
+        font-size: 24px;
         font-weight: 700;
         letter-spacing: -0.02em;
         color: #ffffff;
+        margin: 0;
       }
       .athyx-setup-subtitle {
-        font-size: 14.5px;
-        color: #f7c6ce;
-        opacity: 0.85;
-        max-width: 580px;
+        font-size: 13.5px;
+        color: var(--text-dim, #94a3b8);
         line-height: 1.5;
+        margin: 0;
       }
       .athyx-benchmark-progress-track {
         width: 100%;
-        height: 6px;
+        height: 3px;
         background: rgba(255, 255, 255, 0.08);
-        border-radius: 9999px;
+        border-radius: 2px;
         overflow: hidden;
-        position: relative;
       }
       .athyx-benchmark-progress-fill {
         height: 100%;
         width: 0%;
-        background: linear-gradient(90deg, #0affce, #38bdf8);
-        border-radius: 9999px;
-        transition: width 0.3s ease;
-        box-shadow: 0 0 12px rgba(10, 255, 206, 0.6);
+        background: var(--accent, #0affce);
+        border-radius: 2px;
+        transition: width 0.25s ease;
       }
       .athyx-benchmark-columns {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 16px;
       }
-      @media (max-width: 760px) {
+      @media (max-width: 720px) {
         .athyx-benchmark-columns { grid-template-columns: 1fr; }
-        .athyx-setup-modal { padding: 24px 20px; }
+        .athyx-setup-modal { padding: 20px; }
       }
       .athyx-benchmark-card {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 18px;
+        background: var(--card-bg, rgba(255, 255, 255, 0.03));
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+        border-radius: 12px;
+        padding: 16px;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
       }
       .athyx-benchmark-card-title {
-        font-size: 13.5px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #0affce;
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffffff;
+        letter-spacing: -0.01em;
         display: flex;
         align-items: center;
         gap: 8px;
+      }
+      .athyx-benchmark-card-title i {
+        color: var(--accent, #0affce);
+        font-size: 13px;
       }
       .athyx-candidate-list {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
       }
       .athyx-candidate-item {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 10px;
-        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 9px 12px;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        font-size: 13.5px;
-        transition: all 0.2s ease;
+        font-size: 13px;
+        transition: all 0.15s ease;
       }
       .athyx-candidate-item.winner {
-        border-color: #0affce;
-        background: rgba(10, 255, 206, 0.08);
-        box-shadow: 0 0 16px rgba(10, 255, 206, 0.18);
+        border-color: var(--accent, #0affce);
+        background: var(--accent-dim, rgba(10, 255, 206, 0.12));
       }
       .athyx-candidate-item.failed {
         opacity: 0.45;
-        border-color: rgba(239, 68, 68, 0.25);
+        border-color: rgba(239, 68, 68, 0.2);
       }
       .athyx-candidate-name {
         display: flex;
         align-items: center;
         gap: 8px;
         font-weight: 500;
+        color: var(--text, #f1f5f9);
+        min-width: 0;
+      }
+      .athyx-candidate-name span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .athyx-candidate-badge {
         font-size: 10.5px;
-        padding: 2px 7px;
-        border-radius: 6px;
-        background: rgba(255, 255, 255, 0.08);
-        color: #e2e8f0;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-dim, #94a3b8);
+        font-weight: 500;
+        flex-shrink: 0;
       }
       .athyx-status-pill {
-        font-size: 12px;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 9999px;
+        font-size: 11.5px;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 6px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
       .athyx-status-pill.testing {
-        background: rgba(56, 189, 248, 0.15);
-        color: #38bdf8;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-dim, #94a3b8);
       }
       .athyx-status-pill.success {
-        background: rgba(10, 255, 206, 0.18);
-        color: #0affce;
+        background: var(--accent-dim, rgba(10, 255, 206, 0.12));
+        color: var(--accent, #0affce);
+        font-weight: 600;
       }
       .athyx-status-pill.blocked {
-        background: rgba(239, 68, 68, 0.18);
+        background: rgba(239, 68, 68, 0.1);
         color: #f87171;
       }
       .athyx-setup-summary {
-        background: linear-gradient(135deg, rgba(10, 255, 206, 0.12), rgba(56, 189, 248, 0.06));
-        border: 1px solid rgba(10, 255, 206, 0.35);
-        border-radius: 16px;
-        padding: 16px 20px;
+        background: var(--card-bg, rgba(255, 255, 255, 0.03));
+        border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+        border-radius: 12px;
+        padding: 14px 18px;
         display: none;
         align-items: center;
         justify-content: space-between;
@@ -354,32 +361,32 @@
         display: flex;
       }
       .athyx-setup-summary-text {
-        font-size: 14px;
+        font-size: 13.5px;
         line-height: 1.45;
+        color: var(--text, #f1f5f9);
       }
       .athyx-setup-btn {
-        background: #0affce;
-        color: #051410;
+        background: var(--accent, #0affce);
+        color: var(--accent-text, #051410);
         font-family: inherit;
-        font-weight: 700;
-        font-size: 14.5px;
-        padding: 12px 24px;
-        border-radius: 12px;
+        font-weight: 600;
+        font-size: 13.5px;
+        padding: 9px 18px;
+        border-radius: 8px;
         border: none;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        box-shadow: 0 4px 16px rgba(10, 255, 206, 0.35);
+        transition: opacity 0.15s ease, transform 0.15s ease;
         white-space: nowrap;
       }
       .athyx-setup-btn:hover {
+        opacity: 0.9;
         transform: translateY(-1px);
-        box-shadow: 0 6px 22px rgba(10, 255, 206, 0.5);
       }
       .athyx-setup-btn:active {
-        transform: translateY(1px);
+        transform: translateY(0);
       }
       .athyx-setup-btn.disabled {
         opacity: 0.5;
@@ -394,7 +401,7 @@
       return `
         <div class="athyx-candidate-item" id="setup-cdn-${c.id}">
           <div class="athyx-candidate-name">
-            <i class="fa-solid ${c.icon}" style="color: #0affce; width: 16px; text-align: center;"></i>
+            <i class="fa-solid ${c.icon}" style="color: var(--accent, #0affce); width: 16px; text-align: center;"></i>
             <span>${c.name}</span>
             <span class="athyx-candidate-badge">${c.badge}</span>
           </div>
@@ -410,7 +417,7 @@
       return `
         <div class="athyx-candidate-item" id="setup-${safeId}">
           <div class="athyx-candidate-name">
-            <i class="fa-solid fa-bolt" style="color: #38bdf8; width: 16px; text-align: center;"></i>
+            <i class="fa-solid fa-tower-broadcast" style="color: var(--accent, #0affce); width: 16px; text-align: center;"></i>
             <span>${w.name}</span>
           </div>
           <div class="athyx-status-pill testing" id="status-${safeId}">
@@ -423,12 +430,12 @@
     return `
       <div class="athyx-setup-modal">
         <div class="athyx-setup-header">
-          <div class="athyx-setup-icon">
-            <i class="fa-solid fa-satellite-dish"></i>
+          <div class="athyx-setup-tag">
+            <i class="fa-solid fa-gauge-high"></i> Network Optimizer
           </div>
-          <h2 class="athyx-setup-title">Optimizing Your Connection</h2>
+          <h2 class="athyx-setup-title">Optimizing Your Network</h2>
           <p class="athyx-setup-subtitle">
-            Benchmarking all CDN mirrors and Wisp proxy servers. Any servers blocked by your school firewall will be filtered out, and the fastest connection will be automatically selected.
+            Benchmarking all CDN mirrors and Wisp proxy servers. Any endpoints blocked by your network firewall will be eliminated, and the fastest connection will be automatically selected.
           </p>
         </div>
 
@@ -458,11 +465,11 @@
 
         <div class="athyx-setup-summary" id="setupSummaryBox">
           <div class="athyx-setup-summary-text" id="setupSummaryText">
-            <strong style="color:#0affce;">Connection Optimized!</strong><br>
+            <strong style="color:var(--accent, #0affce);"><i class="fa-solid fa-circle-check"></i> Connection Optimized!</strong><br>
             Selected the fastest unblocked servers for your network.
           </div>
           <button class="athyx-setup-btn" id="setupCompleteBtn">
-            <span>Launch Athyx</span> <i class="fa-solid fa-arrow-right"></i>
+            <span>Continue</span> <i class="fa-solid fa-arrow-right"></i>
           </button>
         </div>
       </div>
@@ -554,7 +561,7 @@
       if (bestRow) {
         bestRow.classList.add('winner');
         var pill = document.getElementById('status-cdn-' + chosenCdn.id);
-        if (pill) pill.innerHTML = '<i class="fa-solid fa-crown"></i> ' + workingCdns[0].result.latency + ' ms (Fastest)';
+        if (pill) pill.innerHTML = '<i class="fa-solid fa-crown"></i> ' + workingCdns[0].result.latency + ' ms';
       }
       localStorage.setItem('athyx_cdn_mirror', chosenCdn.origin);
     }
@@ -569,7 +576,7 @@
       if (bestWispRow) {
         bestWispRow.classList.add('winner');
         var pill = document.getElementById('status-wisp-' + workingWisps[0].index);
-        if (pill) pill.innerHTML = '<i class="fa-solid fa-crown"></i> ' + workingWisps[0].result.latency + ' ms (Fastest)';
+        if (pill) pill.innerHTML = '<i class="fa-solid fa-crown"></i> ' + workingWisps[0].result.latency + ' ms';
       }
       localStorage.setItem('proxServer', chosenWisp.url);
     }
@@ -586,9 +593,9 @@
       var cdnName = chosenCdn.name + (workingCdns.length > 0 ? ' (' + workingCdns[0].result.latency + ' ms)' : '');
       var wispName = chosenWisp.name + (workingWisps.length > 0 ? ' (' + workingWisps[0].result.latency + ' ms)' : '');
       summaryText.innerHTML = `
-        <strong style="color:#0affce; font-size:15px;"><i class="fa-solid fa-circle-check"></i> Connection Optimized!</strong><br>
-        <span style="font-size:13px; color:#e2e8f0;">
-          Fastest CDN: <b>${cdnName}</b> &bull; Fastest Wisp: <b>${wispName}</b>
+        <strong style="color:var(--accent, #0affce); font-size:14px;"><i class="fa-solid fa-circle-check"></i> Connection Optimized</strong><br>
+        <span style="font-size:12.5px; color:var(--text-dim, #94a3b8);">
+          Fastest CDN: <b style="color:var(--text, #ffffff);">${cdnName}</b> &bull; Fastest Wisp: <b style="color:var(--text, #ffffff);">${wispName}</b>
         </span>
       `;
     }
@@ -601,7 +608,7 @@
     var countdownInterval = setInterval(function () {
       countdown--;
       if (countdown > 0 && btnText) {
-        btnText.textContent = `Launch Athyx (${countdown}s)`;
+        btnText.textContent = `Continue (${countdown}s)`;
       } else {
         clearInterval(countdownInterval);
         closeWizard();
@@ -618,7 +625,7 @@
         if (typeof options.onComplete === 'function') {
           options.onComplete({ cdn: chosenCdn, wisp: chosenWisp });
         }
-      }, 400);
+      }, 300);
     }
 
     if (completeBtn) {

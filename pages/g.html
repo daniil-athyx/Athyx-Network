@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="../themes.css?v=4">
   <script src="../js/themes.js?v=4"></script>
   <script src="../js/image-cache.js?v=1"></script>
+  <script src="../js/cdn-config.js?v=1"></script>
   <link rel="icon" type="image/png" href="../assets/favicon.png">
   <link rel="shortcut icon" href="../assets/favicon.ico">
 
@@ -529,7 +530,8 @@
   </div>
 
   <script>
-    const REPO_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/";
+    const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://cdn.jsdelivr.net";
+    const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/";
     const PRIMARY_GAMES_JSON = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/games.json";
     const FALLBACK_GAMES_JSON = REPO_BASE + "games.json";
 
@@ -778,6 +780,10 @@
         if (!res.ok) throw new Error("Status " + res.status);
         let html = await res.text();
 
+        if (window.AthyxCdn) {
+          html = window.AthyxCdn.rewriteHtml(html);
+        }
+
 
 
         const iframeMatch = html.match(/<iframe\b[^>]*?\bsrc=["']([^"']+\.html(?:\?[^"']*)?)["']/i);
@@ -817,6 +823,18 @@
 (function() {
   const resolvedBase = ${JSON.stringify(resolvedBase)};
   const absoluteBase = ${JSON.stringify(absoluteBase)};
+  const activeCdnOrigin = ${JSON.stringify(activeCdn)};
+
+  function rewriteCdnUrl(u) {
+    if (!u || typeof u !== 'string') return u;
+    const dest = activeCdnOrigin.replace(/\\/+$/, '');
+    const pattern = /https?:\\/\\/(?:cdn|fastly|gcore)\\.jsdelivr\\.net|https?:\\/\\/jsdelivr\\.5210521\\.xyz|https?:\\/\\/cdn\\.statically\\.io/gi;
+    let res = u.replace(pattern, dest);
+    if (dest.indexOf('statically.io') !== -1) {
+      res = res.replace(/(\\/gh\\/[^\\/]+\\/[^/@]+)@([^/"']+)/g, '$1/$2');
+    }
+    return res;
+  }
 
   try {
     Object.defineProperty(Document.prototype, 'URL', { get: function() { return resolvedBase; }, configurable: true });
@@ -850,11 +868,12 @@
     });
   } catch(e) {}
 
-  // Fetch interceptor to resolve file:/// and relative paths against absoluteBase
+  // Fetch interceptor to resolve file:/// and relative paths against absoluteBase and rewrite CDN
   if (window.fetch) {
     const origFetch = window.fetch;
     window.fetch = function(input, init) {
       if (typeof input === 'string') {
+        input = rewriteCdnUrl(input);
         if (input.startsWith('file:///')) {
           input = absoluteBase + input.replace(/^file:\\/\\/\\/?/, '');
         } else if (input.startsWith('/') && !input.startsWith('//')) {
@@ -863,12 +882,14 @@
           input = absoluteBase + input.replace(/^(\\.\\/)/, '');
         }
       } else if (input instanceof Request) {
-        let url = input.url;
+        let url = rewriteCdnUrl(input.url);
         if (url.startsWith('file:///')) {
           url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
           input = new Request(url, input);
         } else if (url.startsWith('about:')) {
           url = absoluteBase + url.replace(/^about:[^/]*\\/?/, '');
+          input = new Request(url, input);
+        } else if (url !== input.url) {
           input = new Request(url, input);
         }
       }
@@ -876,11 +897,12 @@
     };
   }
 
-  // XMLHttpRequest interceptor to resolve relative paths against absoluteBase (vital for Unity WebGL .wasm & .data files)
+  // XMLHttpRequest interceptor to resolve relative paths against absoluteBase and rewrite CDN
   if (window.XMLHttpRequest) {
     const origOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, url) {
       if (typeof url === 'string') {
+        url = rewriteCdnUrl(url);
         if (url.startsWith('file:///')) {
           url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
         } else if (url.startsWith('/') && !url.startsWith('//')) {
@@ -931,6 +953,7 @@
     window.Worker = function(url, opts) {
       let targetUrl = url;
       if (typeof targetUrl === 'string') {
+        targetUrl = rewriteCdnUrl(targetUrl);
         if (targetUrl.startsWith('file:///')) {
           targetUrl = absoluteBase + targetUrl.replace(/^file:\\/\\/\\/?/, '');
         } else if (!/^https?:\\/\\//i.test(targetUrl) && !targetUrl.startsWith('blob:') && !targetUrl.startsWith('data:')) {

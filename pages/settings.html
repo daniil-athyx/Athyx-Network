@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../themes.css?v=4">
   <script src="../js/themes.js?v=4"></script>
+  <script src="../js/cdn-config.js?v=1"></script>
   <link rel="icon" type="image/png" href="../assets/favicon.png">
   <link rel="shortcut icon" href="../assets/favicon.ico">
 
@@ -992,6 +993,42 @@
             </div>
           </div>
 
+          <!-- Game Asset CDN & Mirror -->
+          <div class="setting-row" data-search-keys="cdn mirror jsdelivr fastly gcore statically 5210521 school unblock filter network asset speed games">
+            <div class="setting-info">
+              <span class="setting-title">Game & Asset CDN Mirror</span>
+              <span class="setting-desc">Choose which CDN network streams game files. If your school blocks jsDelivr, select 5210521, Gcore, or Fastly.</span>
+            </div>
+            <div class="setting-control" style="position: relative;">
+              <button class="dropdown-pill-btn" id="cdnDropdownBtn" onclick="toggleCdnDropdown()">
+                <span id="cdnDropdownLabel"><i class="fa-solid fa-server" style="margin-right: 6px;"></i> jsDelivr (Default)</span>
+                <i class="fa-solid fa-chevron-down"></i>
+              </button>
+
+              <div class="dropdown-menu" id="cdnDropdownMenu" style="min-width: 280px; right: 0;">
+                <button class="dropdown-item" id="cdn-opt-jsdelivr" onclick="selectCdnMirror('jsdelivr')">
+                  <i class="fa-solid fa-globe"></i> jsDelivr (Default)
+                </button>
+                <button class="dropdown-item" id="cdn-opt-fastly" onclick="selectCdnMirror('fastly')">
+                  <i class="fa-solid fa-bolt"></i> Fastly CDN
+                </button>
+                <button class="dropdown-item" id="cdn-opt-gcore" onclick="selectCdnMirror('gcore')">
+                  <i class="fa-solid fa-network-wired"></i> Gcore CDN
+                </button>
+                <button class="dropdown-item" id="cdn-opt-5210521" onclick="selectCdnMirror('5210521')">
+                  <i class="fa-solid fa-shield-halved"></i> 5210521 (School Bypass)
+                </button>
+                <button class="dropdown-item" id="cdn-opt-statically" onclick="selectCdnMirror('statically')">
+                  <i class="fa-solid fa-cloud"></i> Statically Multi-CDN
+                </button>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" id="cdn-opt-custom" onclick="promptCustomCdn()">
+                  <i class="fa-solid fa-pen-to-square"></i> Custom CDN URL...
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -1206,6 +1243,13 @@
       btn.classList.toggle("open", isShow);
     }
 
+    function toggleCdnDropdown() {
+      const menu = document.getElementById("cdnDropdownMenu");
+      const btn = document.getElementById("cdnDropdownBtn");
+      const isShow = menu.classList.toggle("show");
+      btn.classList.toggle("open", isShow);
+    }
+
     window.addEventListener("click", (e) => {
       const btn = document.getElementById("siteTitleDropdownBtn");
       const menu = document.getElementById("siteTitleDropdownMenu");
@@ -1213,7 +1257,65 @@
         menu.classList.remove("show");
         btn.classList.remove("open");
       }
+      const cdnBtn = document.getElementById("cdnDropdownBtn");
+      const cdnMenu = document.getElementById("cdnDropdownMenu");
+      if (cdnBtn && cdnMenu && !cdnBtn.contains(e.target) && !cdnMenu.contains(e.target)) {
+        cdnMenu.classList.remove("show");
+        cdnBtn.classList.remove("open");
+      }
     });
+
+    function updateCdnDropdownUI(selectedKey, customUrl) {
+      const label = document.getElementById("cdnDropdownLabel");
+      const providers = window.AthyxCdn ? window.AthyxCdn.PROVIDERS : {};
+      
+      document.querySelectorAll("#cdnDropdownMenu .dropdown-item").forEach(item => {
+        item.classList.remove("selected");
+      });
+
+      if (providers[selectedKey]) {
+        const p = providers[selectedKey];
+        if (label) label.innerHTML = `<i class="fa-solid fa-server" style="margin-right: 6px;"></i> ${p.name}`;
+        const activeItem = document.getElementById(`cdn-opt-${selectedKey}`);
+        if (activeItem) activeItem.classList.add("selected");
+      } else if (selectedKey === "custom" || customUrl) {
+        const display = customUrl || localStorage.getItem("athyx_cdn_mirror") || "Custom";
+        if (label) label.innerHTML = `<i class="fa-solid fa-server" style="margin-right: 6px;"></i> Custom: ${display.replace(/^https?:\/\//, '')}`;
+        const customItem = document.getElementById("cdn-opt-custom");
+        if (customItem) customItem.classList.add("selected");
+      }
+    }
+
+    function selectCdnMirror(providerKey) {
+      if (window.AthyxCdn) {
+        window.AthyxCdn.setActiveCdn(providerKey);
+        updateCdnDropdownUI(providerKey);
+        const menu = document.getElementById("cdnDropdownMenu");
+        const btn = document.getElementById("cdnDropdownBtn");
+        if (menu) menu.classList.remove("show");
+        if (btn) btn.classList.remove("open");
+        const prov = window.AthyxCdn.PROVIDERS[providerKey];
+        showToast(`CDN mirror set to ${prov ? prov.name : providerKey}`);
+      }
+    }
+
+    function promptCustomCdn() {
+      const menu = document.getElementById("cdnDropdownMenu");
+      const btn = document.getElementById("cdnDropdownBtn");
+      if (menu) menu.classList.remove("show");
+      if (btn) btn.classList.remove("open");
+
+      const current = localStorage.getItem("athyx_cdn_mirror") || "https://cdn.jsdelivr.net";
+      const custom = prompt("Enter custom CDN / mirror base URL (e.g. https://your-mirror.example.com):", current);
+      if (!custom || !custom.trim()) return;
+
+      let clean = custom.trim().replace(/\/+$/, '');
+      if (!/^https?:\/\//i.test(clean)) clean = "https://" + clean;
+
+      localStorage.setItem("athyx_cdn_mirror", clean);
+      updateCdnDropdownUI("custom", clean);
+      showToast(`Custom CDN set to ${clean}`);
+    }
 
     function selectCloakPreset(presetKey) {
       const preset = CLOAK_PRESETS[presetKey];
@@ -1842,6 +1944,13 @@
         document.getElementById("siteTitleDropdownLabel").textContent = `Custom: ${title}`;
       } else if (CLOAK_PRESETS[selectedPresetKey]) {
         document.getElementById("siteTitleDropdownLabel").textContent = CLOAK_PRESETS[selectedPresetKey].name;
+      }
+
+      // Initialize CDN Mirror state
+      if (window.AthyxCdn) {
+        const activeCdn = window.AthyxCdn.getActiveCdn();
+        const provKey = window.AthyxCdn.getProviderKey(activeCdn);
+        updateCdnDropdownUI(provKey, provKey === "custom" ? activeCdn : null);
       }
 
       // Initialize Color Picker

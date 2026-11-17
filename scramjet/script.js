@@ -118,6 +118,12 @@ document.addEventListener('DOMContentLoaded', async function () {
             all: basePath + 'JS/scramjet.all.js',
             sync: basePath + 'JS/scramjet.sync.js',
         },
+        flags: {
+            serviceworkers: true,
+            syncxhr: true,
+            allowInvalidJs: true,
+            allowFailedIntercepts: true,
+        },
     });
 
     scramjet.init();
@@ -133,7 +139,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     if (!reducedFeatureMode && supportsServiceWorker) {
         // Dynamic path calculation for subfolder hosting compatibility
-        await navigator.serviceWorker.register(basePath + 'sw.js', { scope: basePath });
+        try {
+            await navigator.serviceWorker.register(basePath + 'sw.js', { scope: '/' });
+        } catch (_) {
+            await navigator.serviceWorker.register(basePath + 'sw.js', { scope: basePath });
+        }
     }
     
     // Send the WISP URL to the service worker once ready or if controller already exists

@@ -47,12 +47,34 @@
 
   var DEFAULT_WISPS = [
     { name: 'Baylib Fast Wisp (Unblocked)', url: 'wss://new-server.baylib.top/connection/' },
+    { name: 'StudyNest Relay', url: 'wss://studynestlab.org/sb/w/' },
+    { name: 'Sunrise School Relay', url: 'wss://akmalsunriseschool.com/wisp/' },
+    { name: 'MathNest Relay', url: 'wss://kidsmathnest.org/wisp/' },
     { name: 'Space Wisp', url: 'wss://gointospace.app/wisp/' },
     { name: 'Mercury Workshop Wisp', url: 'wss://wisp.mercurywork.shop/' }
   ];
 
-  function getWispCandidates() {
+  async function getWispCandidates() {
     var list = DEFAULT_WISPS.slice();
+    try {
+      var res = await fetch('/wisp.txt?t=' + Date.now(), { cache: 'no-store' }).catch(function () {
+        return fetch('https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main/wisp.txt?t=' + Date.now(), { cache: 'no-store' });
+      });
+      if (res && res.ok) {
+        var text = await res.text();
+        text.split('\n').forEach(function (line) {
+          var url = line.trim();
+          if (url && /^wss?:\/\//i.test(url)) {
+            if (!list.some(function (x) { return x.url === url; })) {
+              try {
+                var host = new URL(url).hostname;
+                list.push({ name: host, url: url });
+              } catch (_) {}
+            }
+          }
+        });
+      }
+    } catch (_) {}
     try {
       var custom = JSON.parse(localStorage.getItem('customWisps') || '[]');
       if (Array.isArray(custom)) {
@@ -480,7 +502,7 @@
     options = options || {};
     injectStyles();
 
-    var wisps = getWispCandidates();
+    var wisps = await getWispCandidates();
 
     var overlay = document.getElementById('athyx-setup-overlay');
     if (!overlay) {

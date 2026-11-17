@@ -1725,6 +1725,9 @@
     const DEFAULT_WISP = "wss://new-server.baylib.top/connection/";
     let DEFAULT_WISP_SERVERS = [
       { name: "Baylib Fast Wisp (Unblocked)", url: "wss://new-server.baylib.top/connection/" },
+      { name: "StudyNest Relay", url: "wss://studynestlab.org/sb/w/" },
+      { name: "Sunrise School Relay", url: "wss://akmalsunriseschool.com/wisp/" },
+      { name: "MathNest Relay", url: "wss://kidsmathnest.org/wisp/" },
       { name: "Space Wisp", url: "wss://gointospace.app/wisp/" },
       { name: "Mercury Workshop Wisp", url: "wss://wisp.mercurywork.shop/" }
     ];
@@ -2086,9 +2089,28 @@
         }
       });
 
-      // Render Wisps
+      // Render Wisps and sync with wisp.txt
       renderWispSettings();
-      setTimeout(pingAllWispServers, 400);
+      fetch("../wisp.txt?t=" + Date.now(), { cache: "no-store" })
+        .catch(() => fetch("https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main/wisp.txt?t=" + Date.now(), { cache: "no-store" }))
+        .then(res => res && res.ok ? res.text() : "")
+        .then(text => {
+          if (text) {
+            text.split("\n").forEach(line => {
+              const url = line.trim();
+              if (url && /^wss?:\/\//i.test(url) && !DEFAULT_WISP_SERVERS.some(s => s.url === url)) {
+                try {
+                  DEFAULT_WISP_SERVERS.push({ name: new URL(url).hostname, url });
+                } catch (_) {}
+              }
+            });
+            renderWispSettings();
+          }
+          setTimeout(pingAllWispServers, 300);
+        })
+        .catch(() => {
+          setTimeout(pingAllWispServers, 400);
+        });
     });
   </script>
 

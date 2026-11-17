@@ -21,7 +21,10 @@ const { ScramjetServiceWorker } = $scramjetLoadWorker();
 const scramjet = new ScramjetServiceWorker({
     prefix: basePath + 'JS/scramjet/',
     flags: {
-        allowInvalidJs: true
+        serviceworkers: true,
+        syncxhr: true,
+        allowInvalidJs: true,
+        allowFailedIntercepts: true
     }
 });
 
@@ -39,10 +42,61 @@ self.addEventListener('activate', (event) => {
     );
 });
 
+const INTERNAL_PREFIXES = [
+    '/pages/',
+    '/js/',
+    '/assets/',
+    '/images/',
+    '/raldi/',
+    `${basePath}JS/`,
+    `${basePath}B/`,
+    `${basePath}Ep/`
+];
+
+const INTERNAL_EXACT = new Set([
+    '/',
+    '/index.html',
+    '/themes.css',
+    '/quotes.txt',
+    '/update_log.json',
+    '/ads.txt',
+    '/wisp.txt',
+    `${basePath}`,
+    `${basePath}index.html`,
+    `${basePath}NT.html`,
+    `${basePath}compat-error.html`,
+    `${basePath}settings.html`,
+    `${basePath}script.js`,
+    `${basePath}style.css`,
+    `${basePath}prxxry.config.js`,
+    `${basePath}libcurl.mjs`,
+    `${basePath}sw.js`
+]);
+
+function isInternalSiteAsset(pathname) {
+    if (INTERNAL_EXACT.has(pathname)) return true;
+    for (let i = 0; i < INTERNAL_PREFIXES.length; i++) {
+        if (pathname.startsWith(INTERNAL_PREFIXES[i])) return true;
+    }
+    return false;
+}
 
 self.addEventListener("fetch", (event) => {
+    const prefix = `${self.location.origin}${basePath}JS/scramjet/`;
+    const wasmUrl = `${self.location.origin}${basePath}JS/scramjet.wasm.wasm`;
+    const reqUrlStr = event.request.url;
+    const refStr = event.request.referrer || '';
+
+    const isDirectProxyReq = reqUrlStr.startsWith(prefix) || reqUrlStr.startsWith(wasmUrl);
+    const isFromProxiedPage = refStr.startsWith(prefix);
+
+    // Do not intercept unrelated requests from non-proxy pages (games, homepage, settings)
+    if (!isDirectProxyReq && !isFromProxiedPage) {
+        return;
+    }
+
     event.respondWith((async () => {
-        const requestUrl = new URL(event.request.url);
+        const requestUrl = new URL(reqUrlStr);
         const compatibilityEnabled = wispConfig.compatCheck === true;
         const requestFallbackEnabled = wispConfig.requestFallback === true;
         const reducedFeatureMode = wispConfig.reducedFeature === true;
@@ -52,16 +106,15 @@ self.addEventListener("fetch", (event) => {
                 return fetch(event.request, { mode: 'cors', redirect: 'manual' });
             }
 
-            if (reducedFeatureMode && !event.request.url.startsWith(self.location.origin)) {
+            if (reducedFeatureMode && !reqUrlStr.startsWith(self.location.origin)) {
                 return fetch(event.request);
             }
 
             await scramjet.loadConfig();
             if (scramjet.route(event)) {
-                const prefix = `${self.location.origin}${basePath}JS/scramjet/`;
-                if (event.request.url.startsWith(prefix)) {
+                if (reqUrlStr.startsWith(prefix)) {
                     try {
-                        let inner = decodeURIComponent(event.request.url.slice(prefix.length));
+                        let inner = decodeURIComponent(reqUrlStr.slice(prefix.length));
                         if (inner.startsWith(prefix)) {
                             while (inner.startsWith(prefix)) {
                                 inner = decodeURIComponent(inner.slice(prefix.length));
@@ -79,6 +132,26 @@ self.addEventListener("fetch", (event) => {
                     return fetch(event.request, { mode: 'cors', redirect: 'manual' });
                 }
             }
+
+            // CroxyProxy-style Referrer Origin Recovery:
+            // Catch root-relative or subfolder-escaped requests originating from a proxied page
+            if (
+                isFromProxiedPage &&
+                requestUrl.origin === self.location.origin &&
+                !isInternalSiteAsset(requestUrl.pathname)
+            ) {
+                try {
+                    const encodedRef = refStr.slice(prefix.length).split('?')[0].split('#')[0];
+                    const targetRefUrl = new URL(decodeURIComponent(encodedRef));
+                    let relPath = requestUrl.pathname;
+                    if (basePath !== '/' && relPath.startsWith(basePath)) {
+                        relPath = '/' + relPath.slice(basePath.length);
+                    }
+                    const recoveredTarget = new URL(relPath + requestUrl.search, targetRefUrl.origin).href;
+                    return Response.redirect(`${prefix}${encodeURIComponent(recoveredTarget)}`, 307);
+                } catch (_) {}
+            }
+
             return await fetch(event.request);
         } catch (err) {
             if (requestFallbackEnabled) {
@@ -118,14 +191,14 @@ const configReadyPromise = new Promise(resolve => {
     // Safety fallback so requests never hang if config message is delayed
     setTimeout(() => {
         if (!wispConfig.wispurl) {
-            wispConfig.wispurl = "wss://ok.worldmicroscope.com/wisp/";
+            wispConfig.wispurl = "wss://new-server.baylib.top/connection/";
         }
         resolve();
     }, 3000);
 });
 
 self.addEventListener("message", ({ data }) => {
-    if (data.type === "config") {
+    if (data && data.type === "config") {
         if (data.wispurl) {
             const oldWisp = wispConfig.wispurl;
             wispConfig.wispurl = data.wispurl;

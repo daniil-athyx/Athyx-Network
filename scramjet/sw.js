@@ -13,10 +13,52 @@ self.$scramjet = {
 };
 
 // Load ALL required scripts at the top level.
-importScripts(`${basePath}JS/scramjet.all.js?v=5`);
+importScripts(`${basePath}JS/scramjet.all.js?v=6`);
 importScripts(`${basePath}B/index.js`);
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
+
+const defaultScramjetConfig = {
+    prefix: basePath + 'JS/scramjet/',
+    globals: {
+        wrapfn: "$scramjet$wrap",
+        wrappropertybase: "$scramjet__",
+        wrappropertyfn: "$scramjet$prop",
+        cleanrestfn: "$scramjet$clean",
+        importfn: "$scramjet$import",
+        rewritefn: "$scramjet$rewrite",
+        metafn: "$scramjet$meta",
+        setrealmfn: "$scramjet$setrealm",
+        pushsourcemapfn: "$scramjet$pushsourcemap",
+        trysetfn: "$scramjet$tryset",
+        templocid: "$scramjet$temploc",
+        tempunusedid: "$scramjet$tempunused"
+    },
+    files: {
+        wasm: basePath + 'JS/scramjet.wasm.wasm',
+        all: basePath + 'JS/scramjet.all.js',
+        sync: basePath + 'JS/scramjet.sync.js'
+    },
+    flags: {
+        serviceworkers: true,
+        syncxhr: true,
+        strictRewrites: true,
+        rewriterLogs: false,
+        captureErrors: true,
+        cleanErrors: false,
+        scramitize: false,
+        sourcemaps: true,
+        destructureRewrites: false,
+        interceptDownloads: false,
+        allowInvalidJs: true,
+        allowFailedIntercepts: true
+    },
+    siteFlags: {},
+    codec: {
+        encode: (e => e ? encodeURIComponent(e) : e).toString(),
+        decode: (e => e ? decodeURIComponent(e) : e).toString()
+    }
+};
 
 const scramjet = new ScramjetServiceWorker({
     prefix: basePath + 'JS/scramjet/',
@@ -27,6 +69,7 @@ const scramjet = new ScramjetServiceWorker({
         allowFailedIntercepts: true
     }
 });
+scramjet.config = defaultScramjetConfig;
 
 self.addEventListener('install', (event) => {
     self.skipWaiting();
@@ -111,6 +154,9 @@ self.addEventListener("fetch", (event) => {
             }
 
             await scramjet.loadConfig();
+            if (!scramjet.config) {
+                scramjet.config = defaultScramjetConfig;
+            }
             if (scramjet.route(event)) {
                 if (reqUrlStr.startsWith(prefix)) {
                     try {

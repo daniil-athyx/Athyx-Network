@@ -90,12 +90,7 @@
 
   async function testCdn(cdn, timeoutMs) {
     timeoutMs = timeoutMs || 3500;
-    var testUrl;
-    if (cdn.id === 'statically') {
-      testUrl = cdn.origin + '/gh/daniil-athyx/ubg-assets/main/games.json?t=' + Date.now();
-    } else {
-      testUrl = cdn.origin + '/gh/daniil-athyx/ubg-assets@main/games.json?t=' + Date.now();
-    }
+    var testUrl = cdn.origin + '/gh/daniil-athyx/ubg-assets@main/games.json';
 
     var start = performance.now();
     var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;

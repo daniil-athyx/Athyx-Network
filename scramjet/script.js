@@ -412,6 +412,13 @@ function updateTabsUI() {
 }
 function unwrapScramjetUrl(url) {
     if (!url || typeof url !== "string") return url;
+    if (url.startsWith("ath://")) return url;
+    if (url.includes("pages/g.html")) return "ath://games";
+    if (url.includes("pages/apps.html")) return "ath://apps";
+    if (url.includes("pages/homepage.html")) return "ath://home";
+    if (url.includes("pages/cloud.html")) return "ath://cloud";
+    if (url.includes("pages/settings.html")) return "ath://settings";
+    if (url.includes("NT.html")) return "ath://hometab";
     const marker = "/scramjet/JS/scramjet/";
     let current = url;
     while (current.includes(marker)) {
@@ -426,12 +433,46 @@ function unwrapScramjetUrl(url) {
     return current;
 }
 
+function isAthyxBuiltInTab(url) {
+    if (!url) return true;
+    const clean = unwrapScramjetUrl(url);
+    if (!clean) return true;
+    if (clean.startsWith("ath://") || clean.startsWith("scram://")) return true;
+    if (clean === "about:blank" || clean.endsWith("NT.html") || clean.includes("pages/")) return true;
+    return false;
+}
+
 function updateAddressBar() {
     const addressBar = document.getElementById("address-bar");
     const activeTab = getActiveTab();
-    if (addressBar) {
-        const clean = activeTab ? unwrapScramjetUrl(activeTab.url) : ""; if (!clean || clean.endsWith("NT.html") || clean === "about:blank") { addressBar.value = ""; addressBar.placeholder = "scram://hometab"; } else if (clean.endsWith("settings.html")) { addressBar.value = ""; addressBar.placeholder = "scram://settings"; } else { addressBar.placeholder = "Search or enter URL..."; addressBar.value = clean; }
+    if (!addressBar) return;
+    if (!activeTab) {
+        addressBar.value = "";
+        addressBar.placeholder = "ath://hometab";
+        addressBar.classList.remove("built-in-focused");
+        return;
     }
+    const clean = unwrapScramjetUrl(activeTab.url);
+    const isBuiltIn = isAthyxBuiltInTab(activeTab.url);
+    const displayUrl = clean || "ath://hometab";
+
+    if (document.activeElement === addressBar) {
+        if (isBuiltIn) {
+            addressBar.dataset.builtinUrl = displayUrl;
+            addressBar.placeholder = displayUrl;
+            if (!addressBar.value) {
+                addressBar.classList.add("built-in-focused");
+            }
+        } else {
+            addressBar.classList.remove("built-in-focused");
+        }
+        return;
+    }
+
+    addressBar.classList.remove("built-in-focused");
+    addressBar.dataset.builtinUrl = displayUrl;
+    addressBar.value = displayUrl;
+    addressBar.placeholder = isBuiltIn ? displayUrl : "Search or enter URL...";
 }
 function isSameOrigin(url) {
     try {
@@ -520,11 +561,74 @@ async function initializeBrowser() {
     document.getElementById('back-btn').onclick = () => getActiveTab()?.frame.back();
     document.getElementById('fwd-btn').onclick = () => getActiveTab()?.frame.forward();
     document.getElementById('reload-btn').onclick = () => getActiveTab()?.frame.reload();
-    document.getElementById('address-bar').onkeyup = (event) => {
-        if (event.keyCode === 13)
+    const addressBarEl = document.getElementById('address-bar');
+    addressBarEl.addEventListener('focus', () => {
+        const activeTab = getActiveTab();
+        const url = activeTab ? activeTab.url : '';
+        const clean = activeTab ? unwrapScramjetUrl(url) : '';
+        const isBuiltIn = isAthyxBuiltInTab(url);
+
+        if (isBuiltIn) {
+            const displayUrl = clean || 'ath://hometab';
+            addressBarEl.dataset.builtinUrl = displayUrl;
+            addressBarEl.placeholder = displayUrl;
+            addressBarEl.value = '';
+            addressBarEl.classList.add('built-in-focused');
+        } else {
+            addressBarEl.classList.remove('built-in-focused');
+            setTimeout(() => {
+                if (document.activeElement === addressBarEl) {
+                    addressBarEl.select();
+                }
+            }, 10);
+        }
+    });
+
+    addressBarEl.addEventListener('input', () => {
+        const activeTab = getActiveTab();
+        const isBuiltIn = isAthyxBuiltInTab(activeTab ? activeTab.url : '');
+        if (isBuiltIn) {
+            if (addressBarEl.value.length === 0) {
+                addressBarEl.placeholder = addressBarEl.dataset.builtinUrl || (activeTab ? unwrapScramjetUrl(activeTab.url) : 'ath://hometab');
+                addressBarEl.classList.add('built-in-focused');
+            } else {
+                addressBarEl.classList.add('built-in-focused');
+            }
+        }
+    });
+
+    addressBarEl.addEventListener('blur', () => {
+        addressBarEl.classList.remove('built-in-focused');
+        const activeTab = getActiveTab();
+        const url = activeTab ? activeTab.url : '';
+        const clean = activeTab ? unwrapScramjetUrl(url) : '';
+        const isBuiltIn = isAthyxBuiltInTab(url);
+
+        if (isBuiltIn) {
+            const displayUrl = clean || 'ath://hometab';
+            addressBarEl.value = displayUrl;
+            addressBarEl.placeholder = displayUrl;
+        } else {
+            if (addressBarEl.value.trim() === '') {
+                addressBarEl.value = clean || '';
+            }
+            addressBarEl.placeholder = 'Search or enter URL...';
+        }
+    });
+
+    addressBarEl.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            addressBarEl.blur();
             handleSubmit();
-    }
-        ;
+        } else if (event.key === 'Escape') {
+            event.preventDefault();
+            const activeTab = getActiveTab();
+            const clean = activeTab ? unwrapScramjetUrl(activeTab.url) : '';
+            addressBarEl.value = clean || 'ath://hometab';
+            addressBarEl.blur();
+        }
+    });
     document.getElementById('open-new-window-btn').onclick = () => {
         const url = getActiveTab()?.url;
         if (url)
@@ -650,14 +754,35 @@ function handleSubmit(url = null) {
     }
 
     // Handle custom internal schemes
-    if (inputUrl === "scram://settings") {
-        activeTab.isInitialPageLoad = true;
-        activeTab.loading = true;
-        updateLoadingBar(activeTab);
-        activeTab.frame.frame.src = basePath + 'settings.html';
-        activeTab.url = inputUrl;
-        if (addressBar) addressBar.value = inputUrl;
-        return;
+    if (inputUrl.startsWith("ath://") || inputUrl === "scram://settings" || inputUrl === "scram://hometab") {
+        const routeMap = {
+            "ath://games": { src: "../pages/g.html", title: "Games - Athyx Network" },
+            "ath://apps": { src: "../pages/apps.html", title: "Apps - Athyx Network" },
+            "ath://home": { src: "../pages/homepage.html", title: "Home - Athyx Network" },
+            "ath://cloud": { src: "../pages/cloud.html", title: "Proxy/Cloud Games" },
+            "ath://settings": { src: "../pages/settings.html", title: "Settings - Athyx Network" },
+            "scram://settings": { src: basePath + "settings.html", title: "Settings" },
+            "ath://hometab": { src: basePath + "NT.html", title: "New Tab" },
+            "scram://hometab": { src: basePath + "NT.html", title: "New Tab" },
+            "ath://ai": { src: "https://toolbaz.com/writer/chat-gpt-alternative", proxy: true, title: "AI Assistant" }
+        };
+        const lower = inputUrl.toLowerCase();
+        if (routeMap[lower]) {
+            const target = routeMap[lower];
+            activeTab.isInitialPageLoad = true;
+            activeTab.loading = true;
+            updateLoadingBar(activeTab);
+            activeTab.url = inputUrl;
+            activeTab.title = target.title;
+            if (target.proxy) {
+                activeTab.frame.go(target.src);
+            } else {
+                activeTab.frame.frame.src = target.src;
+            }
+            if (addressBar) addressBar.value = inputUrl;
+            updateTabsUI();
+            return;
+        }
     }
 
     // Handle special cases where URL might be malformed

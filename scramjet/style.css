@@ -2,17 +2,17 @@
 
 :root {
     color-scheme: dark;
-    --bg: #0b0508;
-    --bg-base: #0b0508;
-    --surface: rgba(28, 12, 16, 0.82);
-    --surface-hover: rgba(42, 18, 24, 0.9);
-    --surface-active: rgba(64, 26, 35, 0.96);
-    --border: rgba(10, 255, 206, 0.16);
-    --border-hover: rgba(10, 255, 206, 0.32);
-    --border-light: rgba(10, 255, 206, 0.22);
-    --text: #fff5f6;
-    --text-main: #fff5f6;
-    --text-muted: #f7c6ce;
+    --bg: #000000;
+    --bg-base: #000000;
+    --surface: rgba(255, 255, 255, 0.05);
+    --surface-hover: rgba(255, 255, 255, 0.08);
+    --surface-active: rgba(255, 255, 255, 0.12);
+    --border: rgba(255, 255, 255, 0.1);
+    --border-hover: rgba(255, 255, 255, 0.22);
+    --border-light: rgba(255, 255, 255, 0.14);
+    --text: #ffffff;
+    --text-main: #ffffff;
+    --text-muted: #a1a1aa;
     --text-dim: rgb(10, 255, 206);
     --accent: rgb(10, 255, 206);
     --accent-dim: rgba(10, 255, 206, 0.18);
@@ -137,6 +137,26 @@ input.bar:focus {
     background: var(--surface-hover);
     border-color: var(--accent);
     box-shadow: 0 0 0 2px var(--accent-dim), 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+input.bar::placeholder {
+    color: rgba(255, 255, 255, 0.45);
+    transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+input.bar.built-in-focused,
+input.bar.built-in-focused:focus {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 4px 18px rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: #ffffff;
+}
+
+input.bar.built-in-focused::placeholder {
+    color: rgba(255, 255, 255, 0.38) !important;
+    opacity: 1 !important;
 }
 
 /* Tabs Bar */

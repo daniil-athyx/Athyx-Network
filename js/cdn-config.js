@@ -136,11 +136,6 @@
     if (!isMatch) return url;
 
     var path = url.slice(matchedOrigin.length);
-
-    if (dest.indexOf('statically.io') !== -1) {
-      path = path.replace(/\/gh\/([^/]+)\/([^/@]+)@([^/]+)\//, '/gh/$1/$2/$3/');
-    }
-
     return dest + path;
   }
 
@@ -149,20 +144,11 @@
     var dest = (targetOrigin || getActiveCdn()).replace(/\/+$/, '');
 
     var pattern = /https?:\/\/(?:cdn|fastly|gcore)\.jsdelivr\.net|https?:\/\/jsdelivr\.5210521\.xyz|https?:\/\/cdn\.statically\.io/gi;
-    var res = html.replace(pattern, dest);
-
-    if (dest.indexOf('statically.io') !== -1) {
-      res = res.replace(/(\/gh\/[^/]+\/[^/@]+)@([^/"']+)/g, '$1/$2');
-    }
-
-    return res;
+    return html.replace(pattern, dest);
   }
 
   function getUbgAssetsBase(targetOrigin) {
     var dest = (targetOrigin || getActiveCdn()).replace(/\/+$/, '');
-    if (dest.indexOf('statically.io') !== -1) {
-      return dest + '/gh/daniil-athyx/ubg-assets/main/';
-    }
     return dest + '/gh/daniil-athyx/ubg-assets@main/';
   }
 

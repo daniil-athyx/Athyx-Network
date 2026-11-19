@@ -13,7 +13,7 @@ self.$scramjet = {
 };
 
 // Load ALL required scripts at the top level.
-importScripts('/scramjet/JS/scramjet.all.js?v=11');
+importScripts('/scramjet/JS/scramjet.all.js?v=12');
 importScripts('/scramjet/B/index.js');
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
@@ -36,7 +36,7 @@ const defaultScramjetConfig = {
     },
     files: {
         wasm: '/scramjet/JS/scramjet.wasm.wasm',
-        all: '/scramjet/JS/scramjet.all.js',
+        all: '/scramjet/JS/scramjet.all.js?v=12',
         sync: '/scramjet/JS/scramjet.sync.js'
     },
     flags: {

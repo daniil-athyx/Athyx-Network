@@ -39,6 +39,7 @@
   ];
 
   var DEFAULT_WISPS = [
+    { name: 'GirlsPrep Relay (Recommended)', url: 'wss://girlspreples.org/wi/' },
     { name: 'Plutonium Serverless Wisp', url: 'wss://wisp.plutoniumnet.work/' },
     { name: 'Plutonium US East Wisp', url: 'wss://wisp-us-east-backup.plutoniumnet.work/' },
     { name: 'Plutonium US West Wisp', url: 'wss://wisp-us-west-backup.plutoniumnet.work/' },

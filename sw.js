@@ -133,7 +133,7 @@ async function ensureBareClient(forceReconnect = false) {
     clientInitPromise = (async () => {
         try {
             await configReadyPromise;
-            const wisp = wispConfig.wispurl || "wss://wisp.plutoniumnet.work/";
+            const wisp = wispConfig.wispurl || "wss://girlspreples.org/wi/";
             const connection = new BareMux.BareMuxConnection(`/scramjet/B/worker.js`);
             if (forceReconnect) {
                 await connection.setTransport(`/scramjet/Ep/index.mjs`, [{ wisp }]);
@@ -271,7 +271,7 @@ const configReadyPromise = new Promise(resolve => {
     // Safety fallback so requests never hang if config message is delayed
     setTimeout(() => {
         if (!wispConfig.wispurl) {
-            wispConfig.wispurl = "wss://wisp.plutoniumnet.work/";
+            wispConfig.wispurl = "wss://girlspreples.org/wi/";
         }
         resolve();
     }, 3000);
@@ -366,7 +366,7 @@ scramjet.addEventListener("request", async (e) => {
             method: e.method,
             body: bodyPayload,
             headers: reqHeaders,
-            credentials: "omit",
+            credentials: "include",
             mode: e.mode === "cors" ? e.mode : "same-origin",
             cache: e.cache,
             redirect: "manual",

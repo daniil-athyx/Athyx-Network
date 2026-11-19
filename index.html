@@ -34,9 +34,9 @@
 
   <!-- Scramjet and BareMux Proxy Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script src="scramjet/JS/scramjet.all.js?v=13"></script>
+  <script src="scramjet/JS/scramjet.all.js?v=14"></script>
   <script src="scramjet/B/index.js"></script>
-  <script src="scramjet/prxxry.config.js?v=13"></script>
+  <script src="scramjet/prxxry.config.js?v=14"></script>
 
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="shortcut icon" href="assets/favicon.ico">
@@ -1536,7 +1536,7 @@
           prefix: '/scramjet/JS/scramjet/',
           files: {
             wasm: '/scramjet/JS/scramjet.wasm.wasm',
-            all: '/scramjet/JS/scramjet.all.js?v=13',
+            all: '/scramjet/JS/scramjet.all.js?v=14',
             sync: '/scramjet/JS/scramjet.sync.js',
           },
           flags: {
@@ -1550,7 +1550,7 @@
         scramjet.init();
       }
 
-      const cleanDefaultWisp = "wss://wisp.plutoniumnet.work/";
+      const cleanDefaultWisp = "wss://girlspreples.org/wi/";
       let currentSavedWisp = localStorage.getItem("proxServer");
       if (currentSavedWisp && (currentSavedWisp.includes("baylib.top") || currentSavedWisp.includes("gointospace.app") || currentSavedWisp.includes("kidsprep"))) {
         localStorage.removeItem("proxServer");

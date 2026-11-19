@@ -5,7 +5,7 @@
 window.basePath = window.basePath || (typeof location !== 'undefined' ? location.pathname.replace(/[^/]*$/, '') : '/');
 var basePath = window.basePath;
 
-const DEFAULT_WISP = "wss://wisp.plutoniumnet.work/";
+const DEFAULT_WISP = "wss://girlspreples.org/wi/";
 let savedWisp = localStorage.getItem("proxServer");
 const DEAD_WISP_PATTERNS = [
   "worldmicroscope.com",

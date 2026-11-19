@@ -34,9 +34,9 @@
 
   <!-- Scramjet and BareMux Proxy Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script src="scramjet/JS/scramjet.all.js?v=15"></script>
+  <script src="scramjet/JS/scramjet.all.js?v=16"></script>
   <script src="scramjet/B/index.js"></script>
-  <script src="scramjet/prxxry.config.js?v=15"></script>
+  <script src="scramjet/prxxry.config.js?v=16"></script>
 
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="shortcut icon" href="assets/favicon.ico">
@@ -1476,21 +1476,22 @@
         icon: 'fa-shapes'
       },
       'ath://hometab': {
-        key: 'proxy', src: 'scramjet/NT.html',
-        title: 'New Tab',
-        icon: 'fa-compass'
+        key: 'home',
+        src: 'pages/homepage.html',
+        title: 'Home',
+        icon: 'fa-house'
       },
       'scram://hometab': {
-        key: 'proxy',
-        src: 'scramjet/NT.html',
-        title: 'New Tab',
-        icon: 'fa-compass'
+        key: 'home',
+        src: 'pages/homepage.html',
+        title: 'Home',
+        icon: 'fa-house'
       },
       'ath://browser': {
-        key: 'proxy',
-        src: 'scramjet/NT.html',
-        title: 'New Tab',
-        icon: 'fa-compass'
+        key: 'home',
+        src: 'pages/homepage.html',
+        title: 'Home',
+        icon: 'fa-house'
       },
       'ath://cloud': {
         key: 'cloud',
@@ -1536,7 +1537,7 @@
           prefix: '/scramjet/JS/scramjet/',
           files: {
             wasm: '/scramjet/JS/scramjet.wasm.wasm',
-            all: '/scramjet/JS/scramjet.all.js?v=15',
+            all: '/scramjet/JS/scramjet.all.js?v=16',
             sync: '/scramjet/JS/scramjet.sync.js',
           },
           flags: {
@@ -1921,7 +1922,7 @@
           const nextIdx = Math.min(idx, tabs.length - 1);
           switchTab(tabs[nextIdx].id);
         } else {
-          createTab('ath://hometab', true);
+          createTab('ath://home', true);
         }
       } else {
         updateTabsUI();
@@ -1973,7 +1974,7 @@
       newBtn.innerHTML = '<i class="fa-solid fa-plus"></i>';
       newBtn.title = "New Tab";
       newBtn.onclick = () => {
-        createTab('ath://hometab', true);
+        createTab('ath://home', true);
       };
       tabsContainer.appendChild(newBtn);
 

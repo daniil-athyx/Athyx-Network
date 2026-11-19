@@ -6,7 +6,7 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BDX31ZZP55"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-BDX31ZZP55');
   </script>
@@ -18,12 +18,14 @@
     try {
       const savedCloakTitle = localStorage.getItem("athyx_tab_title");
       if (savedCloakTitle) document.title = savedCloakTitle;
-    } catch(e) {}
+    } catch (e) { }
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link rel="stylesheet" href="themes.css?v=6">
   <script src="js/themes.js?v=6"></script>
@@ -32,9 +34,9 @@
 
   <!-- Scramjet and BareMux Proxy Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script src="scramjet/JS/scramjet.all.js?v=12"></script>
+  <script src="scramjet/JS/scramjet.all.js?v=13"></script>
   <script src="scramjet/B/index.js"></script>
-  <script src="scramjet/prxxry.config.js?v=12"></script>
+  <script src="scramjet/prxxry.config.js?v=13"></script>
 
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="shortcut icon" href="assets/favicon.ico">
@@ -45,7 +47,7 @@
       if (savedCloakIcon) {
         document.querySelectorAll("link[rel*='icon']").forEach(el => el.href = savedCloakIcon);
       }
-    } catch(e) {}
+    } catch (e) { }
 
     // Synchronize cloak in real-time when changed from Settings
     window.addEventListener("storage", (e) => {
@@ -86,7 +88,7 @@
     @font-face {
       font-family: 'Sabersong';
       src: url('assets/fonts/Sabersong-X38j2.ttf') format('truetype'),
-           url('assets/fonts/Sabersong-L3Djy.otf') format('opentype');
+        url('assets/fonts/Sabersong-L3Djy.otf') format('opentype');
       font-weight: normal;
       font-style: normal;
       font-display: swap;
@@ -118,13 +120,16 @@
       --font-heading: 'Outfit', sans-serif;
     }
 
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
-    html, body {
+    html,
+    body {
       width: 100vw;
       height: 100vh;
       overflow: hidden;
@@ -238,7 +243,8 @@
       display: block;
     }
 
-    .tab-favicon[src=""], .tab-favicon:not([src]) {
+    .tab-favicon[src=""],
+    .tab-favicon:not([src]) {
       display: none;
     }
 
@@ -658,33 +664,217 @@
     }
 
     /* Modals & Alerts */
-    .custom-alert { position: fixed; inset: 0; z-index: 99999; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, 0.78); backdrop-filter: blur(8px); }
-    .custom-alert.open { display: flex; animation: alertFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-    .custom-alert-card { width: min(440px, 92vw); background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 24px; text-align: center; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55); display: flex; flex-direction: column; gap: 12px; align-items: center; color: var(--text-main); }
-    .custom-alert-title { margin: 0; font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-main); }
-    .custom-alert-text { margin: 0; font-size: 14px; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px; width: 100%; text-align: left; }
-    .custom-alert-btn { width: 100%; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; background: var(--accent); color: #000; transition: filter 0.2s; }
-    .custom-alert-btn:hover { filter: brightness(1.1); }
-    @keyframes alertFadeIn { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .custom-alert {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+    }
+
+    .custom-alert.open {
+      display: flex;
+      animation: alertFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .custom-alert-card {
+      width: min(440px, 92vw);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      color: var(--text-main);
+    }
+
+    .custom-alert-title {
+      margin: 0;
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .custom-alert-text {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 8px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .custom-alert-btn {
+      width: 100%;
+      border: none;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      background: var(--accent);
+      color: #000;
+      transition: filter 0.2s;
+    }
+
+    .custom-alert-btn:hover {
+      filter: brightness(1.1);
+    }
+
+    @keyframes alertFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
 
     /* WISP Modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 99998; opacity: 1; transition: opacity 0.2s ease; }
-    .modal-overlay.hidden { display: none !important; opacity: 0; pointer-events: none; }
-    .wisp-settings-container { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: 90%; max-width: 500px; padding: 20px; box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6); display: flex; flex-direction: column; gap: 16px; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-    .modal-header h3 { font-family: var(--font-heading); font-size: 18px; color: var(--text); }
-    .modal-close-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; }
-    .modal-close-btn:hover { background: var(--surface-hover); color: var(--text); }
-    .modal-close-btn svg { width: 18px; height: 18px; }
-    .wisp-option { background: var(--surface-hover); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; }
-    .wisp-option:hover { border-color: var(--accent); background: var(--surface-active); }
-    .wisp-option.selected { border-color: var(--accent); background: var(--dock-btn-active); }
-    .wisp-option-name { font-size: 13.5px; font-weight: 500; color: var(--text); }
-    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); padding-top: 12px; }
-    .btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; }
-    .btn-secondary { background: var(--surface-hover); color: var(--text); border: 1px solid var(--border); }
-    .btn-primary { background: var(--accent); color: #000; }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99998;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.hidden {
+      display: none !important;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .wisp-settings-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      padding: 20px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .modal-header h3 {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    .modal-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+
+    .modal-close-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .wisp-option {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .wisp-option:hover {
+      border-color: var(--accent);
+      background: var(--surface-active);
+    }
+
+    .wisp-option.selected {
+      border-color: var(--accent);
+      background: var(--dock-btn-active);
+    }
+
+    .wisp-option-name {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-secondary {
+      background: var(--surface-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
     @media (max-width: 768px) {
       .dock-wrapper {
@@ -694,13 +884,16 @@
         max-width: calc(100vw - 24px);
         overflow-x: auto;
       }
+
       .dock-wrapper.dock-hidden {
         transform: translate(-50%, calc(100% - 4px));
       }
+
       .dock-item {
         padding: 7px 10px;
         font-size: 12px;
       }
+
       .dock-item span {
         display: none;
       }
@@ -752,7 +945,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
     .school-brand {
@@ -846,7 +1039,7 @@
       padding: 6px 8px;
       display: flex;
       align-items: center;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.25), 0 8px 10px -6px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
     }
 
     .school-search-box-wrapper i {
@@ -914,7 +1107,7 @@
       border: 1px solid #e2e8f0;
       border-radius: 10px;
       padding: 22px 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -924,7 +1117,7 @@
 
     .school-tile:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
     }
 
     .school-tile i {
@@ -1040,7 +1233,8 @@
   <!-- School Website Disguise -->
   <div id="school-disguise-site" aria-label="Westlake High School Portal">
     <div class="school-top-banner">
-      <span><i class="fa-solid fa-bullhorn"></i> <strong>District Notice:</strong> 2026-2027 Academic Schedule &amp; Counseling Updates Posted.</span>
+      <span><i class="fa-solid fa-bullhorn"></i> <strong>District Notice:</strong> 2026-2027 Academic Schedule &amp;
+        Counseling Updates Posted.</span>
       <div>
         <a href="#" onclick="event.preventDefault();">Daily Bell Schedule</a>
         <a href="#" onclick="event.preventDefault();">Staff Directory</a>
@@ -1049,9 +1243,10 @@
 
     <header class="school-header">
       <div class="school-brand">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+          <path d="M6 12v5c3 3 9 3 12 0v-5" />
         </svg>
         <div>
           <div class="school-name">Westlake High School</div>
@@ -1075,7 +1270,9 @@
       <form id="school-search-form" onsubmit="event.preventDefault(); handleSchoolSearch();">
         <div class="school-search-box-wrapper">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="school-text-box" class="school-search-input" placeholder="Type here to search courses, library, or notes..." autocomplete="off" spellcheck="false" autofocus>
+          <input type="text" id="school-text-box" class="school-search-input"
+            placeholder="Type here to search courses, library, or notes..." autocomplete="off" spellcheck="false"
+            autofocus>
           <button type="submit" class="school-search-submit">Search</button>
         </div>
         <div id="school-search-status" class="school-search-notice">
@@ -1138,7 +1335,8 @@
 
     <footer class="school-footer">
       <div class="school-footer-inner">
-        <div><strong>Westlake Community High School</strong> • 4500 Parkway Boulevard, District 104 • Main Office: (555) 234-8900</div>
+        <div><strong>Westlake Community High School</strong> • 4500 Parkway Boulevard, District 104 • Main Office: (555)
+          234-8900</div>
         <div>
           <a href="#" onclick="event.preventDefault();">District Board</a> |
           <a href="#" onclick="event.preventDefault();">Acceptable Use Policy</a> |
@@ -1160,10 +1358,12 @@
       <button id="back-btn" title="Back"><i class="fa-solid fa-chevron-left"></i></button>
       <button id="fwd-btn" title="Forward"><i class="fa-solid fa-chevron-right"></i></button>
       <button id="reload-btn" title="Reload"><i class="fa-solid fa-rotate-right"></i></button>
-      <input class="bar" id="address-bar" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="ath://home">
+      <input class="bar" id="address-bar" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+        placeholder="ath://home">
       <button id="devtools-btn" title="Developer Tools"><i class="fa-solid fa-code"></i></button>
       <button id="wisp-settings-btn" title="Proxy Settings"><i class="fa-solid fa-cog"></i></button>
-      <button id="open-new-window-btn" title="Open in New Window"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+      <button id="open-new-window-btn" title="Open in New Window"><i
+          class="fa-solid fa-arrow-up-right-from-square"></i></button>
     </div>
 
     <!-- Loading Bar -->
@@ -1211,7 +1411,9 @@
     </button>
   </div>
 
-  <div id="global-notification-container" style="position:fixed; top:70px; left:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none;"></div>
+  <div id="global-notification-container"
+    style="position:fixed; top:70px; left:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none;">
+  </div>
 
   <!-- Update Log Modal -->
   <div id="update-modal" class="custom-alert" aria-hidden="true">
@@ -1247,7 +1449,7 @@
 
   <script>
     // Internal Athyx Routes configuration
-    const ATHYX_REPO_ROOT = (function() {
+    const ATHYX_REPO_ROOT = (function () {
       if (typeof window !== 'undefined' && window.location) {
         return window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
       }
@@ -1273,7 +1475,8 @@
         title: 'Apps',
         icon: 'fa-shapes'
       },
-      'ath://hometab': { key: 'proxy', src: 'scramjet/NT.html',
+      'ath://hometab': {
+        key: 'proxy', src: 'scramjet/NT.html',
         title: 'New Tab',
         icon: 'fa-compass'
       },
@@ -1333,7 +1536,7 @@
           prefix: '/scramjet/JS/scramjet/',
           files: {
             wasm: '/scramjet/JS/scramjet.wasm.wasm',
-            all: '/scramjet/JS/scramjet.all.js?v=12',
+            all: '/scramjet/JS/scramjet.all.js?v=13',
             sync: '/scramjet/JS/scramjet.sync.js',
           },
           flags: {
@@ -1381,7 +1584,7 @@
           });
         }).catch(e => console.warn(e));
       }
-    } catch(e) {
+    } catch (e) {
       console.warn('Scramjet proxy initialization error:', e);
     }
 
@@ -1417,7 +1620,7 @@
         const rest = current.slice(idx + marker.length);
         try {
           current = decodeURIComponent(rest);
-        } catch(e) {
+        } catch (e) {
           current = rest;
         }
       }
@@ -1503,7 +1706,7 @@
         try {
           scramFrame = scramjet.createFrame();
           iframe = scramFrame.frame;
-        } catch(e) {}
+        } catch (e) { }
       }
       if (!iframe) {
         iframe = document.createElement("iframe");
@@ -1538,10 +1741,10 @@
           updateLoadingBar(20);
           try {
             tab.favicon = new URL(e.url).origin + "/favicon.ico";
-          } catch(_) {}
+          } catch (_) { }
           try {
             tab.title = new URL(e.url).hostname;
-          } catch(_) {}
+          } catch (_) { }
           if (tab.id === activeTabId) {
             updateAddressBar();
           }
@@ -1559,11 +1762,11 @@
           if (docTitle && !tab.url.startsWith("ath://")) {
             tab.title = docTitle;
           }
-        } catch(e) {}
+        } catch (e) { }
 
         try {
           bindIframeMouseEvents(iframe);
-        } catch(e) {}
+        } catch (e) { }
 
         updateTabsUI();
       });
@@ -1584,6 +1787,14 @@
       }
 
       return tab;
+    }
+
+    function getSearchUrl(query) {
+      const engine = localStorage.getItem("searchEngine") || "google";
+      const q = encodeURIComponent(query);
+      if (engine === "bing") return "https://www.bing.com/search?q=" + q;
+      if (engine === "duckduckgo") return "https://duckduckgo.com/?q=" + q;
+      return "https://www.google.com/search?hl=en-us&q=" + q;
     }
 
     async function navigateTo(tab, targetUrl) {
@@ -1608,7 +1819,7 @@
           if (navigator.serviceWorker && window.isSecureContext) {
             try {
               await Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(r, 1500))]);
-            } catch(_) {}
+            } catch (_) { }
           }
           if (tab.scramFrame && typeof tab.scramFrame.go === 'function') {
             tab.scramFrame.go(match.src);
@@ -1632,24 +1843,24 @@
           if (fullUrl.includes(".") && !fullUrl.includes(" ")) {
             fullUrl = "https://" + fullUrl;
           } else {
-            fullUrl = "https://www.google.com/search?hl=en-us&q=" + encodeURIComponent(fullUrl);
+            fullUrl = getSearchUrl(fullUrl);
           }
         }
         try {
           new URL(fullUrl);
-        } catch(_) {
-          fullUrl = "https://www.google.com/search?hl=en-us&q=" + encodeURIComponent(fullUrl);
+        } catch (_) {
+          fullUrl = getSearchUrl(fullUrl);
         }
         tab.url = fullUrl;
         try {
           tab.title = new URL(fullUrl).hostname;
-        } catch(_) {
+        } catch (_) {
           tab.title = fullUrl;
         }
         tab.icon = "fa-globe";
         try {
           tab.favicon = new URL(fullUrl).origin + "/favicon.ico";
-        } catch(e) {
+        } catch (e) {
           tab.favicon = "";
         }
         tab.frame.removeAttribute('srcdoc');
@@ -1657,7 +1868,7 @@
         if (navigator.serviceWorker && window.isSecureContext) {
           try {
             await Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(r, 1500))]);
-          } catch(_) {}
+          } catch (_) { }
         }
         if (tab.scramFrame && typeof tab.scramFrame.go === 'function') {
           tab.scramFrame.go(fullUrl);
@@ -1802,7 +2013,7 @@
         } else if (activeTab && activeTab.frame.contentWindow) {
           activeTab.frame.contentWindow.history.back();
         }
-      } catch(e) {}
+      } catch (e) { }
     };
 
     document.getElementById("fwd-btn").onclick = () => {
@@ -1813,7 +2024,7 @@
         } else if (activeTab && activeTab.frame.contentWindow) {
           activeTab.frame.contentWindow.history.forward();
         }
-      } catch(e) {}
+      } catch (e) { }
     };
 
     document.getElementById("reload-btn").onclick = () => {
@@ -1924,7 +2135,7 @@
           };
           win.document.head.appendChild(s);
         }
-      } catch(e) {
+      } catch (e) {
         alert("Developer tools cannot be attached to cross-origin frames.");
       }
     };
@@ -1998,7 +2209,7 @@
           };
           container.appendChild(opt);
         });
-      } catch(e) {
+      } catch (e) {
         container.innerHTML = '<div style="font-size:13px; color:var(--text-muted); padding:10px;">Using active WISP proxy: wss://wisp.plutoniumnet.work/</div>';
       }
     }
@@ -2102,7 +2313,7 @@
 
     function handleGlobalMouseMove(clientX, clientY) {
       if (isGameFullscreenActive) return;
-      
+
       let shouldShow = false;
       if (currentDockPosition === "left") {
         shouldShow = clientX <= 85;
@@ -2130,7 +2341,7 @@
             handleGlobalMouseMove(e.clientX + rect.left, e.clientY + rect.top);
           }, { passive: true });
         }
-      } catch(e) {}
+      } catch (e) { }
     }
 
     window.addEventListener("mousemove", (e) => {
@@ -2184,7 +2395,7 @@
         if (box) {
           setTimeout(() => box.focus(), 150);
         }
-      } catch(e) {}
+      } catch (e) { }
     }
 
     function handleSchoolSearch() {

@@ -588,14 +588,22 @@
         if (/^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/i.test(query)) {
           query = "https://" + query;
         } else {
-          query = "https://www.google.com/search?q=" + encodeURIComponent(query);
+          const engine = localStorage.getItem("searchEngine") || "google";
+          if (engine === "bing") {
+            query = "https://www.bing.com/search?q=" + encodeURIComponent(query);
+          } else if (engine === "duckduckgo") {
+            query = "https://duckduckgo.com/?q=" + encodeURIComponent(query);
+          } else {
+            query = "https://www.google.com/search?hl=en-us&q=" + encodeURIComponent(query);
+          }
         }
       }
 
-      const proxyPath = "/scramjet/index.html#";
-      const proxyUrl = proxyPath + encodeURIComponent(query);
-      overlayFrame.src = proxyUrl;
-      searchOverlay.classList.add("show");
+      if (window.parent && window.parent !== window && typeof window.parent.postMessage === "function") {
+        window.parent.postMessage({ type: "navigate", url: query }, "*");
+      } else {
+        location.href = "/scramjet/JS/scramjet/" + encodeURIComponent(query);
+      }
     }
 
     function closeOverlay() {

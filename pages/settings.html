@@ -1011,6 +1011,21 @@
             </div>
           </div>
 
+          <!-- Default Search Engine -->
+          <div class="setting-row" data-search-keys="search engine default google bing duckduckgo captcha bypass">
+            <div class="setting-info">
+              <span class="setting-title">Default Search Engine</span>
+              <span class="setting-desc">Choose your default search provider. If Google is blocked or displays a bot check on your network, use Bing or DuckDuckGo for instant, captcha-free results.</span>
+            </div>
+            <div class="setting-control">
+              <select id="searchEngineSelect" onchange="setSearchEngine(this.value)" style="padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border, #333); background: var(--card-bg, #1e1e24); color: var(--text, #fff); font-weight: 500; cursor: pointer; outline: none;">
+                <option value="google">Google (Default)</option>
+                <option value="bing">Bing (No Captcha)</option>
+                <option value="duckduckgo">DuckDuckGo</option>
+              </select>
+            </div>
+          </div>
+
           <!-- Open in about:blank -->
           <div class="setting-row" data-search-keys="open about blank popup hide history">
             <div class="setting-info">
@@ -1713,6 +1728,13 @@
       showToast(isHidden ? "App bar hidden" : "App bar shown");
     }
 
+    function setSearchEngine(val) {
+      localStorage.setItem("searchEngine", val);
+      if (typeof showToast === 'function') {
+        showToast("Search engine set to " + (val.charAt(0).toUpperCase() + val.slice(1)));
+      }
+    }
+
     function setGameLaunchMode(mode) {
       localStorage.setItem("athyx_game_launch_mode", mode);
       document.getElementById("gameLaunchSegmented").setAttribute("data-mode", mode);
@@ -1976,6 +1998,13 @@
       }
 
 
+
+      // Search Engine State
+      const currentSearchEngine = localStorage.getItem("searchEngine") || "google";
+      const searchEngineSelect = document.getElementById("searchEngineSelect");
+      if (searchEngineSelect) {
+        searchEngineSelect.value = currentSearchEngine;
+      }
 
       // Panic Key toggle state
       const panicEnabled = localStorage.getItem("athyx_panic_enabled") !== "false";

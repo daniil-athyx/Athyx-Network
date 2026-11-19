@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="themes.css?v=6">
   <script src="js/themes.js?v=6"></script>
   <script src="js/cdn-config.js?v=1"></script>
-  <script src="js/setup-wizard.js?v=1"></script>
+  <script src="js/setup-wizard.js?v=2"></script>
 
   <!-- Scramjet and BareMux Proxy Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -1347,15 +1347,22 @@
         scramjet.init();
       }
 
+      const cleanDefaultWisp = "wss://wisp.plutoniumnet.work/";
+      let currentSavedWisp = localStorage.getItem("proxServer");
+      if (currentSavedWisp && (currentSavedWisp.includes("baylib.top") || currentSavedWisp.includes("gointospace.app") || currentSavedWisp.includes("kidsprep"))) {
+        localStorage.removeItem("proxServer");
+        currentSavedWisp = null;
+      }
+
       if (typeof BareMux !== 'undefined' && BareMux.BareMuxConnection) {
         bareMuxConn = new BareMux.BareMuxConnection('/scramjet/B/worker.js');
-        const defaultWisp = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://wisp.plutoniumnet.work/");
+        const defaultWisp = currentSavedWisp || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : cleanDefaultWisp);
         bareMuxConn.setTransport('/scramjet/Ep/index.mjs', [{ wisp: defaultWisp }]).catch(e => console.warn(e));
       }
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js', { scope: '/' }).then((reg) => {
-          const wispUrl = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://wisp.plutoniumnet.work/");
+          const wispUrl = currentSavedWisp || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : cleanDefaultWisp);
           const adblockEnabled = localStorage.getItem('adblockEnabled') === 'true';
           const configMessage = { type: "config", wispurl: wispUrl, adblock: adblockEnabled };
           if (navigator.serviceWorker.controller) {

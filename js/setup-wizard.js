@@ -39,20 +39,20 @@
   ];
 
   var DEFAULT_WISPS = [
-    { name: 'Baylib Fast Wisp (Unblocked)', url: 'wss://new-server.baylib.top/connection/' },
+    { name: 'Plutonium Serverless Wisp', url: 'wss://wisp.plutoniumnet.work/' },
+    { name: 'Plutonium US East Wisp', url: 'wss://wisp-us-east-backup.plutoniumnet.work/' },
+    { name: 'Plutonium US West Wisp', url: 'wss://wisp-us-west-backup.plutoniumnet.work/' },
+    { name: 'Plutonium Europe Wisp', url: 'wss://wisp-europe.plutoniumnet.work/' },
+    { name: 'Mercury Workshop Wisp', url: 'wss://wisp.mercurywork.shop/' },
     { name: 'StudyNest Relay', url: 'wss://studynestlab.org/sb/w/' },
     { name: 'Sunrise School Relay', url: 'wss://akmalsunriseschool.com/wisp/' },
-    { name: 'MathNest Relay', url: 'wss://kidsmathnest.org/wisp/' },
-    { name: 'Space Wisp', url: 'wss://gointospace.app/wisp/' },
-    { name: 'Mercury Workshop Wisp', url: 'wss://wisp.mercurywork.shop/' }
+    { name: 'MathNest Relay', url: 'wss://kidsmathnest.org/wisp/' }
   ];
 
   async function getWispCandidates() {
     var list = DEFAULT_WISPS.slice();
     try {
-      var res = await fetch('https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-web@v1.0.4/wisp.txt?t=' + Date.now(), { cache: 'no-store' }).catch(function () {
-        return fetch('https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-web@v1.0.4/wisp.txt?t=' + Date.now(), { cache: 'no-store' });
-      });
+      var res = await fetch('wisp.txt?t=' + Date.now(), { cache: 'no-store' });
       if (res && res.ok) {
         var text = await res.text();
         text.split('\n').forEach(function (line) {
@@ -589,6 +589,12 @@
         if (pill) pill.innerHTML = '<i class="fa-solid fa-crown"></i> ' + workingWisps[0].result.latency + ' ms';
       }
       localStorage.setItem('proxServer', chosenWisp.url);
+      if (typeof window.updateWispUrl === 'function') {
+        window.updateWispUrl(chosenWisp.url);
+      }
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'config', wispurl: chosenWisp.url });
+      }
     }
 
     // Mark setup completed

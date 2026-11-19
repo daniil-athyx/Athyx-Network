@@ -35,9 +35,9 @@ const defaultScramjetConfig = {
         tempunusedid: "$scramjet$tempunused"
     },
     files: {
-        wasm: basePath + 'JS/scramjet.wasm.wasm',
-        all: basePath + 'JS/scramjet.all.js',
-        sync: basePath + 'JS/scramjet.sync.js'
+        wasm: '/scramjet/JS/scramjet.wasm.wasm',
+        all: '/scramjet/JS/scramjet.all.js',
+        sync: '/scramjet/JS/scramjet.sync.js'
     },
     flags: {
         serviceworkers: true,
@@ -61,7 +61,7 @@ const defaultScramjetConfig = {
 };
 
 const scramjet = new ScramjetServiceWorker({
-    prefix: basePath + 'JS/scramjet/',
+    prefix: '/scramjet/JS/scramjet/',
     flags: {
         serviceworkers: true,
         syncxhr: true,
@@ -91,9 +91,9 @@ const INTERNAL_PREFIXES = [
     '/assets/',
     '/images/',
     '/raldi/',
-    `${basePath}JS/`,
-    `${basePath}B/`,
-    `${basePath}Ep/`
+    '/scramjet/JS/',
+    '/scramjet/B/',
+    '/scramjet/Ep/'
 ];
 
 const INTERNAL_EXACT = new Set([

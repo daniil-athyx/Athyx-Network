@@ -1353,7 +1353,20 @@
       }
 
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(e => console.warn(e));
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).then((reg) => {
+          const wispUrl = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://new-server.baylib.top/connection/");
+          const adblockEnabled = localStorage.getItem('adblockEnabled') === 'true';
+          const configMessage = { type: "config", wispurl: wispUrl, adblock: adblockEnabled };
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage(configMessage);
+          }
+          if (reg && reg.active) {
+            reg.active.postMessage(configMessage);
+          }
+          navigator.serviceWorker.ready.then(r => {
+            if (r.active) r.active.postMessage(configMessage);
+          });
+        }).catch(e => console.warn(e));
       }
     } catch(e) {
       console.warn('Scramjet proxy initialization error:', e);
@@ -1471,7 +1484,17 @@
     }
 
     function createTab(initialRoute = 'ath://home', makeActive = true) {
-      const iframe = document.createElement("iframe");
+      let scramFrame = null;
+      let iframe = null;
+      if (scramjet && typeof scramjet.createFrame === 'function') {
+        try {
+          scramFrame = scramjet.createFrame();
+          iframe = scramFrame.frame;
+        } catch(e) {}
+      }
+      if (!iframe) {
+        iframe = document.createElement("iframe");
+      }
       iframe.setAttribute("allow", "autoplay; fullscreen; gamepad; clipboard-read; clipboard-write; cross-origin-isolated");
       iframe.setAttribute("allowtransparency", "true");
       iframe.style.backgroundColor = "#000000";
@@ -1486,11 +1509,32 @@
         icon: "fa-house",
         favicon: "",
         frame: iframe,
+        scramFrame: scramFrame,
         loading: true,
         progress: 20
       };
 
       tabs.push(tab);
+
+      if (scramFrame && typeof scramFrame.addEventListener === 'function') {
+        scramFrame.addEventListener("urlchange", (e) => {
+          if (!e.url || e.url === "about:blank") return;
+          tab.url = e.url;
+          tab.loading = true;
+          tab.progress = 20;
+          updateLoadingBar(20);
+          try {
+            tab.favicon = new URL(e.url).origin + "/favicon.ico";
+          } catch(_) {}
+          try {
+            tab.title = new URL(e.url).hostname;
+          } catch(_) {}
+          if (tab.id === activeTabId) {
+            updateAddressBar();
+          }
+          updateTabsUI();
+        });
+      }
 
       iframe.addEventListener("load", () => {
         tab.loading = false;
@@ -1529,7 +1573,7 @@
       return tab;
     }
 
-    function navigateTo(tab, targetUrl) {
+    async function navigateTo(tab, targetUrl) {
       if (!tab) return;
       let url = (targetUrl || "").trim();
       if (!url) url = "ath://hometab";
@@ -1548,10 +1592,18 @@
         if (match.proxy) {
           tab.frame.removeAttribute('srcdoc');
           tab.frame.style.backgroundColor = '#000000';
-          const proxyContainerUrl = new URL('scramjet/index.html#' + encodeURIComponent(match.src), ATHYX_REPO_ROOT).href;
-          tab.frame.src = proxyContainerUrl;
-          tab.loading = false;
-          updateLoadingBar(100);
+          if (navigator.serviceWorker && window.isSecureContext) {
+            try {
+              await Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(r, 1500))]);
+            } catch(_) {}
+          }
+          if (tab.scramFrame && typeof tab.scramFrame.go === 'function') {
+            tab.scramFrame.go(match.src);
+          } else if (scramjet && typeof scramjet.encodeUrl === 'function') {
+            tab.frame.src = scramjet.encodeUrl(match.src);
+          } else {
+            tab.frame.src = '/scramjet/JS/scramjet/' + encodeURIComponent(match.src);
+          }
         } else {
           tab.frame.removeAttribute('srcdoc');
           tab.frame.style.backgroundColor = '#000000';
@@ -1570,8 +1622,17 @@
             fullUrl = "https://search.brave.com/search?q=" + encodeURIComponent(fullUrl);
           }
         }
+        try {
+          new URL(fullUrl);
+        } catch(_) {
+          fullUrl = "https://search.brave.com/search?q=" + encodeURIComponent(fullUrl);
+        }
         tab.url = fullUrl;
-        tab.title = new URL(fullUrl).hostname;
+        try {
+          tab.title = new URL(fullUrl).hostname;
+        } catch(_) {
+          tab.title = fullUrl;
+        }
         tab.icon = "fa-globe";
         try {
           tab.favicon = new URL(fullUrl).origin + "/favicon.ico";
@@ -1580,8 +1641,18 @@
         }
         tab.frame.removeAttribute('srcdoc');
         tab.frame.style.backgroundColor = '#000000';
-        const proxyContainerUrl = new URL('scramjet/index.html#' + encodeURIComponent(fullUrl), ATHYX_REPO_ROOT).href;
-        tab.frame.src = proxyContainerUrl;
+        if (navigator.serviceWorker && window.isSecureContext) {
+          try {
+            await Promise.race([navigator.serviceWorker.ready, new Promise(r => setTimeout(r, 1500))]);
+          } catch(_) {}
+        }
+        if (tab.scramFrame && typeof tab.scramFrame.go === 'function') {
+          tab.scramFrame.go(fullUrl);
+        } else if (scramjet && typeof scramjet.encodeUrl === 'function') {
+          tab.frame.src = scramjet.encodeUrl(fullUrl);
+        } else {
+          tab.frame.src = '/scramjet/JS/scramjet/' + encodeURIComponent(fullUrl);
+        }
       }
 
       if (tab.id === activeTabId) {
@@ -1713,7 +1784,9 @@
     document.getElementById("back-btn").onclick = () => {
       const activeTab = getActiveTab();
       try {
-        if (activeTab && activeTab.frame.contentWindow) {
+        if (activeTab && activeTab.scramFrame && typeof activeTab.scramFrame.back === 'function') {
+          activeTab.scramFrame.back();
+        } else if (activeTab && activeTab.frame.contentWindow) {
           activeTab.frame.contentWindow.history.back();
         }
       } catch(e) {}
@@ -1722,7 +1795,9 @@
     document.getElementById("fwd-btn").onclick = () => {
       const activeTab = getActiveTab();
       try {
-        if (activeTab && activeTab.frame.contentWindow) {
+        if (activeTab && activeTab.scramFrame && typeof activeTab.scramFrame.forward === 'function') {
+          activeTab.scramFrame.forward();
+        } else if (activeTab && activeTab.frame.contentWindow) {
           activeTab.frame.contentWindow.history.forward();
         }
       } catch(e) {}
@@ -1731,7 +1806,11 @@
     document.getElementById("reload-btn").onclick = () => {
       const activeTab = getActiveTab();
       if (activeTab) {
-        navigateTo(activeTab, activeTab.url);
+        if (!isAthyxBuiltInTab(activeTab.url) && activeTab.scramFrame && typeof activeTab.scramFrame.reload === 'function') {
+          activeTab.scramFrame.reload();
+        } else {
+          navigateTo(activeTab, activeTab.url);
+        }
       }
     };
 
@@ -1916,6 +1995,9 @@
         localStorage.setItem("proxServer", selectedWispUrl);
         if (bareMuxConn) {
           bareMuxConn.setTransport('/scramjet/Ep/index.mjs', [{ wisp: selectedWispUrl }]);
+        }
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: "config", wispurl: selectedWispUrl });
         }
         wispModal.classList.add("hidden");
       }

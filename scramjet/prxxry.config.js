@@ -5,7 +5,7 @@
 window.basePath = window.basePath || (typeof location !== 'undefined' ? location.pathname.replace(/[^/]*$/, '') : '/');
 var basePath = window.basePath;
 
-const DEFAULT_WISP = "wss://new-server.baylib.top/connection/";
+const DEFAULT_WISP = "wss://wisp.plutoniumnet.work/";
 let savedWisp = localStorage.getItem("proxServer");
 const DEAD_WISP_PATTERNS = [
   "worldmicroscope.com",
@@ -18,7 +18,9 @@ const DEAD_WISP_PATTERNS = [
   "anymor.org",
   "eminescusm.ro",
   "kidsprepnest.org",
-  "kidsprepglade.org"
+  "kidsprepglade.org",
+  "new-server.baylib.top",
+  "gointospace.app"
 ];
 
 if (savedWisp && DEAD_WISP_PATTERNS.some(dead => savedWisp.includes(dead))) {

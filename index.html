@@ -32,7 +32,7 @@
 
   <!-- Scramjet and BareMux Proxy Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <script src="scramjet/JS/scramjet.all.js?v=10"></script>
+  <script src="scramjet/JS/scramjet.all.js?v=11"></script>
   <script src="scramjet/B/index.js"></script>
   <script src="scramjet/prxxry.config.js"></script>
 
@@ -1339,6 +1339,7 @@
           flags: {
             serviceworkers: true,
             syncxhr: true,
+            captureErrors: false,
             allowInvalidJs: true,
             allowFailedIntercepts: true,
           },
@@ -1348,13 +1349,13 @@
 
       if (typeof BareMux !== 'undefined' && BareMux.BareMuxConnection) {
         bareMuxConn = new BareMux.BareMuxConnection('/scramjet/B/worker.js');
-        const defaultWisp = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://new-server.baylib.top/connection/");
+        const defaultWisp = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://wisp.plutoniumnet.work/");
         bareMuxConn.setTransport('/scramjet/Ep/index.mjs', [{ wisp: defaultWisp }]).catch(e => console.warn(e));
       }
 
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js', { scope: '/' }).then((reg) => {
-          const wispUrl = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://new-server.baylib.top/connection/");
+          const wispUrl = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://wisp.plutoniumnet.work/");
           const adblockEnabled = localStorage.getItem('adblockEnabled') === 'true';
           const configMessage = { type: "config", wispurl: wispUrl, adblock: adblockEnabled };
           if (navigator.serviceWorker.controller) {
@@ -1967,12 +1968,12 @@
     async function loadWisps() {
       const container = document.getElementById("dynamic-wisps-container");
       try {
-        const res = await fetch("https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main./wisp.txt");
+        const res = await fetch("wisp.txt?v=" + Date.now());
         if (!res.ok) throw new Error("fetch failed");
         const txt = await res.text();
         const urls = txt.split("\n").map(l => l.trim()).filter(l => l.startsWith("ws"));
         container.innerHTML = "";
-        const cur = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://new-server.baylib.top/connection/");
+        const cur = localStorage.getItem("proxServer") || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : "wss://wisp.plutoniumnet.work/");
         urls.forEach(u => {
           const opt = document.createElement("div");
           opt.className = `wisp-option ${u === cur ? "selected" : ""}`;
@@ -1986,7 +1987,7 @@
           container.appendChild(opt);
         });
       } catch(e) {
-        container.innerHTML = '<div style="font-size:13px; color:var(--text-muted); padding:10px;">Using active WISP proxy: wss://new-server.baylib.top/connection/</div>';
+        container.innerHTML = '<div style="font-size:13px; color:var(--text-muted); padding:10px;">Using active WISP proxy: wss://wisp.plutoniumnet.work/</div>';
       }
     }
 

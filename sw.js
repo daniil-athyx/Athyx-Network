@@ -13,7 +13,7 @@ self.$scramjet = {
 };
 
 // Load ALL required scripts at the top level.
-importScripts('/scramjet/JS/scramjet.all.js?v=10');
+importScripts('/scramjet/JS/scramjet.all.js?v=11');
 importScripts('/scramjet/B/index.js');
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
@@ -44,7 +44,7 @@ const defaultScramjetConfig = {
         syncxhr: true,
         strictRewrites: true,
         rewriterLogs: false,
-        captureErrors: true,
+        captureErrors: false,
         cleanErrors: false,
         scramitize: false,
         sourcemaps: true,
@@ -133,7 +133,7 @@ async function ensureBareClient(forceReconnect = false) {
     clientInitPromise = (async () => {
         try {
             await configReadyPromise;
-            const wisp = wispConfig.wispurl || "wss://new-server.baylib.top/connection/";
+            const wisp = wispConfig.wispurl || "wss://wisp.plutoniumnet.work/";
             const connection = new BareMux.BareMuxConnection(`/scramjet/B/worker.js`);
             if (forceReconnect) {
                 await connection.setTransport(`/scramjet/Ep/index.mjs`, [{ wisp }]);
@@ -271,7 +271,7 @@ const configReadyPromise = new Promise(resolve => {
     // Safety fallback so requests never hang if config message is delayed
     setTimeout(() => {
         if (!wispConfig.wispurl) {
-            wispConfig.wispurl = "wss://new-server.baylib.top/connection/";
+            wispConfig.wispurl = "wss://wisp.plutoniumnet.work/";
         }
         resolve();
     }, 3000);

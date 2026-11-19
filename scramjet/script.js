@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         flags: {
             serviceworkers: true,
             syncxhr: true,
+            captureErrors: false,
             allowInvalidJs: true,
             allowFailedIntercepts: true,
         },

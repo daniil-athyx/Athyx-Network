@@ -1,7 +1,11 @@
-wss://new-server.baylib.top/connection/
+wss://wisp.plutoniumnet.work/
+wss://wisp-us-east-backup.plutoniumnet.work/
+wss://wisp-us-west-backup.plutoniumnet.work/
+wss://wisp-europe.plutoniumnet.work/
+wss://wisp-asia.plutoniumnet.work/
+wss://tokyo.new-updates.info/wisp/
+wss://wisp.mercurywork.shop/
 wss://studynestlab.org/sb/w/
 wss://akmalsunriseschool.com/wisp/
 wss://kidsmathnest.org/wisp/
-wss://gointospace.app/wisp/
-wss://wisp.mercurywork.shop/
 wss://girlspreples.org/wi/

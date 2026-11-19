@@ -350,10 +350,21 @@ scramjet.addEventListener("request", async (e) => {
             } catch (_) {}
         }
 
+        const reqHeaders = Object.assign({}, e.requestHeaders || {});
+        try {
+            const targetUrlObj = new URL(e.url);
+            if (!reqHeaders['origin'] && !reqHeaders['Origin'] && e.method && e.method.toUpperCase() !== 'GET' && e.method.toUpperCase() !== 'HEAD') {
+                reqHeaders['Origin'] = targetUrlObj.origin;
+            }
+            if (!reqHeaders['referer'] && !reqHeaders['Referer']) {
+                reqHeaders['Referer'] = targetUrlObj.origin + '/';
+            }
+        } catch (_) {}
+
         const fetchOpts = {
             method: e.method,
             body: bodyPayload,
-            headers: e.requestHeaders || {},
+            headers: reqHeaders,
             credentials: "omit",
             mode: e.mode === "cors" ? e.mode : "same-origin",
             cache: e.cache,

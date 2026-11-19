@@ -1358,6 +1358,11 @@
         bareMuxConn = new BareMux.BareMuxConnection('/scramjet/B/worker.js');
         const defaultWisp = currentSavedWisp || (typeof _CONFIG !== 'undefined' ? _CONFIG.wispurl : cleanDefaultWisp);
         bareMuxConn.setTransport('/scramjet/Ep/index.mjs', [{ wisp: defaultWisp }]).catch(e => console.warn(e));
+        window.addEventListener('wispUrlUpdated', (e) => {
+          if (e.detail && e.detail.newUrl) {
+            bareMuxConn.setTransport('/scramjet/Ep/index.mjs', [{ wisp: e.detail.newUrl }]).catch(err => console.warn(err));
+          }
+        });
       }
 
       if ('serviceWorker' in navigator) {
@@ -1627,13 +1632,13 @@
           if (fullUrl.includes(".") && !fullUrl.includes(" ")) {
             fullUrl = "https://" + fullUrl;
           } else {
-            fullUrl = "https://search.brave.com/search?q=" + encodeURIComponent(fullUrl);
+            fullUrl = "https://www.google.com/search?hl=en-us&q=" + encodeURIComponent(fullUrl);
           }
         }
         try {
           new URL(fullUrl);
         } catch(_) {
-          fullUrl = "https://search.brave.com/search?q=" + encodeURIComponent(fullUrl);
+          fullUrl = "https://www.google.com/search?hl=en-us&q=" + encodeURIComponent(fullUrl);
         }
         tab.url = fullUrl;
         try {

@@ -33,29 +33,29 @@
 }
 
 :root {
-  color-scheme: light;
-  --bg: #ffffff;
-  --bg-base: #ffffff;
-  --surface: #f4f4f5;
-  --surface-hover: #e4e4e7;
-  --surface-active: #d4d4d8;
-  --border: rgba(0, 0, 0, 0.15);
-  --border-hover: rgba(0, 0, 0, 0.3);
-  --border-light: rgba(0, 0, 0, 0.1);
-  --text: #09090b;
-  --text-main: #09090b;
-  --text-muted: #52525b;
+  color-scheme: dark;
+  --bg: #000000;
+  --bg-base: #000000;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --surface-active: rgba(255, 255, 255, 0.12);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.22);
+  --border-light: rgba(255, 255, 255, 0.14);
+  --text: #ffffff;
+  --text-main: #ffffff;
+  --text-muted: #a1a1aa;
   --text-dim: #71717a;
-  --accent: #000000;
-  --accent-dim: rgba(0, 0, 0, 0.08);
-  --accent-glow: rgba(0, 0, 0, 0.15);
-  --accent-hover: #27272a;
-  --accent-text: #ffffff;
-  --dock-bg: rgba(255, 255, 255, 0.9);
-  --dock-border: rgba(0, 0, 0, 0.15);
-  --dock-btn-hover: rgba(0, 0, 0, 0.08);
-  --dock-btn-active: rgba(0, 0, 0, 0.15);
-  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.1);
+  --accent: #ffffff;
+  --accent-dim: rgba(255, 255, 255, 0.12);
+  --accent-glow: rgba(255, 255, 255, 0.25);
+  --accent-hover: #e4e4e7;
+  --accent-text: #000000;
+  --dock-bg: rgba(10, 10, 10, 0.55);
+  --dock-border: rgba(255, 255, 255, 0.12);
+  --dock-btn-hover: rgba(255, 255, 255, 0.08);
+  --dock-btn-active: rgba(255, 255, 255, 0.14);
+  --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 0 1px var(--accent-dim), 0 18px 44px var(--accent-dim);
 }
 
@@ -74,35 +74,37 @@ body,
 .dock-toggle-btn,
 #topBar,
 .search-box,
-#searchBox,
 .search-wrapper,
 .card,
-.preset-btn,
-.setting-row {
+.preset-btn {
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.section-card,
+.dock-wrapper,
+.dock-toggle-btn,
+.search-box,
+.search-wrapper,
+.card,
+.preset-btn {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 body {
   min-height: 100vh;
   color: var(--text-main);
-  background-color: var(--bg);
+  background-color: #000000;
   background-image:
-    radial-gradient(circle at 20% 0%, var(--accent-dim), transparent 30%),
-    radial-gradient(circle at 80% 100%, var(--accent-dim), transparent 28%),
-    radial-gradient(rgba(255, 255, 255, 0.065) 1.25px, transparent 1.25px);
-  background-size: auto, auto, 22px 22px;
+    radial-gradient(rgba(255, 255, 255, 0.08) 1.25px, transparent 1.25px);
+  background-size: 22px 22px;
   background-attachment: fixed;
   font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
 body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(to bottom, rgba(11, 5, 8, 0.12), rgba(11, 5, 8, 0.4));
+  display: none !important;
 }
 
 ::selection {
@@ -125,8 +127,6 @@ textarea,
 .section-card,
 .search-box,
 .search-wrapper,
-#topBar,
-.setting-row,
 .dock-wrapper,
 .dock-toggle-btn {
   border-radius: 18px;
@@ -136,27 +136,30 @@ button:hover,
 .card:hover,
 .section-card:hover,
 .search-box:hover,
-.search-wrapper:hover,
-.setting-row:hover {
+.search-wrapper:hover {
   border-color: var(--border-hover);
 }
 
+*:focus,
+*:focus-visible,
+button:focus,
 button:focus-visible,
+input:focus,
 input:focus-visible,
+select:focus,
 select:focus-visible,
+textarea:focus,
 textarea:focus-visible,
+a:focus,
 a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px var(--accent-dim);
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .card,
 .section-card,
-#topBar,
 .search-box,
 .search-wrapper,
-.setting-row,
 .dock-wrapper,
 .dock-toggle-btn {
   box-shadow: var(--shadow-soft);
@@ -165,8 +168,7 @@ a:focus-visible {
 .card:hover,
 .section-card:hover,
 .search-box:hover,
-.search-wrapper:hover,
-.setting-row:hover {
+.search-wrapper:hover {
   box-shadow: var(--shadow-glow);
 }
 

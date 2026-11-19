@@ -13,7 +13,7 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      background: var(--bg-gradient, var(--bg, #0d0d12));
+      background: #000000;
       background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
       background-size: 28px 28px;
       color: var(--text-main, #fff5f6);
@@ -87,26 +87,19 @@
     <div class="grid" id="cloudGrid">Loading...</div>
   </div>
   <script>
-    const RAW_BASE = "https://raw.githubusercontent.com/daniil-athyx/athyx-cloud-games/main/";
-    const CDN_BASE = window.AthyxCdn ? window.AthyxCdn.rewriteUrl("https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-cloud-games@main/") : "https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-cloud-games@main/";
+    const CDN_BASE = "https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-cloud-games@main/";
     async function loadCloudGames() {
       const grid = document.getElementById("cloudGrid");
       try {
-        let res;
-        try {
-          res = await fetch(RAW_BASE + "games.json?v=" + Date.now(), { cache: "no-cache" });
-          if (!res.ok) throw new Error("Raw failed");
-        } catch (_) {
-          res = await fetch(CDN_BASE + "games.json?v=" + Date.now(), { cache: "no-cache" });
-        }
+        const res = await fetch(CDN_BASE + "games.json?v=" + Date.now(), { cache: "no-cache" });
+        if (!res.ok) throw new Error("Could not load cloud games");
         const games = await res.json();
         grid.innerHTML = "";
         games.forEach(g => {
           const card = document.createElement("div");
           card.className = "card";
           card.onclick = () => {
-            const origin = window.location.origin;
-            window.location.href = origin + "/scramjet/index.html?v=" + Date.now() + "#" + g.url;
+            window.open(g.url, "_blank");
           };
           const iconSrc = g.icon.startsWith("http") ? g.icon : CDN_BASE + g.icon;
           card.innerHTML = `<img src="${iconSrc}" alt="${g.name}"><div class="card-name">${g.name}</div><div class="card-tag">${g.tag || "Cloud"}</div>`;

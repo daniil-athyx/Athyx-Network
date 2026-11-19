@@ -8,20 +8,22 @@ var basePath = window.basePath;
 const DEFAULT_WISP = "wss://new-server.baylib.top/connection/";
 let savedWisp = localStorage.getItem("proxServer");
 const DEAD_WISP_PATTERNS = [
-    "worldmicroscope.com",
-    "soyescalahumana.cl",
-    "gressvikbmx.no",
-    "lervs.ro",
-    "simplysweetcakesoc.com",
-    "tribeoftwo.com",
-    "bitds.eu",
-    "anymor.org",
-    "eminescusm.ro"
+  "worldmicroscope.com",
+  "soyescalahumana.cl",
+  "gressvikbmx.no",
+  "lervs.ro",
+  "simplysweetcakesoc.com",
+  "tribeoftwo.com",
+  "bitds.eu",
+  "anymor.org",
+  "eminescusm.ro",
+  "kidsprepnest.org",
+  "kidsprepglade.org"
 ];
 
 if (savedWisp && DEAD_WISP_PATTERNS.some(dead => savedWisp.includes(dead))) {
-    savedWisp = null;
-    localStorage.removeItem("proxServer");
+  savedWisp = null;
+  localStorage.removeItem("proxServer");
 }
 
 let _CONFIG = {

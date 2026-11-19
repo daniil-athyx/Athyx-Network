@@ -5,5 +5,3 @@ wss://kidsmathnest.org/wisp/
 wss://gointospace.app/wisp/
 wss://wisp.mercurywork.shop/
 wss://girlspreples.org/wi/
-wss://kidsprepnest.org/vi/
-wss://kidsprepglade.org/vv/

@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Athyx Network</title>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6960985165305491"
-     crossorigin="anonymous"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../themes.css?v=6">
   <script src="../js/themes.js?v=6"></script>
@@ -44,7 +45,7 @@
     @font-face {
       font-family: 'Sabersong';
       src: url('../assets/fonts/Sabersong-X38j2.ttf') format('truetype'),
-           url('../assets/fonts/Sabersong-L3Djy.otf') format('opentype');
+        url('../assets/fonts/Sabersong-L3Djy.otf') format('opentype');
       font-weight: normal;
       font-style: normal;
       font-display: swap;
@@ -52,12 +53,13 @@
 
     :root {
       color-scheme: dark;
-      --bg: #0b0508;
-      --surface: rgba(28, 12, 16, 0.82);
-      --surface-hover: rgba(42, 18, 24, 0.9);
-      --surface-active: rgba(64, 26, 35, 0.96);
-      --text: #fff5f6;
-      --text-muted: #f7c6ce;
+      --bg: #000000;
+      --bg-base: #000000;
+      --surface: rgba(255, 255, 255, 0.05);
+      --surface-hover: rgba(255, 255, 255, 0.08);
+      --surface-active: rgba(255, 255, 255, 0.12);
+      --text: #ffffff;
+      --text-muted: #a1a1aa;
     }
 
     * {
@@ -68,8 +70,8 @@
 
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg);
-      background-image: radial-gradient(rgba(255, 255, 255, 0.075) 1.5px, transparent 1.5px);
+      background-color: #000000;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.25px, transparent 1.25px);
       background-size: 24px 24px;
       background-attachment: fixed;
       color: var(--text);
@@ -92,7 +94,7 @@
       z-index: 1;
     }
 
-    
+
     .dork-box {
       position: fixed;
       top: 24px;
@@ -101,13 +103,15 @@
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 20px;
       padding: 16px 20px;
-      box-shadow: 
+      box-shadow:
         0 10px 30px -8px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.02);
+        0 0 0 1px rgba(255, 255, 255, 0.03);
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       max-width: 280px;
       text-align: center;
@@ -117,7 +121,7 @@
     .dork-box:hover {
       border-color: var(--accent);
       transform: translateY(-2px);
-      box-shadow: 
+      box-shadow:
         0 14px 36px -8px rgba(0, 0, 0, 0.7),
         0 0 20px -4px var(--accent-glow);
     }
@@ -202,7 +206,7 @@
       user-select: none;
     }
 
-    
+
     .search-container {
       width: 100%;
       max-width: 620px;
@@ -213,27 +217,30 @@
     .search-box {
       display: flex;
       align-items: center;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 16px;
       padding: 6px 10px 6px 18px;
-      box-shadow: 
-        0 12px 30px -10px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(255, 255, 255, 0.02);
+      box-shadow:
+        0 12px 30px -10px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.03);
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .search-box:hover {
-      border-color: var(--border-hover) !important;
+      border-color: rgba(255, 255, 255, 0.22) !important;
+      background: rgba(255, 255, 255, 0.07);
       box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--accent-dim) !important;
     }
 
     .search-box:focus-within {
       border-color: var(--accent) !important;
-      box-shadow: 
+      box-shadow:
         0 16px 36px -10px rgba(0, 0, 0, 0.8),
         0 0 0 2px var(--accent-dim) !important;
-      background: var(--surface-hover);
+      background: rgba(255, 255, 255, 0.09);
     }
 
     .search-box i.search-icon {
@@ -264,7 +271,7 @@
     .search-box input:-webkit-autofill,
     .search-box input:-webkit-autofill:hover,
     .search-box input:-webkit-autofill:focus {
-      -webkit-box-shadow: 0 0 0 1000px var(--surface-hover) inset;
+      -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset;
       -webkit-text-fill-color: var(--text);
       border: none;
       transition: background-color 5000s ease-in-out 0s;
@@ -275,8 +282,10 @@
     }
 
     .search-btn {
-      background: var(--surface-hover);
-      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       color: var(--text);
       padding: 8px 14px;
       border-radius: 10px;
@@ -293,19 +302,19 @@
     .search-btn:hover {
       background: var(--accent);
       border-color: var(--accent);
-      color: var(--accent-text, #fff);
+      color: var(--accent-text, #000);
     }
 
     .kbd-badge {
       font-size: 10px;
-      background: var(--surface-active);
+      background: rgba(255, 255, 255, 0.08);
       padding: 2px 5px;
       border-radius: 4px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       color: var(--text-muted);
     }
 
-    
+
     .quick-chips {
       display: flex;
       flex-wrap: wrap;
@@ -339,7 +348,7 @@
       transform: translateY(-1px);
     }
 
-    
+
     .popular-section {
       margin-top: 36px;
       padding: 24px 0;
@@ -369,7 +378,7 @@
     .pop-card:hover {
       transform: translateY(-4px);
       border-color: var(--accent);
-      box-shadow: 
+      box-shadow:
         0 12px 26px -6px rgba(0, 0, 0, 0.7),
         0 0 16px -2px var(--accent-glow);
     }
@@ -456,7 +465,7 @@
       color: var(--accent);
     }
 
-    
+
     #searchOverlay {
       position: fixed;
       inset: 0;
@@ -520,13 +529,16 @@
       .title {
         font-size: 2.2rem;
       }
+
       .popular-grid {
         grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
         gap: 10px;
       }
+
       .pop-info {
         padding: 8px 6px;
       }
+
       .pop-title {
         font-size: 11.5px;
       }
@@ -537,15 +549,16 @@
 <body>
 
   <div class="container">
-    
+
     <h1 class="title">Athyx Network</h1>
     <p class="home-quote" id="homeQuote"></p>
 
-    
+
     <div class="search-container">
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass search-icon" id="searchIcon"></i>
-        <input type="text" id="searchInput" placeholder="Search with Google or enter a web URL..." autocomplete="off" spellcheck="false">
+        <input type="text" id="searchInput" placeholder="Search with Google or enter a web URL..." autocomplete="off"
+          spellcheck="false">
         <button class="search-btn" id="searchBtn" title="Press Enter to Search">
           <span>Search</span>
           <span class="kbd-badge">Enter</span>
@@ -555,7 +568,7 @@
 
   </div>
 
-  
+
   <div id="searchOverlay">
     <iframe id="overlayFrame" title="Web Search Viewer"></iframe>
   </div>
@@ -660,7 +673,7 @@
             return;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
 
       try {
         const cutoff = Timestamp.fromMillis(now - 360000); // within 6 minutes
@@ -681,7 +694,7 @@
         updateCount(total);
         try {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify({ count: total, ts: now }));
-        } catch (e) {}
+        } catch (e) { }
       } catch (e) {
         // Back off for 10 minutes on quota/429 errors instead of retrying in a loop
         quotaCooldownUntil = Date.now() + 600000;
@@ -703,5 +716,5 @@
 
   <script src="../js/particle.js"></script>
 </body>
-</html>
 
+</html>

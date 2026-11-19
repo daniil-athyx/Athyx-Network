@@ -9,13 +9,6 @@
 
   var CDN_TARGETS = [
     {
-      id: '5210521',
-      name: '5210521 Mirror',
-      badge: 'School Bypass',
-      origin: 'https://jsdelivr.5210521.xyz',
-      icon: 'fa-shield-halved'
-    },
-    {
       id: 'gcore',
       name: 'Gcore CDN',
       badge: 'Global CDN',
@@ -57,8 +50,8 @@
   async function getWispCandidates() {
     var list = DEFAULT_WISPS.slice();
     try {
-      var res = await fetch('/wisp.txt?t=' + Date.now(), { cache: 'no-store' }).catch(function () {
-        return fetch('https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main/wisp.txt?t=' + Date.now(), { cache: 'no-store' });
+      var res = await fetch('https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-web@v1.0.4/wisp.txt?t=' + Date.now(), { cache: 'no-store' }).catch(function () {
+        return fetch('https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-web@v1.0.4/wisp.txt?t=' + Date.now(), { cache: 'no-store' });
       });
       if (res && res.ok) {
         var text = await res.text();
@@ -90,12 +83,7 @@
 
   async function testCdn(cdn, timeoutMs) {
     timeoutMs = timeoutMs || 3500;
-    var testUrl;
-    if (cdn.id === 'statically') {
-      testUrl = cdn.origin + '/gh/daniil-athyx/ubg-assets/main/games.json?t=' + Date.now();
-    } else {
-      testUrl = cdn.origin + '/gh/daniil-athyx/ubg-assets@main/games.json?t=' + Date.now();
-    }
+    var testUrl = cdn.origin + '/gh/daniil-athyx/ubg-assets@main/games.json';
 
     var start = performance.now();
     var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -577,7 +565,7 @@
     var workingCdns = cdnResults.filter(function (r) { return r.result.success; });
     workingCdns.sort(function (a, b) { return a.result.latency - b.result.latency; });
 
-    var chosenCdn = workingCdns.length > 0 ? workingCdns[0].cdn : CDN_TARGETS[0]; // fallback to 5210521
+    var chosenCdn = workingCdns.length > 0 ? workingCdns[0].cdn : CDN_TARGETS[0];
     if (workingCdns.length > 0) {
       var bestRow = document.getElementById('setup-cdn-' + chosenCdn.id);
       if (bestRow) {

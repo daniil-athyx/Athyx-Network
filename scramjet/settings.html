@@ -321,7 +321,7 @@
 
     async function loadServers() {
       try {
-        const res = await fetch('../wisp.txt');
+        const res = await fetch('.../wisp.txt');
         const text = await res.text();
         allUrls = text.split('\n').map(u => u.trim()).filter(u => u.startsWith('ws'));
         

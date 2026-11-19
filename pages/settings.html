@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +11,9 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="../themes.css?v=4">
   <script src="../js/themes.js?v=4"></script>
@@ -24,15 +27,15 @@
       color-scheme: dark;
       /* Shared / Fallback variables before themes load */
       --sidebar-width: 280px;
-      --bg: #0b0f17;
-      --sidebar-bg: rgba(11, 13, 17, 0.85);
+      --bg: #000000;
+      --sidebar-bg: rgba(0, 0, 0, 0.85);
       --card-bg: rgba(255, 255, 255, 0.04);
-      --surface: #121215;
-      --surface-hover: #18181c;
-      --surface-active: #222228;
+      --surface: #0a0a0a;
+      --surface-hover: #141414;
+      --surface-active: #1c1c1c;
       --border: rgba(10, 255, 206, 0.14);
       --border-hover: rgba(10, 255, 206, 0.26);
-      
+
       --accent: rgb(10, 255, 206);
       --accent-dim: rgba(10, 255, 206, 0.15);
       --accent-glow: rgba(10, 255, 206, 0.35);
@@ -75,7 +78,6 @@
       max-width: 1300px;
       margin: 0 auto;
       padding: 40px 30px 120px;
-      padding-left: calc(30px + 88px);
       gap: 40px;
     }
 
@@ -127,7 +129,7 @@
       box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
     }
 
-    .search-input:focus + .search-icon {
+    .search-input:focus+.search-icon {
       color: var(--text-muted);
     }
 
@@ -227,23 +229,34 @@
       justify-content: space-between;
       padding: 18px 24px;
       border-bottom: 1px solid var(--border);
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      background: transparent !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-top: none !important;
+      margin: 0 !important;
       gap: 20px;
       transition: background 0.15s ease;
     }
 
     .setting-row:first-child {
-      border-top-left-radius: 16px;
-      border-top-right-radius: 16px;
+      border-top-left-radius: 16px !important;
+      border-top-right-radius: 16px !important;
     }
 
     .setting-row:last-child {
-      border-bottom: none;
-      border-bottom-left-radius: 16px;
-      border-bottom-right-radius: 16px;
+      border-bottom: none !important;
+      border-bottom-left-radius: 16px !important;
+      border-bottom-right-radius: 16px !important;
     }
 
     .setting-row:hover {
-      background: rgba(255, 255, 255, 0.015);
+      background: rgba(255, 255, 255, 0.02) !important;
+      box-shadow: none !important;
+      border-color: var(--border) !important;
     }
 
     .setting-row.expanded {
@@ -492,8 +505,13 @@
     }
 
     @keyframes pulseRecord {
-      from { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-      to { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+      from {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+      }
+
+      to {
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+      }
     }
 
     /* Themes Section Grid */
@@ -624,6 +642,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       position: relative;
     }
+
     .segment-highlighter {
       position: absolute;
       top: 4px;
@@ -633,26 +652,43 @@
       background: var(--accent);
       border-radius: 6px;
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       z-index: 0;
     }
+
     .segmented-control[data-mode="iframe"] .segment-highlighter,
     .segmented-control[data-mode="scramjet"] .segment-highlighter {
       transform: translateX(0);
     }
+
     .segmented-control[data-mode="about:blank"] .segment-highlighter,
     .segmented-control[data-mode="ultraviolet"] .segment-highlighter {
       transform: translateX(100%);
     }
-    #gameLaunchSegmented {
+
+    #gameLaunchSegmented,
+    #dockPositionSegmented {
       grid-template-columns: repeat(3, 1fr);
     }
-    #gameLaunchSegmented .segment-highlighter {
+
+    #gameLaunchSegmented .segment-highlighter,
+    #dockPositionSegmented .segment-highlighter {
       width: calc(33.333% - 2.67px);
     }
-    #gameLaunchSegmented[data-mode="blob"] .segment-highlighter {
+
+    #gameLaunchSegmented[data-mode="blob"] .segment-highlighter,
+    #dockPositionSegmented[data-mode="right"] .segment-highlighter {
       transform: translateX(200%);
     }
+
+    #dockPositionSegmented[data-mode="bottom"] .segment-highlighter {
+      transform: translateX(0);
+    }
+
+    #dockPositionSegmented[data-mode="left"] .segment-highlighter {
+      transform: translateX(100%);
+    }
+
     .segmented-control .segment {
       padding: 6px 12px;
       font-size: 13px;
@@ -664,6 +700,7 @@
       z-index: 1;
       text-align: center;
     }
+
     .segmented-control .segment.active {
       color: var(--accent-text, #fff);
       font-weight: 600;
@@ -860,6 +897,7 @@
       transform: scale(1.08);
       box-shadow: 0 8px 28px rgba(0, 0, 0, 0.6), inset 0 0 0 2px rgba(255, 255, 255, 0.4) !important;
     }
+
     #themeColorPickerContainer:active {
       transform: scale(0.95);
     }
@@ -869,19 +907,21 @@
 <body>
 
   <div class="settings-app">
-    
+
     <!-- Sidebar -->
     <aside class="settings-sidebar">
       <!-- Search Input -->
       <div class="search-wrapper">
-        <input type="text" id="settingsFilterInput" class="search-input" placeholder="Filter settings" oninput="handleSearchFilter(this.value)">
+        <input type="text" id="settingsFilterInput" class="search-input" placeholder="Filter settings"
+          oninput="handleSearchFilter(this.value)">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
       </div>
 
       <!-- Navigation Tabs -->
       <ul class="nav-list" role="tablist">
         <li>
-          <button class="nav-item active" id="nav-privacy" onclick="switchTab('privacy')" role="tab" aria-selected="true">
+          <button class="nav-item active" id="nav-privacy" onclick="switchTab('privacy')" role="tab"
+            aria-selected="true">
             <i class="fa-solid fa-user-secret"></i>
             <span>Privacy</span>
           </button>
@@ -910,12 +950,14 @@
       <!-- ================= PRIVACY SECTION ================= -->
       <section class="tab-section" id="section-privacy">
         <div class="settings-card">
-          
+
           <!-- Site Title / Tab Disguise Row -->
-          <div class="setting-row" data-search-keys="site title disguise tab icon cloak google drive classroom docs canvas">
+          <div class="setting-row"
+            data-search-keys="site title disguise tab icon cloak google drive classroom docs canvas">
             <div class="setting-info">
               <span class="setting-title">Tab Cloaker</span>
-              <span class="setting-desc">Disguise the site by changing its tab title and favicon to appear as another site.</span>
+              <span class="setting-desc">Disguise the site by changing its tab title and favicon to appear as another
+                site.</span>
             </div>
             <div class="setting-control" style="position: relative;">
               <button class="dropdown-pill-btn" id="siteTitleDropdownBtn" onclick="toggleSiteTitleDropdown()">
@@ -932,16 +974,19 @@
                   <img src="https://www.google.com/favicon.ico" alt="Google"> Google
                 </button>
                 <button class="dropdown-item" onclick="selectCloakPreset('drive')">
-                  <img src="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" alt="Google Drive"> Google Drive
+                  <img src="https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png" alt="Google Drive">
+                  Google Drive
                 </button>
                 <button class="dropdown-item" onclick="selectCloakPreset('classroom')">
                   <img src="https://ssl.gstatic.com/classroom/favicon.png" alt="Google Classroom"> Google Classroom
                 </button>
                 <button class="dropdown-item" onclick="selectCloakPreset('docs')">
-                  <img src="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico" alt="Google Docs"> Google Docs
+                  <img src="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico" alt="Google Docs"> Google
+                  Docs
                 </button>
                 <button class="dropdown-item" onclick="selectCloakPreset('canvas')">
-                  <img src="https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" alt="Canvas"> Canvas
+                  <img src="https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico" alt="Canvas">
+                  Canvas
                 </button>
                 <button class="dropdown-item" onclick="selectCloakPreset('calculator')">
                   <img src="https://www.calculator.net/favicon.ico" alt="Calculator"> Calculator
@@ -970,25 +1015,16 @@
           <div class="setting-row" data-search-keys="open about blank popup hide history">
             <div class="setting-info">
               <span class="setting-title">Open in about:blank</span>
-              <span class="setting-desc">Instantly open this entire proxy site in an isolated about:blank window to hide it from history.</span>
+              <span class="setting-desc">Instantly open this entire proxy site in an isolated about:blank window to hide
+                it from history.</span>
             </div>
             <div class="setting-control">
-              <button class="primary-btn" onclick="openSiteInAboutBlank()" style="padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; background: var(--accent); color: var(--accent-text, #fff); transition: opacity 0.2s;">Open <i class="fa-solid fa-external-link-alt" style="margin-left: 6px;"></i></button>
+              <button class="primary-btn" onclick="openSiteInAboutBlank()"
+                style="padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; background: var(--accent); color: var(--accent-text, #fff); transition: opacity 0.2s;">Open
+                <i class="fa-solid fa-external-link-alt" style="margin-left: 6px;"></i></button>
             </div>
           </div>
 
-          <!-- Auto about:blank -->
-          <div class="setting-row" data-search-keys="auto about blank launch cloaker automatically">
-            <div class="setting-info">
-              <span class="setting-title">Auto about:blank</span>
-              <span class="setting-desc">Automatically launch the site in an about:blank tab when you open it.</span>
-            </div>
-            <div class="setting-control">
-              <div class="toggle-switch" id="autoAbToggle" onclick="toggleAutoAboutBlank()" role="switch" aria-checked="false">
-                <div class="toggle-knob"></div>
-              </div>
-            </div>
-          </div>
 
           <!-- Game Launch Mode -->
           <div class="setting-row" data-search-keys="game launch mode open about:blank iframe srcdoc">
@@ -1007,14 +1043,17 @@
           </div>
 
           <!-- Game Asset CDN & Mirror -->
-          <div class="setting-row" data-search-keys="cdn mirror jsdelivr fastly gcore statically 5210521 school unblock filter network asset speed games">
+          <div class="setting-row"
+            data-search-keys="cdn mirror jsdelivr fastly gcore statically school unblock filter network asset speed games">
             <div class="setting-info">
               <span class="setting-title">Game & Asset CDN Mirror</span>
-              <span class="setting-desc">Choose which CDN network streams game files. If your school blocks jsDelivr, select 5210521, Gcore, or Fastly.</span>
+              <span class="setting-desc">Choose which CDN network streams game files. If your school blocks jsDelivr,
+                select Gcore or Fastly.</span>
             </div>
             <div class="setting-control" style="position: relative;">
               <button class="dropdown-pill-btn" id="cdnDropdownBtn" onclick="toggleCdnDropdown()">
-                <span id="cdnDropdownLabel"><i class="fa-solid fa-server" style="margin-right: 6px;"></i> jsDelivr (Default)</span>
+                <span id="cdnDropdownLabel"><i class="fa-solid fa-server" style="margin-right: 6px;"></i> jsDelivr
+                  (Default)</span>
                 <i class="fa-solid fa-chevron-down"></i>
               </button>
 
@@ -1028,9 +1067,6 @@
                 <button class="dropdown-item" id="cdn-opt-gcore" onclick="selectCdnMirror('gcore')">
                   <i class="fa-solid fa-network-wired"></i> Gcore CDN
                 </button>
-                <button class="dropdown-item" id="cdn-opt-5210521" onclick="selectCdnMirror('5210521')">
-                  <i class="fa-solid fa-shield-halved"></i> 5210521 (School Bypass)
-                </button>
                 <button class="dropdown-item" id="cdn-opt-statically" onclick="selectCdnMirror('statically')">
                   <i class="fa-solid fa-cloud"></i> Statically Multi-CDN
                 </button>
@@ -1043,13 +1079,17 @@
           </div>
 
           <!-- Run Benchmark & Optimization Wizard -->
-          <div class="setting-row" data-search-keys="setup wizard benchmark test cdn wisp ping fastest auto optimize network speed latency">
+          <div class="setting-row"
+            data-search-keys="setup wizard benchmark test cdn wisp ping fastest auto optimize network speed latency"
+            style="display: none !important;">
             <div class="setting-info">
               <span class="setting-title">Auto-Benchmark & Optimizer</span>
-              <span class="setting-desc">Run a full live benchmark across all CDN mirrors and Wisp servers to test your school network and select the fastest ones.</span>
+              <span class="setting-desc">Run a full live benchmark across all CDN mirrors and Wisp servers to test your
+                school network and select the fastest ones.</span>
             </div>
             <div class="setting-control">
-              <button class="primary-btn" onclick="runBenchmarkWizard()" style="padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; background: var(--accent); color: var(--accent-text, #051410); transition: opacity 0.2s; display: flex; align-items: center; gap: 8px;">
+              <button class="primary-btn" onclick="runBenchmarkWizard()"
+                style="padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; background: var(--accent); color: var(--accent-text, #051410); transition: opacity 0.2s; display: flex; align-items: center; gap: 8px;">
                 <i class="fa-solid fa-gauge-high"></i> <span>Run Benchmark</span>
               </button>
             </div>
@@ -1061,7 +1101,7 @@
       <!-- ================= CUSTOMIZE SECTION ================= -->
       <section class="tab-section" id="section-customize" style="display: none;">
         <div class="settings-card">
-          
+
           <!-- Theme Color Picker -->
           <div class="setting-row" data-search-keys="theme color custom picker accent">
             <div class="setting-info">
@@ -1069,15 +1109,37 @@
               <span class="setting-desc">Pick an accent color to dynamically generate a custom dark theme.</span>
             </div>
             <div class="setting-control">
-              <div id="themeColorPickerContainer" title="Click to choose custom theme color" style="position: relative; width: 44px; height: 44px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.2); transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease; overflow: hidden;">
+              <div id="themeColorPickerContainer" title="Click to choose custom theme color"
+                style="position: relative; width: 44px; height: 44px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 255, 255, 0.2); transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease; overflow: hidden;">
                 <!-- True visual color swatch directly controlled by CSS and JS -->
-                <div id="themeColorSwatch" style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 12px; background-color: var(--accent, #0affce); pointer-events: none; transition: background-color 0.15s ease;"></div>
-                
+                <div id="themeColorSwatch"
+                  style="position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 12px; background-color: var(--accent, #0affce); pointer-events: none; transition: background-color 0.15s ease;">
+                </div>
+
                 <!-- Font Awesome icon -->
-                <i class="fa-solid fa-palette" style="position: relative; z-index: 1; color: #ffffff; font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); pointer-events: none; opacity: 0.95;"></i>
-                
+                <i class="fa-solid fa-palette"
+                  style="position: relative; z-index: 1; color: #ffffff; font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); pointer-events: none; opacity: 0.95;"></i>
+
                 <!-- Invisible native input positioned over the swatch so clicking anywhere opens the color dialog -->
-                <input type="color" id="themeColorPicker" title="Click to choose custom theme color" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; padding: 0; margin: 0; border: none; appearance: none; -webkit-appearance: none;" onchange="selectCustomTheme(this.value)" oninput="selectCustomTheme(this.value)">
+                <input type="color" id="themeColorPicker" title="Click to choose custom theme color"
+                  style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; padding: 0; margin: 0; border: none; appearance: none; -webkit-appearance: none;"
+                  onchange="selectCustomTheme(this.value)" oninput="selectCustomTheme(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- App Bar Position -->
+          <div class="setting-row" data-search-keys="app bar position dock placement bottom left right">
+            <div class="setting-info">
+              <span class="setting-title">App Bar Position</span>
+              <span class="setting-desc">Choose where the navigation app bar is placed on your screen.</span>
+            </div>
+            <div class="setting-control">
+              <div class="segmented-control" id="dockPositionSegmented" data-mode="bottom">
+                <div class="segment-highlighter"></div>
+                <div class="segment" id="seg-dock-bottom" onclick="setDockPositionSetting('bottom')">Bottom</div>
+                <div class="segment" id="seg-dock-left" onclick="setDockPositionSetting('left')">Left</div>
+                <div class="segment" id="seg-dock-right" onclick="setDockPositionSetting('right')">Right</div>
               </div>
             </div>
           </div>
@@ -1089,24 +1151,13 @@
               <span class="setting-desc">Display navigation bar with icons only for maximum screen space.</span>
             </div>
             <div class="setting-control">
-              <div class="toggle-switch" id="compactDockToggle" onclick="toggleCompactDock()" role="switch" aria-checked="false">
+              <div class="toggle-switch" id="compactDockToggle" onclick="toggleCompactDock()" role="switch"
+                aria-checked="false">
                 <div class="toggle-knob"></div>
               </div>
             </div>
           </div>
 
-          <!-- Hide App Bar -->
-          <div class="setting-row" data-search-keys="hide app bar navigation selection bar">
-            <div class="setting-info">
-              <span class="setting-title">Hide App Bar</span>
-              <span class="setting-desc">Hide the selection bar until you reopen it from the edge.</span>
-            </div>
-            <div class="setting-control">
-              <button class="toggle-switch" id="hideDockToggle" onclick="toggleDockFromSettings()" role="switch" aria-checked="false" aria-label="Hide App Bar">
-                <div class="toggle-knob"></div>
-              </button>
-            </div>
-          </div>
 
           <!-- Flying Particles Mode -->
           <div class="setting-row" data-search-keys="flying particles background animation">
@@ -1115,7 +1166,8 @@
               <span class="setting-desc">Enable background flying particles animation.</span>
             </div>
             <div class="setting-control">
-              <div class="toggle-switch" id="flyingParticlesToggle" onclick="toggleFlyingParticles()" role="switch" aria-checked="false">
+              <div class="toggle-switch" id="flyingParticlesToggle" onclick="toggleFlyingParticles()" role="switch"
+                aria-checked="false">
                 <div class="toggle-knob"></div>
               </div>
             </div>
@@ -1126,17 +1178,19 @@
       <!-- ================= ADVANCED SECTION ================= -->
       <section class="tab-section" id="section-advanced" style="display: none;">
         <div class="settings-card">
-          
+
 
 
           <!-- Clear Proxy Cache -->
           <div class="setting-row" data-search-keys="clear proxy cache indexeddb scramjet storage">
             <div class="setting-info">
               <span class="setting-title">Clear Proxy Cache</span>
-              <span class="setting-desc">Clear Scramjet IndexedDB databases and ServiceWorker cache to fix loading glitches.</span>
+              <span class="setting-desc">Clear Scramjet IndexedDB databases and ServiceWorker cache to fix loading
+                glitches.</span>
             </div>
             <div class="setting-control">
-              <button class="btn-action btn-secondary" onclick="clearProxyCache()"><i class="fa-solid fa-broom"></i> Clear Cache</button>
+              <button class="btn-action btn-secondary" onclick="clearProxyCache()"><i class="fa-solid fa-broom"></i>
+                Clear Cache</button>
             </div>
           </div>
 
@@ -1257,7 +1311,7 @@
             link.href = iconUrl;
           }
         }
-      } catch(e) {
+      } catch (e) {
         console.error(e);
       }
     }
@@ -1322,7 +1376,7 @@
     function updateCdnDropdownUI(selectedKey, customUrl) {
       const label = document.getElementById("cdnDropdownLabel");
       const providers = window.AthyxCdn ? window.AthyxCdn.PROVIDERS : {};
-      
+
       document.querySelectorAll("#cdnDropdownMenu .dropdown-item").forEach(item => {
         item.classList.remove("selected");
       });
@@ -1374,7 +1428,7 @@
     function runBenchmarkWizard() {
       if (window.AthyxSetupWizard) {
         window.AthyxSetupWizard.start({
-          onComplete: function(results) {
+          onComplete: function (results) {
             if (window.updateCdnDropdownUI && results && results.cdn) {
               const provKey = window.AthyxCdn ? window.AthyxCdn.getProviderKey(results.cdn.origin) : 'jsdelivr';
               updateCdnDropdownUI(provKey);
@@ -1430,14 +1484,14 @@
       try {
         const title = localStorage.getItem("athyx_tab_title") || "Athyx Network";
         const icon = localStorage.getItem("athyx_tab_icon") || "https://ssl.gstatic.com/classroom/favicon.png";
-        
+
         let url;
         try {
-           url = window.top.location.href;
-        } catch(e) {
-           url = window.location.origin;
+          url = window.top.location.href;
+        } catch (e) {
+          url = window.location.origin;
         }
-        
+
         const win = window.open("about:blank", "_blank");
         if (win) {
           win.document.write(`
@@ -1457,10 +1511,10 @@
             </html>
           `);
           win.document.close();
-          
+
           try {
             window.top.close();
-          } catch(e) {}
+          } catch (e) { }
         } else {
           alert("Popup blocked! Please allow popups for this site.");
         }
@@ -1469,58 +1523,7 @@
       }
     }
 
-    function toggleAutoAboutBlank() {
-      const toggle = document.getElementById("autoAbToggle");
-      const current = localStorage.getItem("athyx_auto_about_blank") === "true";
-      const next = !current;
-      localStorage.setItem("athyx_auto_about_blank", next.toString());
-      toggle.classList.toggle("active", next);
-      toggle.setAttribute("aria-checked", next.toString());
-      
-      if (next) {
-        let popupsAllowed = false;
-        try {
-          const testWin = window.open("about:blank", "_blank", "width=1,height=1");
-          if (testWin) {
-            popupsAllowed = true;
-            testWin.close();
-          }
-        } catch(e) {}
-        
-        if (!popupsAllowed) {
-          const overlay = document.createElement("div");
-          overlay.style.position = "fixed";
-          overlay.style.top = "0";
-          overlay.style.left = "0";
-          overlay.style.width = "100vw";
-          overlay.style.height = "100vh";
-          overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
-          overlay.style.zIndex = "999999";
-          overlay.style.display = "flex";
-          overlay.style.alignItems = "center";
-          overlay.style.justifyContent = "center";
-          overlay.style.backdropFilter = "blur(8px)";
-          
-          overlay.innerHTML = `
-            <div style="background: var(--surface); padding: 32px; border-radius: 20px; border: 1px solid var(--border); text-align: center; max-width: 420px; box-shadow: 0 24px 48px rgba(0,0,0,0.6);">
-              <i class="fa-solid fa-up-right-from-square" style="font-size: 42px; color: var(--accent); margin-bottom: 20px;"></i>
-              <h2 style="color: #ffffff; margin-bottom: 12px; font-family: 'Outfit', sans-serif; font-size: 24px;">Pop-ups Required</h2>
-              <p style="color: var(--text-dim); margin-bottom: 24px; line-height: 1.5; font-size: 14.5px;">allow opening about blank please allow pop ups to open in about blank</p>
-              <button onclick="window.top ? window.top.location.reload() : window.location.reload()" style="background: var(--accent); color: var(--accent-text, #fff); border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; font-family: inherit; font-size: 14.5px; cursor: pointer; transition: transform 0.2s;">I've Allowed Pop-ups</button>
-            </div>
-          `;
-          document.body.appendChild(overlay);
-        } else {
-          if (window.top) {
-            window.top.location.reload();
-          } else {
-            window.location.reload();
-          }
-        }
-      } else {
-        showToast("Auto about:blank disabled");
-      }
-    }
+
 
     function togglePanicKey() {
       const toggle = document.getElementById("panicKeyToggle");
@@ -1605,7 +1608,7 @@
       doc.close();
       try {
         if (window.top) window.top.close();
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function generateSvgCloakContent() {
@@ -1655,19 +1658,35 @@
     // Themes
     function selectCustomTheme(colorHex) {
       if (!colorHex) return;
-      
+
       let hex = colorHex;
       if (hex.startsWith("#") && hex.length === 4) {
         hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
       }
-      
+
       const swatch = document.getElementById("themeColorSwatch");
       if (swatch) {
         swatch.style.backgroundColor = hex;
       }
-      
+
       if (!window.AthyxThemeEngine) return;
       AthyxThemeEngine.applyTheme(hex);
+    }
+
+    function setDockPositionSetting(pos) {
+      if (pos !== "bottom" && pos !== "left" && pos !== "right") pos = "bottom";
+      localStorage.setItem("athyx_dock_position", pos);
+      const segContainer = document.getElementById("dockPositionSegmented");
+      if (segContainer) segContainer.setAttribute("data-mode", pos);
+
+      document.getElementById("seg-dock-bottom")?.classList.toggle("active", pos === "bottom");
+      document.getElementById("seg-dock-left")?.classList.toggle("active", pos === "left");
+      document.getElementById("seg-dock-right")?.classList.toggle("active", pos === "right");
+
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ action: "athyx_dock_position_change", position: pos }, "*");
+      }
+      showToast("App bar set to " + pos);
     }
 
     function toggleCompactDock() {
@@ -1716,7 +1735,7 @@
         if (window.parent && window.parent !== window) {
           window.parent.postMessage({ action: "athyx_flying_particles_change", active: next }, "*");
         }
-      } catch(e) {}
+      } catch (e) { }
 
       showToast(next ? "Flying particles enabled" : "Flying particles disabled");
     }
@@ -1769,20 +1788,20 @@
           const wsUrl = url.replace(/^http:\/\//i, 'ws://').replace(/^https:\/\//i, 'wss://');
           const ws = new WebSocket(wsUrl);
           const timer = setTimeout(() => {
-            try { ws.close(); } catch {}
+            try { ws.close(); } catch { }
             resolve({ success: false, latency: null });
           }, timeout);
 
           ws.onopen = () => {
             clearTimeout(timer);
             const latency = Date.now() - start;
-            try { ws.close(); } catch {}
+            try { ws.close(); } catch { }
             resolve({ success: true, latency });
           };
 
           ws.onerror = () => {
             clearTimeout(timer);
-            try { ws.close(); } catch {}
+            try { ws.close(); } catch { }
             resolve({ success: false, latency: null });
           };
         } catch {
@@ -1933,7 +1952,7 @@
       try {
         const dbs = ["scramjet-data", "scrambase", "ScramjetData", "epoxy-bare-mux"];
         for (const db of dbs) {
-          try { indexedDB.deleteDatabase(db); } catch(e) {}
+          try { indexedDB.deleteDatabase(db); } catch (e) { }
         }
         if ("caches" in window) {
           const keys = await caches.keys();
@@ -1956,13 +1975,7 @@
         localStorage.setItem("proxyEngine", savedEngine);
       }
 
-      // Auto about:blank toggle state
-      const autoAb = localStorage.getItem("athyx_auto_about_blank") === "true";
-      const autoAbToggle = document.getElementById("autoAbToggle");
-      if (autoAbToggle) {
-        autoAbToggle.classList.toggle("active", autoAb);
-        autoAbToggle.setAttribute("aria-checked", autoAb.toString());
-      }
+
 
       // Panic Key toggle state
       const panicEnabled = localStorage.getItem("athyx_panic_enabled") !== "false";
@@ -1970,6 +1983,16 @@
       if (panicToggle) {
         panicToggle.classList.toggle("active", panicEnabled);
         panicToggle.setAttribute("aria-checked", panicEnabled.toString());
+      }
+
+      // Dock Position state
+      const dockPos = localStorage.getItem("athyx_dock_position") || "bottom";
+      const dockPosSeg = document.getElementById("dockPositionSegmented");
+      if (dockPosSeg) {
+        dockPosSeg.setAttribute("data-mode", dockPos);
+        document.getElementById("seg-dock-bottom")?.classList.toggle("active", dockPos === "bottom");
+        document.getElementById("seg-dock-left")?.classList.toggle("active", dockPos === "left");
+        document.getElementById("seg-dock-right")?.classList.toggle("active", dockPos === "right");
       }
 
       // Compact Dock state
@@ -2010,8 +2033,8 @@
       // Panic Inputs
       const savedPanicKey = localStorage.getItem("athyx_panic_key") || "";
       const savedPanicUrl = localStorage.getItem("athyx_panic_url") || "https://www.google.com";
-      panicKeyInput.value = savedPanicKey;
-      panicUrlInput.value = savedPanicUrl;
+      if (panicKeyInput) panicKeyInput.value = savedPanicKey;
+      if (panicUrlInput) panicUrlInput.value = savedPanicUrl;
 
       // Cloak Preset state
       const selectedPresetKey = localStorage.getItem("athyx_preset_selected") || "default";
@@ -2047,13 +2070,13 @@
             displayName = theme.name;
           }
         }
-        
+
         if (hex.startsWith("#")) {
           if (hex.length === 4) hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
           if (hex.length >= 7) hex = hex.substring(0, 7);
           hex = hex.toLowerCase();
         }
-        
+
         if (swatch) {
           swatch.style.backgroundColor = hex;
         }
@@ -2061,7 +2084,7 @@
           try {
             colorPicker.value = hex;
             colorPicker.setAttribute("value", hex);
-          } catch(e) {}
+          } catch (e) { }
         }
       };
       window.updateColorPickerState();
@@ -2091,8 +2114,8 @@
 
       // Render Wisps and sync with wisp.txt
       renderWispSettings();
-      fetch("../wisp.txt?t=" + Date.now(), { cache: "no-store" })
-        .catch(() => fetch("https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main/wisp.txt?t=" + Date.now(), { cache: "no-store" }))
+      fetch(".../wisp.txt?t=" + Date.now(), { cache: "no-store" })
+        .catch(() => fetch("https://cdn.jsdelivr.net/gh/daniil-athyx/Athyx-Network@main./wisp.txt?t=" + Date.now(), { cache: "no-store" }))
         .then(res => res && res.ok ? res.text() : "")
         .then(text => {
           if (text) {
@@ -2101,7 +2124,7 @@
               if (url && /^wss?:\/\//i.test(url) && !DEFAULT_WISP_SERVERS.some(s => s.url === url)) {
                 try {
                   DEFAULT_WISP_SERVERS.push({ name: new URL(url).hostname, url });
-                } catch (_) {}
+                } catch (_) { }
               }
             });
             renderWispSettings();
@@ -2116,4 +2139,5 @@
 
   <script src="../js/particle.js"></script>
 </body>
+
 </html>

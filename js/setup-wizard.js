@@ -577,24 +577,31 @@
       localStorage.setItem('athyx_cdn_mirror', chosenCdn.origin);
     }
 
-    // Choose fastest working Wisp
-    var workingWisps = wispResults.filter(function (r) { return r.result.success; });
-    workingWisps.sort(function (a, b) { return a.result.latency - b.result.latency; });
+    // Choose fastest working Wisp only if user has not chosen one
+    var existingWisp = localStorage.getItem('proxServer');
+    var isDeadWisp = existingWisp && (existingWisp.includes('baylib.top') || existingWisp.includes('gointospace.app'));
+    var chosenWisp = DEFAULT_WISPS[0];
+    if (existingWisp && !isDeadWisp) {
+      chosenWisp = DEFAULT_WISPS.find(function (w) { return w.url === existingWisp; }) || { name: existingWisp, url: existingWisp };
+    } else {
+      var workingWisps = wispResults.filter(function (r) { return r.result.success; });
+      workingWisps.sort(function (a, b) { return a.result.latency - b.result.latency; });
 
-    var chosenWisp = workingWisps.length > 0 ? workingWisps[0].wisp : DEFAULT_WISPS[0];
-    if (workingWisps.length > 0) {
-      var bestWispRow = document.getElementById('setup-wisp-' + workingWisps[0].index);
-      if (bestWispRow) {
-        bestWispRow.classList.add('winner');
-        var pill = document.getElementById('status-wisp-' + workingWisps[0].index);
-        if (pill) pill.innerHTML = '<i class="fa-solid fa-crown"></i> ' + workingWisps[0].result.latency + ' ms';
-      }
-      localStorage.setItem('proxServer', chosenWisp.url);
-      if (typeof window.updateWispUrl === 'function') {
-        window.updateWispUrl(chosenWisp.url);
-      }
-      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ type: 'config', wispurl: chosenWisp.url });
+      if (workingWisps.length > 0) {
+        chosenWisp = workingWisps[0].wisp;
+        var bestWispRow = document.getElementById('setup-wisp-' + workingWisps[0].index);
+        if (bestWispRow) {
+          bestWispRow.classList.add('winner');
+          var pill = document.getElementById('status-wisp-' + workingWisps[0].index);
+          if (pill) pill.innerHTML = '<i class="fa-solid fa-crown"></i> ' + workingWisps[0].result.latency + ' ms';
+        }
+        localStorage.setItem('proxServer', chosenWisp.url);
+        if (typeof window.updateWispUrl === 'function') {
+          window.updateWispUrl(chosenWisp.url);
+        }
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'config', wispurl: chosenWisp.url });
+        }
       }
     }
 

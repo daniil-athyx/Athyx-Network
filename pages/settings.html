@@ -18,7 +18,6 @@
   <link rel="stylesheet" href="../themes.css?v=4">
   <script src="../js/themes.js?v=4"></script>
   <script src="../js/cdn-config.js?v=1"></script>
-  <script src="../js/setup-wizard.js?v=1"></script>
   <link rel="icon" type="image/png" href="../assets/favicon.png">
   <link rel="shortcut icon" href="../assets/favicon.ico">
 
@@ -1095,23 +1094,6 @@
             </div>
           </div>
 
-          <!-- Run Benchmark & Optimization Wizard -->
-          <div class="setting-row"
-            data-search-keys="setup wizard benchmark test cdn wisp ping fastest auto optimize network speed latency"
-            style="display: none !important;">
-            <div class="setting-info">
-              <span class="setting-title">Auto-Benchmark & Optimizer</span>
-              <span class="setting-desc">Run a full live benchmark across all CDN mirrors and Wisp servers to test your
-                school network and select the fastest ones.</span>
-            </div>
-            <div class="setting-control">
-              <button class="primary-btn" onclick="runBenchmarkWizard()"
-                style="padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; background: var(--accent); color: var(--accent-text, #051410); transition: opacity 0.2s; display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-gauge-high"></i> <span>Run Benchmark</span>
-              </button>
-            </div>
-          </div>
-
         </div>
       </section>
 
@@ -1440,25 +1422,6 @@
       localStorage.setItem("athyx_cdn_mirror", clean);
       updateCdnDropdownUI("custom", clean);
       showToast(`Custom CDN set to ${clean}`);
-    }
-
-    function runBenchmarkWizard() {
-      if (window.AthyxSetupWizard) {
-        window.AthyxSetupWizard.start({
-          onComplete: function (results) {
-            if (window.updateCdnDropdownUI && results && results.cdn) {
-              const provKey = window.AthyxCdn ? window.AthyxCdn.getProviderKey(results.cdn.origin) : 'jsdelivr';
-              updateCdnDropdownUI(provKey);
-            }
-            if (typeof renderWispSettings === 'function') {
-              renderWispSettings();
-            }
-            showToast(`Optimization complete! ${results.cdn ? results.cdn.name : ''} selected.`);
-          }
-        });
-      } else {
-        alert("Benchmark tool is loading, please try again in a moment.");
-      }
     }
 
     function selectCloakPreset(presetKey) {

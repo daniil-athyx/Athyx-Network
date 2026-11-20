@@ -497,6 +497,19 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    .btn-danger {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.28);
+      color: #fb7185;
+    }
+
+    .btn-danger:hover {
+      background: rgba(244, 63, 94, 0.22);
+      border-color: rgba(244, 63, 94, 0.5);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
     .btn-action.recording {
       background: #ef4444;
       color: #fff;
@@ -1190,6 +1203,18 @@
             <div class="setting-control">
               <button class="btn-action btn-secondary" onclick="clearProxyCache()"><i class="fa-solid fa-broom"></i>
                 Clear Cache</button>
+            </div>
+          </div>
+
+          <!-- Clear Cookies & Restart -->
+          <div class="setting-row" data-search-keys="clear cookies restart reset website session cookie reload privacy">
+            <div class="setting-info">
+              <span class="setting-title">Clear Cookies & Restart</span>
+              <span class="setting-desc">Delete all website cookies and session data, then restart Athyx Network.</span>
+            </div>
+            <div class="setting-control">
+              <button class="btn-action btn-danger" onclick="clearCookiesAndRestart()"><i class="fa-solid fa-cookie-bite"></i>
+                Clear & Restart</button>
             </div>
           </div>
 
@@ -1954,6 +1979,99 @@
       } catch (e) {
         showToast("Error clearing cache: " + e.message);
       }
+    }
+
+    async function clearCookiesAndRestart() {
+      if (!confirm("Are you sure you want to clear all cookies and restart Athyx Network?")) return;
+
+      showToast("Clearing cookies and restarting...");
+
+      function eraseCookies(doc) {
+        if (!doc) return;
+        try {
+          const raw = doc.cookie;
+          if (!raw) return;
+          const cookies = raw.split(";");
+          const hostname = window.location.hostname;
+          const hostParts = hostname.split(".");
+          const domains = ["", hostname, `.${hostname}`];
+
+          let cur = "";
+          for (let i = hostParts.length - 1; i >= 0; i--) {
+            cur = "." + hostParts[i] + cur;
+            domains.push(cur);
+          }
+
+          const paths = ["/", window.location.pathname];
+          const pathSegments = window.location.pathname.split("/").filter(Boolean);
+          let pAcc = "";
+          for (const seg of pathSegments) {
+            pAcc += "/" + seg;
+            paths.push(pAcc);
+            paths.push(pAcc + "/");
+          }
+
+          for (let i = 0; i < cookies.length; i++) {
+            const eqPos = cookies[i].indexOf("=");
+            const name = (eqPos > -1 ? cookies[i].substr(0, eqPos) : cookies[i]).trim();
+            if (!name) continue;
+
+            for (const d of domains) {
+              for (const p of paths) {
+                const domainAttr = d ? `; domain=${d}` : "";
+                doc.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=${p}${domainAttr}`;
+                doc.cookie = `${name}=; Max-Age=-99999999; path=${p}${domainAttr}`;
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Could not erase document.cookie:", e);
+        }
+      }
+
+      // 1. Erase standard document cookies
+      eraseCookies(document);
+      try {
+        if (window.parent && window.parent !== window && window.parent.document) {
+          eraseCookies(window.parent.document);
+        }
+      } catch (_) {}
+
+      // 2. CookieStore API (Modern Chromium / browser API)
+      if (window.cookieStore && typeof window.cookieStore.getAll === "function") {
+        try {
+          const allCookies = await window.cookieStore.getAll();
+          for (const c of allCookies) {
+            try {
+              await window.cookieStore.delete({
+                name: c.name,
+                domain: c.domain || undefined,
+                path: c.path || "/"
+              });
+            } catch (_) {}
+          }
+        } catch (errStore) {
+          console.warn("cookieStore delete error:", errStore);
+        }
+      }
+
+      // 3. Clear session storage
+      try {
+        sessionStorage.clear();
+      } catch (_) {}
+
+      // 4. Restart the site
+      setTimeout(() => {
+        try {
+          if (window.top && window.top !== window) {
+            window.top.location.href = window.top.location.origin + window.top.location.pathname;
+          } else {
+            window.location.href = window.location.origin + window.location.pathname;
+          }
+        } catch (_) {
+          window.location.reload();
+        }
+      }, 600);
     }
 
     // Initialize State

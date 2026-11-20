@@ -5,7 +5,7 @@
 (function () {
   'use strict';
   window.AthyxSetupWizard = {
-    start: function () {},
-    autoCheck: function () {}
+    start: function () { },
+    autoCheck: function () { }
   };
 })();

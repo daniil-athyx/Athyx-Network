@@ -809,6 +809,9 @@
         } else if (!/^https?:\\/\\//i.test(input) && !input.startsWith('data:') && !input.startsWith('blob:') && !input.startsWith('javascript:')) {
           input = absoluteBase + input.replace(/^(\\.\\/)/, '');
         }
+        if (/^https?:\\/\\//i.test(input) && input.includes(' ')) {
+          input = encodeURI(input);
+        }
       } else if (input instanceof Request) {
         let url = rewriteCdnUrl(input.url);
         if (url.startsWith('file:///')) {

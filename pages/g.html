@@ -700,7 +700,7 @@
 
         // Neutralize any sitelocks or domain restriction checks so games work across all domains
         try {
-          html = html.replace(/_isAuthorized\(\)/g, "true");
+          html = html.replace(/function\s+_isAuthorized\s*\([^)]*\)\s*\{/gi, "function _isAuthorized() { return true; ");
         } catch(e) {}
 
 
@@ -746,8 +746,8 @@
 
   function rewriteCdnUrl(u) {
     if (!u || typeof u !== 'string') return u;
-    const dest = activeCdnOrigin.replace(/\/+$/, '');
-    const pattern = /https?:\/\/(?:cdn|fastly|gcore)\.jsdelivr\.net|https?:\/\/cdn\.statically\.io/gi;
+    const dest = activeCdnOrigin.replace(new RegExp('/+$'), '');
+    const pattern = new RegExp('https?:\\/\\/(?:cdn|fastly|gcore)\\.jsdelivr\\.net|https?:\\/\\/cdn\\.statically\\.io', 'gi');
     return u.replace(pattern, dest);
   }
 

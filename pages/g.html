@@ -449,6 +449,7 @@
   <script>
     const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://cdn.jsdelivr.net";
     const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/";
+    const resolveGameIcon = (i) => !i ? "" : i.startsWith("http") ? i : (i.startsWith("../") || i.startsWith("/")) ? new URL(i, location.href).href : REPO_BASE + encodeURI(i);
     const PRIMARY_GAMES_JSON = REPO_BASE + "games.json";
     const FALLBACK_GAMES_JSON = REPO_BASE + "games.json";
 
@@ -584,7 +585,6 @@
       renderGames();
 
       if (window.AthyxImageCache) {
-        const resolveGameIcon = (i) => !i ? "" : i.startsWith("http") ? i : (i.startsWith("../") || i.startsWith("/")) ? new URL(i, location.href).href : REPO_BASE + encodeURI(i);
         const iconUrls = allGames
           .map(g => resolveGameIcon(g.icon))
           .filter(Boolean);

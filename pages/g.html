@@ -512,7 +512,7 @@
 
 
     const fallbackGames = [
-      { "name": "2048", "path": "2048.html", "icon": "icons/2048.png" },
+      { "name": "2048", "path": "2048.html", "icon": "../images/games/2048.png" },
       { "name": "Angry Birds", "path": "Angry Birds.html", "icon": "icons/angry_birds.png" },
       { "name": "Bad Piggies", "path": "Bad Piggies.html", "icon": "icons/bad_piggies.png" },
       { "name": "Baldi's Basics", "path": "Baldis Basics.html", "icon": "icons/baldis_basics.png" },
@@ -582,8 +582,9 @@
       renderGames();
 
       if (window.AthyxImageCache) {
+        const resolveGameIcon = (i) => !i ? "" : i.startsWith("http") ? i : (i.startsWith("../") || i.startsWith("/")) ? new URL(i, location.href).href : REPO_BASE + encodeURI(i);
         const iconUrls = allGames
-          .map(g => g.icon ? (g.icon.startsWith("http") ? g.icon : REPO_BASE + encodeURI(g.icon)) : "")
+          .map(g => resolveGameIcon(g.icon))
           .filter(Boolean);
         window.AthyxImageCache.precacheImages(iconUrls);
       }
@@ -647,7 +648,7 @@
       }
 
       list.forEach(game => {
-        const rawIcon = game.icon ? (game.icon.startsWith("http") ? game.icon : REPO_BASE + encodeURI(game.icon)) : "";
+        const rawIcon = resolveGameIcon(game.icon);
 
         const card = document.createElement("div");
         card.className = "game-card";

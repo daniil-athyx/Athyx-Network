@@ -918,6 +918,9 @@
         requestAd: function() {}
       };
     }
+    if (typeof window.getWebsite_URL === 'undefined') {
+      window.getWebsite_URL = function() { return window.location.href; };
+    }
   } catch(e) {}
 
   // Scirra Construct 3 & 2 RuntimeInterface shim (prevents Construct from defaulting to file:/// due to origin === "null")

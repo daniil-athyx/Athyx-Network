@@ -448,7 +448,7 @@
 
   <script>
     const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://fastly.jsdelivr.net";
-    const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://fastly.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/";
+    const REPO_BASE = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/";
     const resolveGameIcon = (i) => !i ? "" : i.startsWith("http") ? i : (i.startsWith("../") || i.startsWith("/")) ? new URL(i, location.href).href : REPO_BASE + encodeURI(i);
     const PRIMARY_GAMES_JSON = REPO_BASE + "games.json";
     const FALLBACK_GAMES_JSON = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/games.json";
@@ -889,13 +889,27 @@
     return mirrorOrigin + '/gh/' + info.user + '/' + info.repo + '@' + info.branch + '/' + info.path;
   }
 
+  function resolveSafeAssetUrl(u) {
+    if (!u || typeof u !== 'string') return u;
+    if (/\.(chunk\d+|part\d+|data|wasm)$/i.test(u) || u.includes('/Build/')) {
+      try {
+        const r = new RegExp('https?:\\/\\/[^\\/]+\\/gh\\/([^\\/]+)\\/([^\\/@]+)(?:@([^\\/]+)|\\/([^\\/]+))\\/(.*)', 'i');
+        let m = u.match(r);
+        if (m) {
+          return 'https://raw.githubusercontent.com/' + m[1] + '/' + m[2] + '/main/' + m[5];
+        }
+      } catch (e) {}
+    }
+    return u;
+  }
+
   // Fetch interceptor to resolve file:/// and relative paths against absoluteBase, rewrite CDN, and auto-fallback
   if (window.fetch) {
     const origFetch = window.fetch;
     window.fetch = async function(input, init) {
       let isStr = typeof input === 'string';
       let origUrl = isStr ? input : (input && input.url ? input.url : '');
-      let url = origUrl;
+      let url = resolveSafeAssetUrl(origUrl);
 
       if (isStr) {
         url = rewriteCdnUrl(url);

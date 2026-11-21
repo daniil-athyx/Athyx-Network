@@ -777,6 +777,18 @@
         return;
       }
 
+      if (game.name && (game.name.toLowerCase().includes('we become what we behold') || (game.path && game.path.toLowerCase().includes('we become what we behold')))) {
+        gameStageIframe.removeAttribute("srcdoc");
+        gameStageIframe.src = "/games/we-become-what-we-behold/index.html";
+        gameStage.classList.add("show");
+        document.body.classList.add("game-active");
+        loadingModal.classList.remove("show");
+        try {
+          window.parent.postMessage({ action: "athyx_game_active", active: true, title: game.name }, "*");
+        } catch (e) { }
+        return;
+      }
+
       let gameUrl = REPO_BASE + encodeURI(game.path);
       let gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
 
@@ -866,6 +878,31 @@
         Object.defineProperty(window.location, 'ancestorOrigins', { get: function() { return [authorizedOrigin]; }, configurable: true });
       }
     } catch(e) {}
+  } catch(e) {}
+
+  // ServiceWorker shim to prevent cross-origin registration SecurityErrors
+  try {
+    if (navigator.serviceWorker && navigator.serviceWorker.register) {
+      const origRegister = navigator.serviceWorker.register.bind(navigator.serviceWorker);
+      navigator.serviceWorker.register = function(scriptURL, options) {
+        try {
+          const resolved = new URL(scriptURL, document.baseURI || window.location.href);
+          if (resolved.origin !== window.location.origin) {
+            return Promise.resolve({
+              scope: (options && options.scope) || './',
+              active: null,
+              installing: null,
+              waiting: null,
+              addEventListener: function() {},
+              removeEventListener: function() {}
+            });
+          }
+          return origRegister(scriptURL, options);
+        } catch (_) {
+          return Promise.resolve({});
+        }
+      };
+    }
   } catch(e) {}
 
   // Scirra Construct 3 & 2 RuntimeInterface shim (prevents Construct from defaulting to file:/// due to origin === "null")

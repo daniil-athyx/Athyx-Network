@@ -45,7 +45,36 @@
 		}
 	</style>
 
-	<script src="poki-sdk.js"></script>
+	<script>
+		window.PokiSDK = {
+			init: function() { return Promise.resolve(); },
+			initWithVideoHB: function() { return Promise.resolve(); },
+			customEvent: function() {},
+			commercialBreak: function() { return Promise.resolve(); },
+			rewardedBreak: function() { return Promise.resolve(false); },
+			displayAd: function() {},
+			destroyAd: function() {},
+			getLeaderboard: function() { return Promise.resolve(); },
+			getSharableURL: function() { return Promise.reject(); },
+			getURLParam: function() { return ''; },
+			gameLoadingStart: function() {},
+			gameLoadingFinished: function() {},
+			gameInteractive: function() {},
+			roundStart: function() {},
+			roundEnd: function() {},
+			muteAd: function() {},
+			setDebug: function() {},
+			gameplayStart: function() {},
+			gameplayStop: function() {},
+			gameLoadingProgress: function() {},
+			happyTime: function() {},
+			setPlayerAge: function() {},
+			togglePlayerAdvertisingConsent: function() {},
+			logError: function() {},
+			sendHighscore: function() {},
+			setDebugTouchOverlayController: function() {}
+		};
+	</script>
 </head>
 
 <body>

@@ -1083,58 +1083,199 @@
     };
   }
 
+  // Canvas2D willReadFrequently optimization to eliminate readback performance warnings
+  if (HTMLCanvasElement.prototype.getContext) {
+    const origGetContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function(type, attributes) {
+      if (type === '2d') {
+        attributes = Object.assign({ willReadFrequently: true }, attributes);
+      }
+      return origGetContext.call(this, type, attributes);
+    };
+  }
+
   // XMLHttpRequest interceptor to resolve relative paths against absoluteBase, rewrite CDN, and auto-fallback
   if (window.XMLHttpRequest) {
-    const origOpen = XMLHttpRequest.prototype.open;
-    const origSend = XMLHttpRequest.prototype.send;
+    const OrigXHR = window.XMLHttpRequest;
+    window.XMLHttpRequest = function() {
+      const xhr = new OrigXHR();
+      let resolvedUrl = '';
+      let reqMethod = 'GET';
+      let reqBody = null;
+      let userOnLoad = null;
+      let userOnError = null;
+      let userOnReady = null;
+      let userOnLoadEnd = null;
+      let listeners = { load: [], error: [], readystatechange: [], loadend: [] };
 
-    XMLHttpRequest.prototype.open = function(method, url) {
-      this._reqMethod = method;
-      this._origUrl = url;
-      if (typeof url === 'string') {
-        url = resolveSafeAssetUrl(url);
-        url = rewriteCdnUrl(url);
-        if (url.startsWith('file:///')) {
-          url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
-        } else if (url.startsWith('/') && !url.startsWith('//')) {
-          url = absoluteBase + url.replace(/^\\//, '');
-        } else if (!/^https?:\\/\\//i.test(url) && !url.startsWith('data:') && !url.startsWith('blob:')) {
-          url = absoluteBase + url.replace(/^(\\.\\/)/, '');
-        }
-      }
-      this._resolvedUrl = url;
-      const args = Array.prototype.slice.call(arguments);
-      args[1] = url;
-      return origOpen.apply(this, args);
-    };
-
-    XMLHttpRequest.prototype.send = function(body) {
-      const xhr = this;
-      let mirrorIdx = 0;
-
-      xhr.addEventListener('load', function() {
-        if (xhr.status >= 400 && parseCdnUrl(xhr._resolvedUrl) && mirrorIdx < MIRROR_ORIGINS.length) {
-          const nextUrl = getMirrorUrl(xhr._resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
-          if (nextUrl && nextUrl !== xhr._resolvedUrl) {
-            console.warn('[Athyx CDN Auto-Fallback] XHR got status ' + xhr.status + ', retrying mirror:', nextUrl);
-            const retryXhr = new XMLHttpRequest();
-            retryXhr.responseType = xhr.responseType;
-            retryXhr.open(xhr._reqMethod || 'GET', nextUrl, true);
-            retryXhr.onload = function() {
-              try {
-                Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
-                Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
-                Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
-                Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
-              } catch (_) {}
-              if (typeof xhr.onload === 'function') xhr.onload.call(xhr);
-            };
-            retryXhr.send(body);
-          }
-        }
+      Object.defineProperty(xhr, 'onload', {
+        get: () => userOnLoad,
+        set: (fn) => { userOnLoad = fn; },
+        configurable: true
+      });
+      Object.defineProperty(xhr, 'onerror', {
+        get: () => userOnError,
+        set: (fn) => { userOnError = fn; },
+        configurable: true
+      });
+      Object.defineProperty(xhr, 'onreadystatechange', {
+        get: () => userOnReady,
+        set: (fn) => { userOnReady = fn; },
+        configurable: true
+      });
+      Object.defineProperty(xhr, 'onloadend', {
+        get: () => userOnLoadEnd,
+        set: (fn) => { userOnLoadEnd = fn; },
+        configurable: true
       });
 
-      return origSend.call(this, body);
+      const origAddEventListener = xhr.addEventListener.bind(xhr);
+      xhr.addEventListener = function(type, fn, options) {
+        if (listeners[type]) {
+          listeners[type].push(fn);
+          return;
+        }
+        return origAddEventListener(type, fn, options);
+      };
+
+      const origOpen = xhr.open;
+      xhr.open = function(method, url) {
+        reqMethod = method;
+        if (typeof url === 'string') {
+          url = resolveSafeAssetUrl(url);
+          url = rewriteCdnUrl(url);
+          if (url.startsWith('file:///')) {
+            url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
+          } else if (url.startsWith('/') && !url.startsWith('//')) {
+            url = absoluteBase + url.replace(/^\\//, '');
+          } else if (!/^https?:\\/\\//i.test(url) && !url.startsWith('data:') && !url.startsWith('blob:')) {
+            url = absoluteBase + url.replace(/^(\\.\\/)/, '');
+          }
+        }
+        resolvedUrl = url;
+        const args = Array.prototype.slice.call(arguments);
+        args[1] = url;
+        return origOpen.apply(xhr, args);
+      };
+
+      const origSend = xhr.send;
+      xhr.send = function(body) {
+        reqBody = body;
+        if (!parseCdnUrl(resolvedUrl)) {
+          origAddEventListener('load', (e) => {
+            if (userOnLoad) userOnLoad.call(xhr, e);
+            listeners.load.forEach(f => f.call(xhr, e));
+          });
+          origAddEventListener('error', (e) => {
+            if (userOnError) userOnError.call(xhr, e);
+            listeners.error.forEach(f => f.call(xhr, e));
+          });
+          origAddEventListener('readystatechange', (e) => {
+            if (userOnReady) userOnReady.call(xhr, e);
+            listeners.readystatechange.forEach(f => f.call(xhr, e));
+          });
+          origAddEventListener('loadend', (e) => {
+            if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
+            listeners.loadend.forEach(f => f.call(xhr, e));
+          });
+          return origSend.call(xhr, body);
+        }
+
+        origAddEventListener('load', function(e) {
+          if (xhr.status < 400) {
+            if (userOnReady) userOnReady.call(xhr, e);
+            listeners.readystatechange.forEach(f => f.call(xhr, e));
+            if (userOnLoad) userOnLoad.call(xhr, e);
+            listeners.load.forEach(f => f.call(xhr, e));
+            if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
+            listeners.loadend.forEach(f => f.call(xhr, e));
+            return;
+          }
+
+          let mirrorIdx = 0;
+          function tryNext() {
+            if (mirrorIdx >= MIRROR_ORIGINS.length) {
+              if (userOnReady) userOnReady.call(xhr, e);
+              listeners.readystatechange.forEach(f => f.call(xhr, e));
+              if (userOnLoad) userOnLoad.call(xhr, e);
+              listeners.load.forEach(f => f.call(xhr, e));
+              if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
+              listeners.loadend.forEach(f => f.call(xhr, e));
+              return;
+            }
+            const nextUrl = getMirrorUrl(resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
+            if (!nextUrl || nextUrl === resolvedUrl) return tryNext();
+            console.warn('[Athyx CDN Auto-Fallback] XHR got status ' + xhr.status + ', retrying mirror:', nextUrl);
+            const retryXhr = new OrigXHR();
+            retryXhr.responseType = xhr.responseType;
+            retryXhr.open(reqMethod, nextUrl, true);
+            retryXhr.onload = function(re) {
+              if (retryXhr.status < 400) {
+                try {
+                  Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
+                  Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
+                  Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
+                  Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
+                } catch(_) {}
+                if (userOnReady) userOnReady.call(xhr, re);
+                listeners.readystatechange.forEach(f => f.call(xhr, re));
+                if (userOnLoad) userOnLoad.call(xhr, re);
+                listeners.load.forEach(f => f.call(xhr, re));
+                if (userOnLoadEnd) userOnLoadEnd.call(xhr, re);
+                listeners.loadend.forEach(f => f.call(xhr, re));
+              } else {
+                tryNext();
+              }
+            };
+            retryXhr.onerror = tryNext;
+            retryXhr.send(reqBody);
+          }
+          tryNext();
+        });
+
+        origAddEventListener('error', function(e) {
+          let mirrorIdx = 0;
+          function tryNext() {
+            if (mirrorIdx >= MIRROR_ORIGINS.length) {
+              if (userOnError) userOnError.call(xhr, e);
+              listeners.error.forEach(f => f.call(xhr, e));
+              if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
+              listeners.loadend.forEach(f => f.call(xhr, e));
+              return;
+            }
+            const nextUrl = getMirrorUrl(resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
+            if (!nextUrl || nextUrl === resolvedUrl) return tryNext();
+            const retryXhr = new OrigXHR();
+            retryXhr.responseType = xhr.responseType;
+            retryXhr.open(reqMethod, nextUrl, true);
+            retryXhr.onload = function(re) {
+              if (retryXhr.status < 400) {
+                try {
+                  Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
+                  Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
+                  Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
+                  Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
+                } catch(_) {}
+                if (userOnReady) userOnReady.call(xhr, re);
+                listeners.readystatechange.forEach(f => f.call(xhr, re));
+                if (userOnLoad) userOnLoad.call(xhr, re);
+                listeners.load.forEach(f => f.call(xhr, re));
+                if (userOnLoadEnd) userOnLoadEnd.call(xhr, re);
+                listeners.loadend.forEach(f => f.call(xhr, re));
+              } else {
+                tryNext();
+              }
+            };
+            retryXhr.onerror = tryNext;
+            retryXhr.send(reqBody);
+          }
+          tryNext();
+        });
+
+        return origSend.call(xhr, body);
+      };
+
+      return xhr;
     };
   }
 
@@ -1203,6 +1344,19 @@
           if (/^https?:\\/\\//i.test(val) && val.includes(' ')) {
             val = encodeURI(val);
           }
+        }
+        if (!this._hasMirrorHandler && parseCdnUrl(val)) {
+          this._hasMirrorHandler = true;
+          let retryIdx = 0;
+          this.addEventListener('error', () => {
+            if (this.src && parseCdnUrl(this.src) && retryIdx < MIRROR_ORIGINS.length) {
+              const nextUrl = getMirrorUrl(this.src, MIRROR_ORIGINS[retryIdx++]);
+              if (nextUrl && nextUrl !== this.src) {
+                console.warn('[Athyx CDN Auto-Fallback] Image load failed, trying mirror:', nextUrl);
+                origSrcDesc.set.call(this, nextUrl);
+              }
+            }
+          });
         }
         return origSrcDesc.set.call(this, val);
       },

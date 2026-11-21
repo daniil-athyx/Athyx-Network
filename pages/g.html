@@ -447,25 +447,35 @@
   </div>
 
   <script>
-    const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://cdn.jsdelivr.net";
-    const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/";
+    const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://fastly.jsdelivr.net";
+    const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://fastly.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/";
     const resolveGameIcon = (i) => !i ? "" : i.startsWith("http") ? i : (i.startsWith("../") || i.startsWith("/")) ? new URL(i, location.href).href : REPO_BASE + encodeURI(i);
     const PRIMARY_GAMES_JSON = REPO_BASE + "games.json";
     const FALLBACK_GAMES_JSON = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/games.json";
 
+    const ICON_MIRRORS = [
+      "https://fastly.jsdelivr.net",
+      "https://gcore.jsdelivr.net",
+      "https://cdn.statically.io",
+      "https://raw.githubusercontent.com"
+    ];
+
     window.handleIconFallback = function (img) {
-      if (!img.dataset.retried) {
-        img.dataset.retried = "true";
-        let url = new URL(img.src, window.location.href);
-        let nextUrl = "";
-        if (url.pathname.endsWith(".png")) {
-          url.pathname = url.pathname.replace(/\.png$/i, ".jpg");
-          nextUrl = url.href;
-        } else if (url.pathname.endsWith(".jpg")) {
-          url.pathname = url.pathname.replace(/\.jpg$/i, ".png");
-          nextUrl = url.href;
+      const currentSrc = img.src || "";
+      let retryIdx = parseInt(img.dataset.mirrorRetry || "0", 10);
+
+      if (retryIdx < ICON_MIRRORS.length) {
+        const nextMirror = ICON_MIRRORS[retryIdx];
+        img.dataset.mirrorRetry = String(retryIdx + 1);
+        let nextUrl = currentSrc;
+        if (nextMirror === "https://raw.githubusercontent.com") {
+          nextUrl = nextUrl.replace(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)@[^\/]+\//i, "https://raw.githubusercontent.com/$1/$2/main/");
+        } else if (nextMirror.includes("statically.io")) {
+          nextUrl = nextUrl.replace(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)@[^\/]+\//i, "https://cdn.statically.io/gh/$1/$2/main/");
+        } else {
+          nextUrl = nextUrl.replace(/https?:\/\/[^\/]+/i, nextMirror);
         }
-        if (nextUrl) {
+        if (nextUrl && nextUrl !== currentSrc) {
           if (window.AthyxImageCache) {
             window.AthyxImageCache.applyToImage(img, nextUrl);
           } else {
@@ -474,6 +484,28 @@
           return;
         }
       }
+
+      if (!img.dataset.extRetried) {
+        img.dataset.extRetried = "true";
+        let url = new URL(currentSrc, window.location.href);
+        let extUrl = "";
+        if (url.pathname.endsWith(".png")) {
+          url.pathname = url.pathname.replace(/\.png$/i, ".jpg");
+          extUrl = url.href;
+        } else if (url.pathname.endsWith(".jpg")) {
+          url.pathname = url.pathname.replace(/\.jpg$/i, ".png");
+          extUrl = url.href;
+        }
+        if (extUrl) {
+          if (window.AthyxImageCache) {
+            window.AthyxImageCache.applyToImage(img, extUrl);
+          } else {
+            img.src = extUrl;
+          }
+          return;
+        }
+      }
+
       img.style.display = "none";
       if (img.nextElementSibling) img.nextElementSibling.style.display = "block";
     };
@@ -727,7 +759,11 @@
 
 
         const baseMatch = html.match(/<base\s+[^>]*href=["']([^"']+)["']/i);
-        const resolvedBase = baseMatch ? baseMatch[1] : gameBaseFolder;
+        let resolvedBase = baseMatch ? baseMatch[1] : gameBaseFolder;
+        if (window.AthyxCdn) {
+          resolvedBase = window.AthyxCdn.rewriteUrl(resolvedBase, activeCdn);
+          html = html.replace(/<base\s+[^>]*href=["'][^"']*["']/i, `<base href="${resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/'}" />`);
+        }
         const absoluteBase = resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/';
 
 
@@ -849,6 +885,79 @@
       }
       return origOpen.apply(this, args);
     };
+  }
+
+  // HTMLImageElement & Image interceptor for Construct 2 / HTML5 2D games
+  const FALLBACK_MIRRORS = [
+    "https://fastly.jsdelivr.net",
+    "https://gcore.jsdelivr.net",
+    "https://cdn.statically.io/gh",
+    "https://raw.githubusercontent.com"
+  ];
+
+  function getFallbackUrl(url, mirror) {
+    if (!url || typeof url !== 'string') return url;
+    if (mirror === 'https://raw.githubusercontent.com') {
+      return url.replace(/https?:\\/\\/[^\\/]+\\/gh\\/([^\\/]+)\\/([^\\/@]+)@[^\\/]+\\//i, 'https://raw.githubusercontent.com/$1/$2/main/');
+    }
+    if (mirror.includes('statically.io')) {
+      return url.replace(/https?:\\/\\/[^\\/]+\\/gh\\/([^\\/]+)\\/([^\\/@]+)@[^\\/]+\\//i, 'https://cdn.statically.io/gh/$1/$2/main/');
+    }
+    return url.replace(/https?:\\/\\/[^\\/]+/i, mirror);
+  }
+
+  const origImage = window.Image;
+  window.Image = function() {
+    const img = new origImage();
+    let retryIdx = 0;
+    let userOnError = null;
+
+    Object.defineProperty(img, 'onerror', {
+      get: function() { return userOnError; },
+      set: function(fn) { userOnError = fn; },
+      configurable: true
+    });
+
+    img.addEventListener('error', function(e) {
+      if (retryIdx < FALLBACK_MIRRORS.length && img.src && (img.src.includes('jsdelivr.net') || img.src.includes('statically.io') || img.src.includes('raw.githubusercontent.com'))) {
+        const nextMirror = FALLBACK_MIRRORS[retryIdx++];
+        const newUrl = getFallbackUrl(img.src, nextMirror);
+        if (newUrl && newUrl !== img.src) {
+          console.warn('[Athyx CDN Auto-Fallback] Image load failed, trying mirror:', newUrl);
+          img.src = newUrl;
+          return;
+        }
+      }
+      if (typeof userOnError === 'function') {
+        userOnError.call(img, e);
+      }
+    });
+
+    return img;
+  };
+
+  const origSrcDesc = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+  if (origSrcDesc) {
+    Object.defineProperty(HTMLImageElement.prototype, 'src', {
+      get: function() { return origSrcDesc.get.call(this); },
+      set: function(val) {
+        if (typeof val === 'string') {
+          val = rewriteCdnUrl(val);
+          if (val.startsWith('file:///')) {
+            val = absoluteBase + val.replace(/^file:\\/\\/\\/?/, '');
+          } else if (val.startsWith('/') && !val.startsWith('//')) {
+            val = absoluteBase + val.replace(/^\\//, '');
+          } else if (!/^https?:\\/\\//i.test(val) && !val.startsWith('data:') && !val.startsWith('blob:') && !val.startsWith('javascript:')) {
+            val = absoluteBase + val.replace(/^(\\.\\/)/, '');
+          }
+          if (/^https?:\\/\\//i.test(val) && val.includes(' ')) {
+            val = encodeURI(val);
+          }
+        }
+        return origSrcDesc.set.call(this, val);
+      },
+      configurable: true
+    });
   }
 
   // WebAssembly instantiate / instantiateStreaming polyfill for Unity WebGL / WASM compatibility

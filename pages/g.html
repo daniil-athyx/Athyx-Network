@@ -859,10 +859,14 @@
 
   function parseCdnUrl(u) {
     if (!u || typeof u !== 'string') return null;
-    let m = u.match(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)(?:@([^\/]+)|\/([^\/]+))\/(.*)/i);
-    if (m) return { user: m[1], repo: m[2], branch: m[3] || m[4] || 'main', path: m[5] };
-    m = u.match(/https?:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.*)/i);
-    if (m) return { user: m[1], repo: m[2], branch: m[3], path: m[4] };
+    try {
+      const r1 = new RegExp('https?:\\/\\/[^\\/]+\\/gh\\/([^\\/]+)\\/([^\\/@]+)(?:@([^\\/]+)|\\/([^\\/]+))\\/(.*)', 'i');
+      let m = u.match(r1);
+      if (m) return { user: m[1], repo: m[2], branch: m[3] || m[4] || 'main', path: m[5] };
+      const r2 = new RegExp('https?:\\/\\/raw\\.githubusercontent\\.com\\/([^\\/]+)\\/([^\\/]+)\\/([^\\/]+)\\/(.*)', 'i');
+      m = u.match(r2);
+      if (m) return { user: m[1], repo: m[2], branch: m[3], path: m[4] };
+    } catch (e) {}
     return null;
   }
 

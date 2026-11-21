@@ -453,12 +453,33 @@
     const PRIMARY_GAMES_JSON = REPO_BASE + "games.json";
     const FALLBACK_GAMES_JSON = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/games.json";
 
+    function parseCdnUrl(u) {
+      if (!u || typeof u !== 'string') return null;
+      let m = u.match(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)(?:@([^\/]+)|\/([^\/]+))\/(.*)/i);
+      if (m) return { user: m[1], repo: m[2], branch: m[3] || m[4] || 'main', path: m[5] };
+      m = u.match(/https?:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.*)/i);
+      if (m) return { user: m[1], repo: m[2], branch: m[3], path: m[4] };
+      return null;
+    }
+
     const ICON_MIRRORS = [
+      "https://raw.githubusercontent.com",
+      "https://cdn.jsdelivr.net",
       "https://fastly.jsdelivr.net",
-      "https://gcore.jsdelivr.net",
-      "https://cdn.statically.io",
-      "https://raw.githubusercontent.com"
+      "https://cdn.statically.io"
     ];
+
+    function getMirrorUrl(u, mirrorOrigin) {
+      const info = parseCdnUrl(u);
+      if (!info) return u;
+      if (mirrorOrigin === 'https://raw.githubusercontent.com') {
+        return `https://raw.githubusercontent.com/${info.user}/${info.repo}/${info.branch}/${info.path}`;
+      }
+      if (mirrorOrigin.includes('statically.io')) {
+        return `https://cdn.statically.io/gh/${info.user}/${info.repo}/${info.branch}/${info.path}`;
+      }
+      return `${mirrorOrigin}/gh/${info.user}/${info.repo}@${info.branch}/${info.path}`;
+    }
 
     window.handleIconFallback = function (img) {
       const currentSrc = img.src || "";
@@ -467,14 +488,7 @@
       if (retryIdx < ICON_MIRRORS.length) {
         const nextMirror = ICON_MIRRORS[retryIdx];
         img.dataset.mirrorRetry = String(retryIdx + 1);
-        let nextUrl = currentSrc;
-        if (nextMirror === "https://raw.githubusercontent.com") {
-          nextUrl = nextUrl.replace(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)@[^\/]+\//i, "https://raw.githubusercontent.com/$1/$2/main/");
-        } else if (nextMirror.includes("statically.io")) {
-          nextUrl = nextUrl.replace(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)@[^\/]+\//i, "https://cdn.statically.io/gh/$1/$2/main/");
-        } else {
-          nextUrl = nextUrl.replace(/https?:\/\/[^\/]+/i, nextMirror);
-        }
+        const nextUrl = getMirrorUrl(currentSrc, nextMirror);
         if (nextUrl && nextUrl !== currentSrc) {
           if (window.AthyxImageCache) {
             window.AthyxImageCache.applyToImage(img, nextUrl);
@@ -717,7 +731,18 @@
       loadingModalText.textContent = `Loading ${game.name}...`;
       loadingModal.classList.add("show");
 
-      
+      if (game.name && (game.name.toLowerCase().includes('small world cup') || (game.path && game.path.toLowerCase().includes('small world cup')))) {
+        gameStageIframe.removeAttribute("srcdoc");
+        gameStageIframe.src = "/games/a-small-world-cup/index.html";
+        gameStage.classList.add("show");
+        document.body.classList.add("game-active");
+        loadingModal.classList.remove("show");
+        try {
+          window.parent.postMessage({ action: "athyx_game_active", active: true, title: game.name }, "*");
+        } catch (e) { }
+        return;
+      }
+
       let gameUrl = REPO_BASE + encodeURI(game.path);
       let gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
 
@@ -832,42 +857,103 @@
     });
   } catch(e) {}
 
-  // Fetch interceptor to resolve file:/// and relative paths against absoluteBase and rewrite CDN
+  function parseCdnUrl(u) {
+    if (!u || typeof u !== 'string') return null;
+    let m = u.match(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)(?:@([^\/]+)|\/([^\/]+))\/(.*)/i);
+    if (m) return { user: m[1], repo: m[2], branch: m[3] || m[4] || 'main', path: m[5] };
+    m = u.match(/https?:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.*)/i);
+    if (m) return { user: m[1], repo: m[2], branch: m[3], path: m[4] };
+    return null;
+  }
+
+  const MIRROR_ORIGINS = [
+    "https://raw.githubusercontent.com",
+    "https://cdn.jsdelivr.net",
+    "https://fastly.jsdelivr.net",
+    "https://cdn.statically.io"
+  ];
+
+  function getMirrorUrl(u, mirrorOrigin) {
+    const info = parseCdnUrl(u);
+    if (!info) return u;
+    if (mirrorOrigin === 'https://raw.githubusercontent.com') {
+      return 'https://raw.githubusercontent.com/' + info.user + '/' + info.repo + '/' + info.branch + '/' + info.path;
+    }
+    if (mirrorOrigin.includes('statically.io')) {
+      return 'https://cdn.statically.io/gh/' + info.user + '/' + info.repo + '/' + info.branch + '/' + info.path;
+    }
+    return mirrorOrigin + '/gh/' + info.user + '/' + info.repo + '@' + info.branch + '/' + info.path;
+  }
+
+  // Fetch interceptor to resolve file:/// and relative paths against absoluteBase, rewrite CDN, and auto-fallback
   if (window.fetch) {
     const origFetch = window.fetch;
-    window.fetch = function(input, init) {
-      if (typeof input === 'string') {
-        input = rewriteCdnUrl(input);
-        if (input.startsWith('file:///')) {
-          input = absoluteBase + input.replace(/^file:\\/\\/\\/?/, '');
-        } else if (input.startsWith('/') && !input.startsWith('//')) {
-          input = absoluteBase + input.replace(/^\\//, '');
-        } else if (!/^https?:\\/\\//i.test(input) && !input.startsWith('data:') && !input.startsWith('blob:') && !input.startsWith('javascript:')) {
-          input = absoluteBase + input.replace(/^(\\.\\/)/, '');
-        }
-        if (/^https?:\\/\\//i.test(input) && input.includes(' ')) {
-          input = encodeURI(input);
-        }
-      } else if (input instanceof Request) {
-        let url = rewriteCdnUrl(input.url);
+    window.fetch = async function(input, init) {
+      let isStr = typeof input === 'string';
+      let origUrl = isStr ? input : (input && input.url ? input.url : '');
+      let url = origUrl;
+
+      if (isStr) {
+        url = rewriteCdnUrl(url);
         if (url.startsWith('file:///')) {
           url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
-          input = new Request(url, input);
+        } else if (url.startsWith('/') && !url.startsWith('//')) {
+          url = absoluteBase + url.replace(/^\\//, '');
+        } else if (!/^https?:\\/\\//i.test(url) && !url.startsWith('data:') && !url.startsWith('blob:') && !url.startsWith('javascript:')) {
+          url = absoluteBase + url.replace(/^(\\.\\/)/, '');
+        }
+        if (/^https?:\\/\\//i.test(url) && url.includes(' ')) {
+          url = encodeURI(url);
+        }
+      } else if (input instanceof Request) {
+        url = rewriteCdnUrl(input.url);
+        if (url.startsWith('file:///')) {
+          url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
         } else if (url.startsWith('about:')) {
           url = absoluteBase + url.replace(/^about:[^/]*\\/?/, '');
-          input = new Request(url, input);
-        } else if (url !== input.url) {
-          input = new Request(url, input);
         }
       }
-      return origFetch.call(this, input, init);
+
+      let activeReq = isStr ? url : new Request(url, input);
+      try {
+        let resp = await origFetch.call(this, activeReq, init);
+        if (!resp.ok && (resp.status === 403 || resp.status === 404) && parseCdnUrl(url)) {
+          for (let m = 0; m < MIRROR_ORIGINS.length; m++) {
+            const nextUrl = getMirrorUrl(url, MIRROR_ORIGINS[m]);
+            if (nextUrl && nextUrl !== url) {
+              try {
+                let retryResp = await origFetch.call(this, nextUrl, init);
+                if (retryResp.ok) return retryResp;
+              } catch (_) {}
+            }
+          }
+        }
+        return resp;
+      } catch (err) {
+        if (parseCdnUrl(url)) {
+          for (let m = 0; m < MIRROR_ORIGINS.length; m++) {
+            const nextUrl = getMirrorUrl(url, MIRROR_ORIGINS[m]);
+            if (nextUrl && nextUrl !== url) {
+              try {
+                let retryResp = await origFetch.call(this, nextUrl, init);
+                if (retryResp.ok) return retryResp;
+              } catch (_) {}
+            }
+          }
+        }
+        throw err;
+      }
     };
   }
 
-  // XMLHttpRequest interceptor to resolve relative paths against absoluteBase and rewrite CDN
+  // XMLHttpRequest interceptor to resolve relative paths against absoluteBase, rewrite CDN, and auto-fallback
   if (window.XMLHttpRequest) {
     const origOpen = XMLHttpRequest.prototype.open;
+    const origSend = XMLHttpRequest.prototype.send;
+
     XMLHttpRequest.prototype.open = function(method, url) {
+      this._reqMethod = method;
+      this._origUrl = url;
       if (typeof url === 'string') {
         url = rewriteCdnUrl(url);
         if (url.startsWith('file:///')) {
@@ -878,34 +964,61 @@
           url = absoluteBase + url.replace(/^(\\.\\/)/, '');
         }
       }
+      this._resolvedUrl = url;
       const args = Array.prototype.slice.call(arguments);
       args[1] = url;
-      if (args.length === 2) {
-        return origOpen.call(this, args[0], args[1]);
-      }
       return origOpen.apply(this, args);
+    };
+
+    XMLHttpRequest.prototype.send = function(body) {
+      const xhr = this;
+      let mirrorIdx = 0;
+
+      xhr.addEventListener('load', function() {
+        if (xhr.status >= 400 && parseCdnUrl(xhr._resolvedUrl) && mirrorIdx < MIRROR_ORIGINS.length) {
+          const nextUrl = getMirrorUrl(xhr._resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
+          if (nextUrl && nextUrl !== xhr._resolvedUrl) {
+            console.warn('[Athyx CDN Auto-Fallback] XHR got status ' + xhr.status + ', retrying mirror:', nextUrl);
+            const retryXhr = new XMLHttpRequest();
+            retryXhr.responseType = xhr.responseType;
+            retryXhr.open(xhr._reqMethod || 'GET', nextUrl, true);
+            retryXhr.onload = function() {
+              try {
+                Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
+                Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
+                Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
+                Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
+              } catch (_) {}
+              if (typeof xhr.onload === 'function') xhr.onload.call(xhr);
+            };
+            retryXhr.send(body);
+          }
+        }
+      });
+
+      return origSend.call(this, body);
     };
   }
 
+  // Audio interceptor for HTML5 audio
+  const OrigAudio = window.Audio;
+  window.Audio = function(src) {
+    const audio = new OrigAudio();
+    let retryIdx = 0;
+    audio.addEventListener('error', function() {
+      if (audio.src && parseCdnUrl(audio.src) && retryIdx < MIRROR_ORIGINS.length) {
+        const nextUrl = getMirrorUrl(audio.src, MIRROR_ORIGINS[retryIdx++]);
+        if (nextUrl && nextUrl !== audio.src) {
+          console.warn('[Athyx CDN Auto-Fallback] Audio load failed, retrying mirror:', nextUrl);
+          audio.src = nextUrl;
+        }
+      }
+    });
+    if (src) audio.src = src;
+    return audio;
+  };
+
   // HTMLImageElement & Image interceptor for Construct 2 / HTML5 2D games
-  const FALLBACK_MIRRORS = [
-    "https://fastly.jsdelivr.net",
-    "https://gcore.jsdelivr.net",
-    "https://cdn.statically.io/gh",
-    "https://raw.githubusercontent.com"
-  ];
-
-  function getFallbackUrl(url, mirror) {
-    if (!url || typeof url !== 'string') return url;
-    if (mirror === 'https://raw.githubusercontent.com') {
-      return url.replace(/https?:\\/\\/[^\\/]+\\/gh\\/([^\\/]+)\\/([^\\/@]+)@[^\\/]+\\//i, 'https://raw.githubusercontent.com/$1/$2/main/');
-    }
-    if (mirror.includes('statically.io')) {
-      return url.replace(/https?:\\/\\/[^\\/]+\\/gh\\/([^\\/]+)\\/([^\\/@]+)@[^\\/]+\\//i, 'https://cdn.statically.io/gh/$1/$2/main/');
-    }
-    return url.replace(/https?:\\/\\/[^\\/]+/i, mirror);
-  }
-
   const origImage = window.Image;
   window.Image = function() {
     const img = new origImage();
@@ -919,12 +1032,11 @@
     });
 
     img.addEventListener('error', function(e) {
-      if (retryIdx < FALLBACK_MIRRORS.length && img.src && (img.src.includes('jsdelivr.net') || img.src.includes('statically.io') || img.src.includes('raw.githubusercontent.com'))) {
-        const nextMirror = FALLBACK_MIRRORS[retryIdx++];
-        const newUrl = getFallbackUrl(img.src, nextMirror);
-        if (newUrl && newUrl !== img.src) {
-          console.warn('[Athyx CDN Auto-Fallback] Image load failed, trying mirror:', newUrl);
-          img.src = newUrl;
+      if (img.src && parseCdnUrl(img.src) && retryIdx < MIRROR_ORIGINS.length) {
+        const nextUrl = getMirrorUrl(img.src, MIRROR_ORIGINS[retryIdx++]);
+        if (nextUrl && nextUrl !== img.src) {
+          console.warn('[Athyx CDN Auto-Fallback] Image load failed, trying mirror:', nextUrl);
+          img.src = nextUrl;
           return;
         }
       }

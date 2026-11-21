@@ -1364,6 +1364,29 @@
     });
   }
 
+  // HTMLScriptElement interceptor to neutralize intrusive ad networks & domain lockers (e.g. GameDistribution main.min.js)
+  const origScriptSrcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+  if (origScriptSrcDesc) {
+    Object.defineProperty(HTMLScriptElement.prototype, 'src', {
+      get: function() { return origScriptSrcDesc.get.call(this); },
+      set: function(val) {
+        if (typeof val === 'string' && (val.includes('gamedistribution') || val.includes('main.min.js') || val.includes('gd-sdk.js'))) {
+          setTimeout(() => {
+            if (window.GD_OPTIONS && typeof window.GD_OPTIONS.onEvent === 'function') {
+              try { window.GD_OPTIONS.onEvent({ name: 'SDK_READY' }); } catch(_) {}
+            }
+            if (typeof this.onload === 'function') {
+              try { this.onload(); } catch(_) {}
+            }
+          }, 10);
+          return origScriptSrcDesc.set.call(this, 'data:application/javascript,console.log("GameDistribution Neutralized");');
+        }
+        return origScriptSrcDesc.set.call(this, val);
+      },
+      configurable: true
+    });
+  }
+
   // WebAssembly instantiate / instantiateStreaming polyfill for Unity WebGL / WASM compatibility
   if (window.WebAssembly) {
     if (WebAssembly.instantiateStreaming) {

@@ -837,7 +837,7 @@
         let resolvedBase = baseMatch ? baseMatch[1] : gameBaseFolder;
         if (window.AthyxCdn) {
           resolvedBase = window.AthyxCdn.rewriteUrl(resolvedBase, activeCdn);
-          html = html.replace(/<base\s+[^>]*href=["'][^"']*["']/i, `<base href="${resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/'}" />`);
+          html = html.replace(/<base\b[^>]*>/i, `<base href="${resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/'}" />`);
         }
         const absoluteBase = resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/';
 

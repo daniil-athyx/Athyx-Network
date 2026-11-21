@@ -81,7 +81,7 @@
         }
       }
     } catch (_) {}
-    return 'https://fastly.jsdelivr.net';
+    return 'https://cdn.jsdelivr.net';
   }
 
   function setActiveCdn(value) {

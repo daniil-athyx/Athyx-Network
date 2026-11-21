@@ -837,8 +837,8 @@
         let resolvedBase = baseMatch ? baseMatch[1] : gameBaseFolder;
         if (window.AthyxCdn) {
           resolvedBase = window.AthyxCdn.rewriteUrl(resolvedBase, activeCdn);
-          html = html.replace(/<base\b[^>]*>/i, `<base href="${resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/'}" />`);
         }
+        html = html.replace(/<base\b[^>]*>/gi, '');
         const absoluteBase = resolvedBase.endsWith('/') ? resolvedBase : resolvedBase + '/';
 
 
@@ -1002,7 +1002,14 @@
       let url = resolveSafeAssetUrl(origUrl);
 
       if (isStr) {
+        const httpMatch = url.match(/(https?:\/\/[^\s"']+)/i);
+        if (httpMatch && !url.startsWith('http')) {
+          url = httpMatch[1];
+        }
         url = rewriteCdnUrl(url);
+        if (url === '' || url === '.' || url === './' || url === absoluteBase) {
+          return new Response('ok', { status: 200, statusText: 'OK' });
+        }
         if (url.startsWith('file:///')) {
           url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
         } else if (url.startsWith('/') && !url.startsWith('//')) {
@@ -1283,6 +1290,12 @@
   const OrigURL = window.URL;
   class PatchedURL extends OrigURL {
     constructor(url, base) {
+      if (typeof url === 'string') {
+        const httpMatch = url.match(/(https?:\/\/[^\s"']+)/i);
+        if (httpMatch && !url.startsWith('http')) {
+          url = httpMatch[1];
+        }
+      }
       let targetBase = base;
       if (!targetBase || targetBase === 'about:srcdoc' || targetBase === 'about:blank' || (typeof targetBase === 'string' && (targetBase.startsWith('blob:') || targetBase.startsWith('about:')))) {
         targetBase = absoluteBase;
@@ -1351,7 +1364,7 @@ iframe {
 </style>`;
 
 
-        const baseTag = baseMatch ? '' : `<base href="${gameBaseFolder}">`;
+        const baseTag = `<base href="${absoluteBase}">`;
         const headInjection = baseTag + defaultStyleShim + engineShim;
 
         let cleanHtml;

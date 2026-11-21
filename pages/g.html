@@ -1364,13 +1364,21 @@
     });
   }
 
-  // HTMLScriptElement interceptor to neutralize intrusive ad networks & domain lockers (e.g. GameDistribution main.min.js)
+  // HTMLScriptElement interceptor to neutralize intrusive ad networks & domain lockers (e.g. GameDistribution main.min.js, 3kh0, anyad, yandex)
   const origScriptSrcDesc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
   if (origScriptSrcDesc) {
     Object.defineProperty(HTMLScriptElement.prototype, 'src', {
       get: function() { return origScriptSrcDesc.get.call(this); },
       set: function(val) {
-        if (typeof val === 'string' && (val.includes('gamedistribution') || val.includes('main.min.js') || val.includes('gd-sdk.js'))) {
+        if (typeof val === 'string' && (
+          val.includes('gamedistribution') ||
+          val.includes('main.min.js') ||
+          val.includes('gd-sdk.js') ||
+          val.includes('3kh0.github.io') ||
+          val.includes('anyad.js') ||
+          val.endsWith('assets/js/v2') ||
+          val.endsWith('assets/js/html5.js')
+        )) {
           setTimeout(() => {
             if (window.GD_OPTIONS && typeof window.GD_OPTIONS.onEvent === 'function') {
               try { window.GD_OPTIONS.onEvent({ name: 'SDK_READY' }); } catch(_) {}
@@ -1378,8 +1386,9 @@
             if (typeof this.onload === 'function') {
               try { this.onload(); } catch(_) {}
             }
+            try { this.dispatchEvent(new Event('load')); } catch(_) {}
           }, 10);
-          return origScriptSrcDesc.set.call(this, 'data:application/javascript,console.log("GameDistribution Neutralized");');
+          return origScriptSrcDesc.set.call(this, 'data:application/javascript,console.log("Ad script neutralized");');
         }
         return origScriptSrcDesc.set.call(this, val);
       },

@@ -1,0 +1,877 @@
+[
+  {
+    "name": "2048",
+    "path": "2048.html",
+    "icon": "icons/2048.webp"
+  },
+  {
+    "name": "60 Seconds! Reatomized",
+    "path": "60 Seconds Reatomized.html",
+    "icon": "icons/60_seconds.webp"
+  },
+  {
+    "name": "8 Ball Pool",
+    "path": "8 Ball Pool.html",
+    "icon": "icons/8_ball_pool.webp"
+  },
+  {
+    "name": "A Small World Cup",
+    "path": "A Small World Cup.html",
+    "icon": "icons/a_small_world_cup.webp"
+  },
+  {
+    "name": "Amanda the Adventurer",
+    "path": "amanda-the-adventurer.html",
+    "icon": "icons/amanda_the_adventurer.webp"
+  },
+  {
+    "name": "Angry Birds",
+    "path": "Angry Birds.html",
+    "icon": "icons/angry_birds.webp"
+  },
+  {
+    "name": "Angry Neighbor",
+    "path": "Angry Neighbor.html",
+    "icon": "icons/angry_neighbor.webp"
+  },
+  {
+    "name": "Bad Piggies",
+    "path": "Bad Piggies.html",
+    "icon": "icons/bad_piggies.webp"
+  },
+  {
+    "name": "Baldi's Basics",
+    "path": "Baldis Basics.html",
+    "icon": "icons/baldis_basics.webp"
+  },
+  {
+    "name": "Baldi's Basics Plus",
+    "path": "Baldi's Basics Plus.html",
+    "icon": "icons/baldis_basics_plus.webp"
+  },
+  {
+    "name": "Baldi's Basics Remastered",
+    "path": "Baldi's Basics Remastered.html",
+    "icon": "icons/baldis_basics_remastered.webp"
+  },
+  {
+    "name": "Baldi's Basics: Ultra Decompile",
+    "path": "Baldi Ultra Decompile.html",
+    "icon": "icons/baldi_ultra_decompile.webp"
+  },
+  {
+    "name": "Baldi's Fun New School",
+    "path": "Baldi's Fun New School.html",
+    "icon": "icons/baldis_fun_new_school.webp"
+  },
+  {
+    "name": "Baldis Basics Squared",
+    "path": "Baldi's Basics Squared.html",
+    "icon": "icons/baldis_basics_squared.webp"
+  },
+  {
+    "name": "Basketball Stars",
+    "path": "Basketball Stars.html",
+    "icon": "icons/basketball_stars.webp"
+  },
+  {
+    "path": "Bendy and the Ink Machine.html",
+    "name": "Bendy and the Ink Machine",
+    "icon": "icons/bendy.webp"
+  },
+  {
+    "name": "BitLife",
+    "path": "Bitlife.html",
+    "icon": "icons/bitlife.webp"
+  },
+  {
+    "name": "Block Blast",
+    "path": "Block Blast.html",
+    "icon": "icons/block_blast.webp"
+  },
+  {
+    "name": "Bloxorz",
+    "path": "Bloxorz.html",
+    "icon": "icons/bloxorz.webp"
+  },
+  {
+    "name": "Bottle Flip 3D",
+    "path": "Bottle Flip 3D.html",
+    "icon": "icons/bottle_flip_3d.webp"
+  },
+  {
+    "name": "Bowmasters",
+    "path": "Bow Masters.html",
+    "icon": "icons/bow_masters.webp"
+  },
+  {
+    "name": "Brawl Stars",
+    "path": "Brawl Stars.html",
+    "icon": "icons/brawl_stars.webp"
+  },
+  {
+    "name": "Buckshot Roulette",
+    "path": "Buckshot Roulette.html",
+    "icon": "icons/buckshot_roulette.webp"
+  },
+  {
+    "name": "Candy Jump",
+    "path": "Candy Jump.html",
+    "icon": "icons/candy_jump.webp"
+  },
+  {
+    "name": "Caseohs Basics",
+    "path": "Caseoh's Basics in eating and fastfood.html",
+    "icon": "icons/caseohs_basics.webp"
+  },
+  {
+    "name": "Chess",
+    "path": "Chess.html",
+    "icon": "icons/chess.webp"
+  },
+  {
+    "name": "Chrome Dino",
+    "path": "Google Dino.html",
+    "icon": "icons/google_dino.webp"
+  },
+  {
+    "name": "Cluster Rush",
+    "path": "Cluster Rush.html",
+    "icon": "icons/cluster_rush.webp"
+  },
+  {
+    "name": "Cookie Clicker",
+    "path": "Cookie Clicker.html",
+    "icon": "icons/cookie_clicker.webp"
+  },
+  {
+    "name": "Counter-Strike",
+    "path": "Counter-Strike.html",
+    "icon": "icons/counter_strike.webp"
+  },
+  {
+    "name": "Crossy Road",
+    "path": "Crossy Road.html",
+    "icon": "icons/crossy_road.webp"
+  },
+  {
+    "path": "Cuphead.html",
+    "name": "Cuphead",
+    "icon": "icons/cuphead.webp"
+  },
+  {
+    "name": "Cut the Rope",
+    "path": "Cut the Rope.html",
+    "icon": "icons/cut_the_rope.webp"
+  },
+  {
+    "name": "Deepest Sword",
+    "path": "Deepest Sword.html",
+    "icon": "icons/deepest_sword.webp"
+  },
+  {
+    "name": "Deltarune",
+    "path": "Deltarune.html",
+    "icon": "icons/deltarune.webp"
+  },
+  {
+    "name": "Doki Doki Literature Club",
+    "path": "Doki Doki Literature Club.html",
+    "icon": "icons/doki_doki_literature_club.webp"
+  },
+  {
+    "name": "Doodle Jump",
+    "path": "Doodle Jump.html",
+    "icon": "icons/doodle_jump.webp"
+  },
+  {
+    "name": "DOOM",
+    "path": "Doom.html",
+    "icon": "icons/doom.webp"
+  },
+  {
+    "name": "Drift Boss",
+    "path": "Drift Boss.html",
+    "icon": "icons/drift_boss.webp"
+  },
+  {
+    "name": "Drift Hunters",
+    "path": "Drift Hunters.html",
+    "icon": "icons/drift_hunters.webp"
+  },
+  {
+    "name": "Drive Mad",
+    "path": "Drive Mad.html",
+    "icon": "icons/drive_mad.webp"
+  },
+  {
+    "name": "Duck Life",
+    "path": "Duck Life.html",
+    "icon": "icons/duck_life.webp"
+  },
+  {
+    "path": "Duck Life 2.html",
+    "name": "Duck Life 2",
+    "icon": "icons/duck_life_2.webp"
+  },
+  {
+    "path": "Duck Life 3.html",
+    "name": "Duck Life 3",
+    "icon": "icons/duck_life_3.webp"
+  },
+  {
+    "path": "Duck Life 4.html",
+    "name": "Duck Life 4",
+    "icon": "icons/duck_life_4.webp"
+  },
+  {
+    "path": "Duck Life 5.html",
+    "name": "Duck Life 5",
+    "icon": "icons/duck_life_5.webp"
+  },
+  {
+    "name": "Escape Road 2",
+    "path": "Escape Road 2.html",
+    "icon": "icons/escape_road_2.webp"
+  },
+  {
+    "name": "FIFA 11",
+    "path": "FIFA 11.html",
+    "icon": "icons/fifa_11.webp"
+  },
+  {
+    "name": "Fight Tom Pearl",
+    "path": "Fight Tom Pearl.html",
+    "icon": "icons/fight_tom_pearl.webp"
+  },
+  {
+    "path": "Fireboy and Watergirl 1.html",
+    "name": "Fireboy and Watergirl 1: Forest Temple",
+    "icon": "icons/fireboy_watergirl_1.webp"
+  },
+  {
+    "path": "Fireboy and Watergirl 2.html",
+    "name": "Fireboy and Watergirl 2: Light Temple",
+    "icon": "icons/fireboy_watergirl_2.webp"
+  },
+  {
+    "path": "Fireboy and Watergirl 3.html",
+    "name": "Fireboy and Watergirl 3: Ice Temple",
+    "icon": "icons/fireboy_watergirl_3.webp"
+  },
+  {
+    "path": "Fireboy and Watergirl 4.html",
+    "name": "Fireboy and Watergirl 4: Crystal Temple",
+    "icon": "icons/fireboy_watergirl_4.webp"
+  },
+  {
+    "name": "Five Nights at Epstein's",
+    "path": "Five Nights At Epsteins.html",
+    "icon": "icons/five_nights_at_epsteins.webp"
+  },
+  {
+    "name": "Five Nights at Freddy's",
+    "path": "Five Nights At Freddys.html",
+    "icon": "icons/fnaf1.webp"
+  },
+  {
+    "name": "Five Nights at Freddy's 2",
+    "path": "Five Nights At Freddys 2.html",
+    "icon": "icons/fnaf2.webp"
+  },
+  {
+    "name": "Five Nights at Freddy's 3",
+    "path": "Five Nights At Freddys 3.html",
+    "icon": "icons/fnaf3.webp"
+  },
+  {
+    "name": "Five Nights at Freddy's 4",
+    "path": "Five Nights At Freddys 4.html",
+    "icon": "icons/fnaf4.webp"
+  },
+  {
+    "name": "Five Nights at Freddy's: Sister Location",
+    "path": "Five Nights at Freddys Sister Location.html",
+    "icon": "icons/fnaf_sister_location.webp"
+  },
+  {
+    "name": "FNAF World",
+    "path": "FNAF World.html",
+    "icon": "icons/fnaf_world.webp"
+  },
+  {
+    "name": "Football Bros",
+    "path": "Football Bros.html",
+    "icon": "icons/football_bros.webp"
+  },
+  {
+    "name": "Geometry Dash",
+    "path": "Geometry Dash.html",
+    "icon": "icons/geometry_dash.svg"
+  },
+  {
+    "name": "Granny",
+    "path": "Granny.html",
+    "icon": "icons/granny.webp"
+  },
+  {
+    "path": "Granny 2.html",
+    "name": "Granny 2",
+    "icon": "icons/granny_2.webp"
+  },
+  {
+    "name": "GTA: 3",
+    "path": "GTA 3.html",
+    "icon": "icons/gta_3_v2.webp"
+  },
+  {
+    "name": "GTA: Vice City",
+    "path": "GTA Vice City.html",
+    "icon": "icons/gta_vice_city.webp"
+  },
+  {
+    "name": "Gunspin",
+    "path": "Gunspin.html",
+    "icon": "icons/gunspin.webp"
+  },
+  {
+    "name": "Happy Wheels",
+    "path": "Happy Wheels.html",
+    "icon": "icons/happy_wheels.webp"
+  },
+  {
+    "name": "Helix Jump",
+    "path": "Helix Jump.html",
+    "icon": "icons/helix_jump.webp"
+  },
+  {
+    "path": "Breaking the Bank.html",
+    "name": "Henry Stickmin: Breaking the Bank",
+    "icon": "icons/breaking_the_bank.webp"
+  },
+  {
+    "path": "Crossing the Pit.html",
+    "name": "Henry Stickmin: Crossing the Pit",
+    "icon": "icons/crossing_the_pit.webp"
+  },
+  {
+    "path": "Escaping the Prison.html",
+    "name": "Henry Stickmin: Escaping the Prison",
+    "icon": "icons/escaping_the_prison.webp"
+  },
+  {
+    "path": "Fleeing the Complex.html",
+    "name": "Henry Stickmin: Fleeing the Complex",
+    "icon": "icons/fleeing_the_complex.webp"
+  },
+  {
+    "path": "Infiltrating the Airship.html",
+    "name": "Henry Stickmin: Infiltrating the Airship",
+    "icon": "icons/infiltrating_the_airship.webp"
+  },
+  {
+    "path": "Stealing the Diamond.html",
+    "name": "Henry Stickmin: Stealing the Diamond",
+    "icon": "icons/stealing_the_diamond.webp"
+  },
+  {
+    "name": "Hollow Knight Silksong",
+    "path": "Hollow Knight Silksong.html",
+    "icon": "icons/hollow_knight_silksong.webp"
+  },
+  {
+    "name": "Hypper Sandbox",
+    "path": "Hypper Sandbox.html",
+    "icon": "icons/hypper_sandbox.webp"
+  },
+  {
+    "path": "Ink Game.html",
+    "name": "Ink Game",
+    "icon": "icons/ink_game.webp"
+  },
+  {
+    "path": "Jetpack Joyride.html",
+    "name": "Jetpack Joyride",
+    "icon": "icons/jetpack_joyride.webp"
+  },
+  {
+    "name": "Just Fall.LOL",
+    "path": "Just Fall.lol.html",
+    "icon": "icons/just_fall.webp"
+  },
+  {
+    "name": "Kingdom Hearts: Chain of Memories",
+    "path": "Kingdom Hearts Chain of Memories.html",
+    "icon": "icons/kingdom_hearts_chain_of_memories.webp"
+  },
+  {
+    "name": "Learn to Fly",
+    "path": "Learn to Fly.html",
+    "icon": "icons/learn_to_fly.webp"
+  },
+  {
+    "name": "Level Devil",
+    "path": "Level Devil.html",
+    "icon": "icons/level_devil.webp"
+  },
+  {
+    "name": "Minecraft",
+    "path": "Minecraft.html",
+    "icon": "icons/minecraft.webp"
+  },
+  {
+    "path": "MiSide.html",
+    "name": "MiSide",
+    "icon": "icons/miside.webp"
+  },
+  {
+    "path": "Monkey Mart.html",
+    "name": "Monkey Mart",
+    "icon": "icons/monkey_mart.webp"
+  },
+  {
+    "name": "Moto X3M",
+    "path": "Moto X3m.html",
+    "icon": "icons/moto_x3m.webp"
+  },
+  {
+    "name": "Moto X3M Pool Party",
+    "path": "Moto X3M Pool Party.html",
+    "icon": "icons/moto_x3m_pool_party.webp"
+  },
+  {
+    "name": "Moto X3M Spooky Land",
+    "path": "Moto X3M Spooky Land.html",
+    "icon": "icons/moto_x3m_spooky_land.webp"
+  },
+  {
+    "name": "Moto X3M Winter",
+    "path": "Moto X3M Winter.html",
+    "icon": "icons/moto_x3m_winter.webp"
+  },
+  {
+    "name": "Need for Speed III: Hot Pursuit",
+    "path": "Need for Speed III Hot Pursuit.html",
+    "icon": "icons/nfs_hot_pursuit.webp"
+  },
+  {
+    "name": "Neon Balls",
+    "path": "Neon Balls.html",
+    "icon": "icons/neon_balls.webp"
+  },
+  {
+    "name": "Noomi Clone",
+    "path": "Noomi Clone.html",
+    "icon": "icons/noomi_clone.webp"
+  },
+  {
+    "name": "Obby 99% Will Lose",
+    "path": "Obby 99% will lose.html",
+    "icon": "icons/obby.webp"
+  },
+  {
+    "name": "Oneshot Royale",
+    "path": "Oneshot Royale.html",
+    "icon": "icons/oneshot_royale.webp"
+  },
+  {
+    "name": "Orange Roulette",
+    "path": "Orange Roulette.html",
+    "icon": "icons/orange_roulette.webp"
+  },
+  {
+    "name": "Osu",
+    "path": "Osu.html",
+    "icon": "icons/osu.webp"
+  },
+  {
+    "name": "OvO",
+    "path": "OvO.html",
+    "icon": "icons/ovo.webp"
+  },
+  {
+    "path": "Papa Louie.html",
+    "name": "Papa Louie",
+    "icon": "icons/papa_louie.webp"
+  },
+  {
+    "path": "Papa Louie 2.html",
+    "name": "Papa Louie 2",
+    "icon": "icons/papa_louie_2.webp"
+  },
+  {
+    "path": "Papa Louie 3.html",
+    "name": "Papa Louie 3",
+    "icon": "icons/papa_louie_3.webp"
+  },
+  {
+    "path": "Papa's Bakeria.html",
+    "name": "Papa's Bakeria",
+    "icon": "icons/papas_bakeria.webp"
+  },
+  {
+    "path": "Papa's Burgeria.html",
+    "name": "Papa's Burgeria",
+    "icon": "icons/papas_burgeria.webp"
+  },
+  {
+    "path": "Papa's Cheeseria.html",
+    "name": "Papa's Cheeseria",
+    "icon": "icons/papas_cheeseria.webp"
+  },
+  {
+    "path": "Papa's Cupcakeria.html",
+    "name": "Papa's Cupcakeria",
+    "icon": "icons/papas_cupcakeria.webp"
+  },
+  {
+    "path": "Papa's Donuteria.html",
+    "name": "Papa's Donuteria",
+    "icon": "icons/papas_donuteria.webp"
+  },
+  {
+    "path": "Papa's Freezeria.html",
+    "name": "Papa's Freezeria",
+    "icon": "icons/papas_freezeria.webp"
+  },
+  {
+    "path": "Papa's Hot Doggeria.html",
+    "name": "Papa's Hot Doggeria",
+    "icon": "icons/papas_hot_doggeria.webp"
+  },
+  {
+    "path": "Papa's Pancakeria.html",
+    "name": "Papa's Pancakeria",
+    "icon": "icons/papas_pancakeria.webp"
+  },
+  {
+    "path": "Papa's Pastaria.html",
+    "name": "Papa's Pastaria",
+    "icon": "icons/papas_pastaria.webp"
+  },
+  {
+    "path": "Papa's Pizzeria.html",
+    "name": "Papa's Pizzeria",
+    "icon": "icons/papas_pizzeria.webp"
+  },
+  {
+    "path": "Papa's Scooperia.html",
+    "name": "Papa's Scooperia",
+    "icon": "icons/papas_scooperia.webp"
+  },
+  {
+    "path": "Papa's Sushiria.html",
+    "name": "Papa's Sushiria",
+    "icon": "icons/papas_sushiria.webp"
+  },
+  {
+    "path": "Papa's Taco Mia.html",
+    "name": "Papa's Taco Mia",
+    "icon": "icons/papas_taco_mia.webp"
+  },
+  {
+    "path": "Papa's Wingeria.html",
+    "name": "Papa's Wingeria",
+    "icon": "icons/papas_wingeria.webp"
+  },
+  {
+    "name": "Paper.io 2",
+    "path": "Paper.io.html",
+    "icon": "icons/paper_io.webp"
+  },
+  {
+    "path": "People Playground.html",
+    "name": "People Playground",
+    "icon": "icons/people_playground.webp"
+  },
+  {
+    "name": "Plague Inc",
+    "path": "Plague Inc.html",
+    "icon": "icons/plague_inc.webp"
+  },
+  {
+    "name": "Plants vs. Zombies",
+    "path": "Plants VS Zombies.html",
+    "icon": "icons/pvz.webp"
+  },
+  {
+    "name": "Polytrack",
+    "path": "Polytrack.html",
+    "icon": "icons/polytrack.webp"
+  },
+  {
+    "name": "Poppy Playtime Chapter 1",
+    "path": "Poppy Playtime Chapter 1.html",
+    "icon": "icons/poppy_playtime_chapter_1.webp"
+  },
+  {
+    "path": "REPO.html",
+    "name": "R.E.P.O.",
+    "icon": "icons/repo.webp"
+  },
+  {
+    "name": "Ragdoll Archers",
+    "path": "Ragdoll Archers.html",
+    "icon": "icons/ragdoll_archers.webp"
+  },
+  {
+    "name": "Ragdoll Hit",
+    "path": "Ragdoll hit.html",
+    "icon": "icons/ragdoll_hit.webp"
+  },
+  {
+    "name": "Raldi's Crackhouse",
+    "path": "Raldis Crackhouse.html",
+    "icon": "icons/raldis_crackhouse.webp"
+  },
+  {
+    "name": "Real Gangster Crime",
+    "path": "Real Gangster Crime.html",
+    "icon": "icons/real_gangster_crime.webp"
+  },
+  {
+    "name": "Red Ball 4",
+    "path": "Red Ball 4.html",
+    "icon": "icons/red_ball_4.webp"
+  },
+  {
+    "name": "Retro Bowl",
+    "path": "Retro Bowl.html",
+    "icon": "icons/retro_bowl.webp"
+  },
+  {
+    "name": "Riddle School",
+    "path": "Riddle School.html",
+    "icon": "icons/riddle_school.webp"
+  },
+  {
+    "name": "Riddle School 2",
+    "path": "Riddle School 2.html",
+    "icon": "icons/riddle_school_2.webp"
+  },
+  {
+    "name": "Riddle School 3",
+    "path": "Riddle School 3.html",
+    "icon": "icons/riddle_school_3.webp"
+  },
+  {
+    "path": "Riddle School 4.html",
+    "name": "Riddle School 4",
+    "icon": "icons/riddle_school_4.webp"
+  },
+  {
+    "path": "Riddle School 5.html",
+    "name": "Riddle School 5",
+    "icon": "icons/riddle_school_5.webp"
+  },
+  {
+    "path": "Riddle Transfer.html",
+    "name": "Riddle Transfer",
+    "icon": "icons/riddle_transfer.webp"
+  },
+  {
+    "path": "Riddle Transfer 2.html",
+    "name": "Riddle Transfer 2",
+    "icon": "icons/riddle_transfer_2.webp"
+  },
+  {
+    "name": "Rodha",
+    "path": "Rodha.html",
+    "icon": "icons/rodha.webp"
+  },
+  {
+    "path": "Run 3.html",
+    "name": "Run 3",
+    "icon": "icons/run_3.webp"
+  },
+  {
+    "name": "Scary Teacher",
+    "path": "scary-teacher.html",
+    "icon": "icons/scary_teacher.webp"
+  },
+  {
+    "name": "Schoolboy Runaway",
+    "path": "schoolboy-runaway.html",
+    "icon": "icons/schoolboy_runaway.webp"
+  },
+  {
+    "name": "Slender: The Eight Pages",
+    "path": "Slender.html",
+    "icon": "icons/slender_the_eight_pages.webp"
+  },
+  {
+    "name": "Slope",
+    "path": "Slope.html",
+    "icon": "icons/slope.webp"
+  },
+  {
+    "name": "Slope 2",
+    "path": "Slope 2.html",
+    "icon": "icons/slope_2.webp"
+  },
+  {
+    "name": "Slyth.io",
+    "path": "Slyth.io.html",
+    "icon": "icons/slyth_io.webp"
+  },
+  {
+    "name": "Smash Karts",
+    "path": "Smash Karts.html",
+    "icon": "icons/smash_karts.webp"
+  },
+  {
+    "name": "Snow Rider 3D",
+    "path": "Snow Rider.html",
+    "icon": "icons/snow_rider.webp"
+  },
+  {
+    "name": "Soccer Random",
+    "path": "Soccer Random.html",
+    "icon": "icons/soccer_random.webp"
+  },
+  {
+    "name": "Soflo Wheelie Life",
+    "path": "Soflo Wheelie Life.html",
+    "icon": "icons/soflo_wheelie_life.webp"
+  },
+  {
+    "name": "Space Waves",
+    "path": "Space Waves.html",
+    "icon": "icons/space_waves.webp"
+  },
+  {
+    "name": "Spacebar Clicker",
+    "path": "Spacebar Clicker.html",
+    "icon": "icons/spacebar_clicker.webp"
+  },
+  {
+    "name": "Stardew Valley",
+    "path": "Stardew Valley.html",
+    "icon": "icons/stardew_valley.webp"
+  },
+  {
+    "name": "Stickman Hook",
+    "path": "Stickman Hook.html",
+    "icon": "icons/stickman_hook.webp"
+  },
+  {
+    "name": "Subway Surfers: San Francisco",
+    "path": "Subway Surfers San Francisco.html",
+    "icon": "icons/subway_surfers_san_francisco.webp"
+  },
+  {
+    "name": "Suika Game",
+    "path": "Suika Game.html",
+    "icon": "icons/suika_game.webp"
+  },
+  {
+    "name": "Super Liquid Soccer",
+    "path": "Super Liquid Soccer.html",
+    "icon": "icons/super_liquid_soccer.webp"
+  },
+  {
+    "name": "Super Mario 64",
+    "path": "Super Mario 64.html",
+    "icon": "icons/super_mario_64.webp"
+  },
+  {
+    "name": "Super Mario Bros",
+    "path": "Super Mario Bross.html",
+    "icon": "icons/super_mario_bros.webp"
+  },
+  {
+    "name": "Surf GO",
+    "path": "Surf Go.html",
+    "icon": "icons/surf_go.webp"
+  },
+  {
+    "name": "Tag",
+    "path": "Tag.html",
+    "icon": "icons/tag.webp"
+  },
+  {
+    "path": "Terraria.html",
+    "name": "Terraria",
+    "icon": "icons/terraria.webp"
+  },
+  {
+    "name": "The Impossible Quiz",
+    "path": "Impossible Quiz.html",
+    "icon": "icons/impossible_quiz.webp"
+  },
+  {
+    "name": "The World's Hardest Game",
+    "path": "World's Hardest Game.html",
+    "icon": "icons/worlds_hardest_game_v2.webp"
+  },
+  {
+    "name": "There Is No Game",
+    "path": "There Is No Game.html",
+    "icon": "icons/there_is_no_game.webp"
+  },
+  {
+    "name": "Tomb of the Mask",
+    "path": "Tomb Of The Mask.html",
+    "icon": "icons/tomb_of_the_mask.webp"
+  },
+  {
+    "name": "Ultimate Custom Night",
+    "path": "Ultimate Custom Night.html",
+    "icon": "icons/ultimate_custom_night.webp"
+  },
+  {
+    "name": "Undertale Yellow",
+    "path": "Undertale Yellow.html",
+    "icon": "icons/undertale_yellow.webp"
+  },
+  {
+    "path": "Vex 3.html",
+    "name": "Vex 3",
+    "icon": "icons/vex_3.webp"
+  },
+  {
+    "path": "Vex 4.html",
+    "name": "Vex 4",
+    "icon": "icons/vex_4.webp"
+  },
+  {
+    "path": "Vex 5.html",
+    "name": "Vex 5",
+    "icon": "icons/vex_5.webp"
+  },
+  {
+    "path": "Vex 6.html",
+    "name": "Vex 6",
+    "icon": "icons/vex_6.webp"
+  },
+  {
+    "path": "Vex 7.html",
+    "name": "Vex 7",
+    "icon": "icons/vex_7.webp"
+  },
+  {
+    "name": "Vex 8",
+    "path": "Vex 8.html",
+    "icon": "icons/vex_8.webp"
+  },
+  {
+    "name": "Volley Random",
+    "path": "Volley Random.html",
+    "icon": "icons/volley_random.webp"
+  },
+  {
+    "name": "We Become What We Behold",
+    "path": "We Become What We Behold.html",
+    "icon": "icons/we_become_what_we_behold.webp"
+  },
+  {
+    "name": "Wordle",
+    "path": "Wordle.html",
+    "icon": "icons/wordle_v2.webp"
+  },
+  {
+    "path": "Yandere Simulator.html",
+    "name": "Yandere Simulator",
+    "icon": "icons/yandere_simulator.webp"
+  }
+]

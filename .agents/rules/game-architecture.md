@@ -12,6 +12,12 @@
 - All game icons live exclusively in `ubg-assets/icons/` as `.webp` files (e.g. `ubg-assets/icons/<name>.webp`).
 - DO NOT mirror game icons to Athyx Network. Game icons are hosted in `ubg-assets` and loaded via CDN.
 - All entries in `games.json` must strictly reference `.webp` icons (`"icons/<name>.webp"`). Old formats (`.png`, `.jpg`, `.svg`) must never be added.
+- **Icon Sourcing Workflow (When Adding Games)**:
+  - When the user asks the AI to add a game, the AI must search and source a high-quality icon for that game from Google / the web.
+  - **Physical Square Verification**: The AI must physically verify that the icon is square (1:1 aspect ratio, e.g. 512x512). If it is not square, the AI must center-crop or pad it to an exact 1:1 square.
+  - **Visual Match Verification**: The AI must physically inspect the image and verify that the icon accurately matches the specific game being added (accurate branding, artwork, and version—never a generic placeholder or wrong title).
+  - **Conversion to WebP**: Whichever image format is found (PNG, JPG, SVG, etc.), the AI must convert/translate it to `.webp` format and save it directly into `ubg-assets/icons/<game_name>.webp`.
+  - Only execute this icon sourcing workflow when the user explicitly requests to add a game.
 
 ### 4. Game Assets & Data Files (`athyx-game-lib`)
 - All actual game files, assets, audio, engines, and data files belong exclusively in `athyx-game-lib` under `athyx-game-lib/<Game Name>/`.

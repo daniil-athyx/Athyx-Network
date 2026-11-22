@@ -767,30 +767,6 @@
       loadingModalText.textContent = `Loading ${game.name}...`;
       loadingModal.classList.add("show");
 
-      if (game.name && (game.name.toLowerCase().includes('small world cup') || (game.path && game.path.toLowerCase().includes('small world cup')))) {
-        gameStageIframe.removeAttribute("srcdoc");
-        gameStageIframe.src = "/games/a-small-world-cup/index.html";
-        gameStage.classList.add("show");
-        document.body.classList.add("game-active");
-        loadingModal.classList.remove("show");
-        try {
-          window.parent.postMessage({ action: "athyx_game_active", active: true, title: game.name }, "*");
-        } catch (e) { }
-        return;
-      }
-
-      if (game.name && (game.name.toLowerCase().includes('we become what we behold') || (game.path && game.path.toLowerCase().includes('we become what we behold')))) {
-        gameStageIframe.removeAttribute("srcdoc");
-        gameStageIframe.src = "/games/we-become-what-we-behold/index.html";
-        gameStage.classList.add("show");
-        document.body.classList.add("game-active");
-        loadingModal.classList.remove("show");
-        try {
-          window.parent.postMessage({ action: "athyx_game_active", active: true, title: game.name }, "*");
-        } catch (e) { }
-        return;
-      }
-
 
 
       let gameUrl = REPO_BASE + encodeURI(game.path);

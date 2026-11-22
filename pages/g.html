@@ -642,6 +642,7 @@
       { "name": "The Impossible Quiz", "path": "Impossible Quiz.html", "icon": "icons/impossible_quiz.webp" },
       { "name": "The World's Hardest Game", "path": "World's Hardest Game.html", "icon": "icons/worlds_hardest_game.webp" },
       { "name": "Tomb of the Mask", "path": "Tomb Of The Mask.html", "icon": "icons/tomb_of_the_mask.webp" },
+      { "name": "Ultimate Custom Night", "path": "Ultimate Custom Night.html", "icon": "icons/ultimate_custom_night.webp" },
       { "name": "Undertale Yellow", "path": "Undertale Yellow.html", "icon": "icons/undertale_yellow.webp" },
       { "name": "Wordle", "path": "Wordle.html", "icon": "icons/wordle.webp" }
     ];
@@ -790,29 +791,7 @@
         return;
       }
 
-      if (game.name && (game.name.toLowerCase().includes('ultimate custom night') || (game.path && game.path.toLowerCase().includes('ultimate custom night')))) {
-        gameStageIframe.removeAttribute("srcdoc");
-        gameStageIframe.src = "/games/ultimate-custom-night/index.html";
-        gameStage.classList.add("show");
-        document.body.classList.add("game-active");
-        loadingModal.classList.remove("show");
-        try {
-          window.parent.postMessage({ action: "athyx_game_active", active: true, title: game.name }, "*");
-        } catch (e) { }
-        return;
-      }
 
-      if (game.name && (game.name.toLowerCase().includes('undertale yellow') || (game.path && game.path.toLowerCase().includes('undertale yellow')))) {
-        gameStageIframe.removeAttribute("srcdoc");
-        gameStageIframe.src = "/games/undertale-yellow/index.html";
-        gameStage.classList.add("show");
-        document.body.classList.add("game-active");
-        loadingModal.classList.remove("show");
-        try {
-          window.parent.postMessage({ action: "athyx_game_active", active: true, title: game.name }, "*");
-        } catch (e) { }
-        return;
-      }
 
       let gameUrl = REPO_BASE + encodeURI(game.path);
       let gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);

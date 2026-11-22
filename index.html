@@ -1500,15 +1500,6 @@
     style="position:fixed; top:70px; left:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none;">
   </div>
 
-  <!-- Update Log Modal -->
-  <div id="update-modal" class="custom-alert" aria-hidden="true">
-    <div class="custom-alert-card">
-      <h3 class="custom-alert-title" id="update-title">Update log:</h3>
-      <div class="custom-alert-text" id="update-changes" style="max-height: 200px; overflow-y: auto;"></div>
-      <button class="custom-alert-btn" id="update-close">Awesome!</button>
-    </div>
-  </div>
-
   <!-- WISP Settings Modal -->
   <div class="wisp-settings-modal modal-overlay hidden" id="wisp-settings-modal">
     <div class="modal-container wisp-settings-container">
@@ -2312,26 +2303,6 @@
         wispModal.classList.add("hidden");
       }
     };
-
-    // Update log modal
-    fetch('update_log.json?v=' + Date.now())
-      .then(res => res.json())
-      .then(data => {
-        if (!data || !data.updateId) return;
-        const lastSeen = localStorage.getItem('athyx_last_update');
-        if (lastSeen !== data.updateId) {
-          const changesDiv = document.getElementById('update-changes');
-          changesDiv.innerHTML = '<ul style="margin: 0; padding-left: 20px;">' + data.changes.map(c => `<li>${c}</li>`).join('') + '</ul>';
-          const modal = document.getElementById('update-modal');
-          modal.classList.add('open');
-          modal.setAttribute('aria-hidden', 'false');
-          document.getElementById('update-close').onclick = () => {
-            modal.classList.remove('open');
-            modal.setAttribute('aria-hidden', 'true');
-            localStorage.setItem('athyx_last_update', data.updateId);
-          };
-        }
-      }).catch(e => console.log('No update log found', e));
 
     // Panic Key
     window.addEventListener("keydown", (e) => {

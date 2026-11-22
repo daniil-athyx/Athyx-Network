@@ -447,14 +447,13 @@
   </div>
 
   <script>
-    const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://cdn.jsdelivr.net";
-    const REPO_BASE = activeCdn.replace(/\/+$/, '') + "/gh/daniil-athyx/ubg-assets@main/";
+    const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@6118bd1eb317992421afda61f0e019a7240ded23/";
     const PRIMARY_GAMES_JSON = REPO_BASE + "games.json";
-    const FALLBACK_GAMES_JSON = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/games.json";
+    const FALLBACK_GAMES_JSON = PRIMARY_GAMES_JSON;
 
     function resolveGameIcon(i) {
       if (!i) return "";
-      if (i.startsWith("http")) return i;
+      if (i.startsWith("http")) return window.AthyxCdn ? window.AthyxCdn.rewriteUrl(i) : i;
       if (i.startsWith("../") || i.startsWith("/")) return new URL(i, location.href).href;
       return REPO_BASE + encodeURI(i);
     }
@@ -462,29 +461,19 @@
     function parseCdnUrl(u) {
       if (!u || typeof u !== 'string') return null;
       let m = u.match(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)(?:@([^\/]+)|\/([^\/]+))\/(.*)/i);
-      if (m) return { user: m[1], repo: m[2], branch: m[3] || m[4] || 'main', path: m[5] };
-      m = u.match(/https?:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.*)/i);
-      if (m) return { user: m[1], repo: m[2], branch: m[3], path: m[4] };
+      if (m) return { user: m[1], repo: m[2], branch: m[3] || m[4] || '6118bd1eb317992421afda61f0e019a7240ded23', path: m[5] };
       return null;
     }
 
     const ICON_MIRRORS = [
       "https://cdn.jsdelivr.net",
-      "https://gcore.jsdelivr.net",
       "https://fastly.jsdelivr.net",
-      "https://cdn.statically.io",
-      "https://raw.githubusercontent.com"
+      "https://gcore.jsdelivr.net"
     ];
 
     function getMirrorUrl(u, mirrorOrigin) {
       const info = parseCdnUrl(u);
       if (!info) return u;
-      if (mirrorOrigin === 'https://raw.githubusercontent.com') {
-        return `https://raw.githubusercontent.com/${info.user}/${info.repo}/${info.branch}/${info.path}`;
-      }
-      if (mirrorOrigin.includes('statically.io')) {
-        return `https://cdn.statically.io/gh/${info.user}/${info.repo}/${info.branch}/${info.path}`;
-      }
       return `${mirrorOrigin}/gh/${info.user}/${info.repo}@${info.branch}/${info.path}`;
     }
 

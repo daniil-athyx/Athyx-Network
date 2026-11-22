@@ -32,13 +32,6 @@
       origin: 'https://gcore.jsdelivr.net',
       badge: 'Gcore Global',
       desc: 'Gcore worldwide mirror, bypasses some blocks'
-    },
-    statically: {
-      id: 'statically',
-      name: 'Statically Proxy',
-      origin: 'https://cdn.statically.io',
-      badge: 'Multi-CDN',
-      desc: 'Cloudflare / Fastly backed asset proxy'
     }
   };
 
@@ -46,11 +39,9 @@
     'https://cdn.jsdelivr.net',
     'https://fastly.jsdelivr.net',
     'https://gcore.jsdelivr.net',
-    'https://cdn.statically.io',
     'http://cdn.jsdelivr.net',
     'http://fastly.jsdelivr.net',
-    'http://gcore.jsdelivr.net',
-    'http://cdn.statically.io'
+    'http://gcore.jsdelivr.net'
   ];
 
   function getQueryCdn() {
@@ -109,6 +100,9 @@
     return 'custom';
   }
 
+  var UBG_ASSETS_SHA = '6118bd1eb317992421afda61f0e019a7240ded23';
+  var ATHYX_GAME_LIB_SHA = 'f5e99014cf6a330dec61e2cfd8940a7b2181391b';
+
   function rewriteUrl(url, targetOrigin) {
     if (!url || typeof url !== 'string') return url;
     var dest = (targetOrigin || getActiveCdn()).replace(/\/+$/, '');
@@ -126,6 +120,11 @@
     if (!isMatch) return url;
 
     var path = url.slice(matchedOrigin.length);
+
+    // Bypass jsDelivr 50MB repo size limit on branch archives by pinning commit SHA
+    path = path.replace(/\/gh\/daniil-athyx\/ubg-assets@(?:main|master)\//i, '/gh/daniil-athyx/ubg-assets@' + UBG_ASSETS_SHA + '/');
+    path = path.replace(/\/gh\/daniil-athyx\/athyx-game-lib@(?:main|master)\//i, '/gh/daniil-athyx/athyx-game-lib@' + ATHYX_GAME_LIB_SHA + '/');
+
     return dest + path;
   }
 
@@ -133,25 +132,36 @@
     if (!html || typeof html !== 'string') return html;
     var dest = (targetOrigin || getActiveCdn()).replace(/\/+$/, '');
 
-    var pattern = /https?:\/\/(?:cdn|fastly|gcore)\.jsdelivr\.net|https?:\/\/cdn\.statically\.io/gi;
-    return html.replace(pattern, dest);
+    var pattern = /https?:\/\/(?:cdn|fastly|gcore)\.jsdelivr\.net/gi;
+    var rewritten = html.replace(pattern, dest);
+    rewritten = rewritten.replace(/\/gh\/daniil-athyx\/ubg-assets@(?:main|master)\//gi, '/gh/daniil-athyx/ubg-assets@' + UBG_ASSETS_SHA + '/');
+    rewritten = rewritten.replace(/\/gh\/daniil-athyx\/athyx-game-lib@(?:main|master)\//gi, '/gh/daniil-athyx/athyx-game-lib@' + ATHYX_GAME_LIB_SHA + '/');
+    return rewritten;
   }
 
   function getUbgAssetsBase(targetOrigin) {
     var dest = (targetOrigin || getActiveCdn()).replace(/\/+$/, '');
-    return dest + '/gh/daniil-athyx/ubg-assets@main/';
+    return dest + '/gh/daniil-athyx/ubg-assets@' + UBG_ASSETS_SHA + '/';
+  }
+
+  function getGameLibBase(targetOrigin) {
+    var dest = (targetOrigin || getActiveCdn()).replace(/\/+$/, '');
+    return dest + '/gh/daniil-athyx/athyx-game-lib@' + ATHYX_GAME_LIB_SHA + '/';
   }
 
   var AthyxCdn = {
     PROVIDERS: CDN_PROVIDERS,
     KNOWN_MIRRORS: KNOWN_MIRRORS,
+    UBG_ASSETS_SHA: UBG_ASSETS_SHA,
+    ATHYX_GAME_LIB_SHA: ATHYX_GAME_LIB_SHA,
     getActiveCdn: getActiveCdn,
     setActiveCdn: setActiveCdn,
     getQueryCdn: getQueryCdn,
     getProviderKey: getProviderKey,
     rewriteUrl: rewriteUrl,
     rewriteHtml: rewriteHtml,
-    getUbgAssetsBase: getUbgAssetsBase
+    getUbgAssetsBase: getUbgAssetsBase,
+    getGameLibBase: getGameLibBase
   };
 
   // Attach to window / global

@@ -447,6 +447,7 @@
   </div>
 
   <script>
+    const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://cdn.jsdelivr.net";
     const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@6118bd1eb317992421afda61f0e019a7240ded23/";
     const PRIMARY_GAMES_JSON = REPO_BASE + "games.json";
     const FALLBACK_GAMES_JSON = PRIMARY_GAMES_JSON;
@@ -757,7 +758,7 @@
       let gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
 
       async function fetchWithMirrorFallback(targetUrl, opts) {
-        const origins = ["https://raw.githubusercontent.com", null, ...ICON_MIRRORS];
+        const origins = [null, ...ICON_MIRRORS];
         const tried = new Set();
         let lastErr = null;
         for (const origin of origins) {
@@ -947,50 +948,24 @@
 
   const MIRROR_ORIGINS = [
     "https://cdn.jsdelivr.net",
-    "https://raw.githubusercontent.com",
     "https://fastly.jsdelivr.net",
     "https://gcore.jsdelivr.net"
   ];
   const jsdelivrBlockedRepos = new Set();
 
-  function markJsdelivrBlocked(u) {
-    const info = parseCdnUrl(u);
-    if (info && /jsdelivr\.net/i.test(u)) {
-      jsdelivrBlockedRepos.add((info.user + '/' + info.repo).toLowerCase());
-    }
-  }
+  function markJsdelivrBlocked(u) {}
 
   function maybeSkipBlockedJsdelivr(u) {
-    const info = parseCdnUrl(u);
-    if (info && /jsdelivr\.net/i.test(u) && jsdelivrBlockedRepos.has((info.user + '/' + info.repo).toLowerCase())) {
-      return getMirrorUrl(u, 'https://raw.githubusercontent.com');
-    }
     return u;
   }
 
   function getMirrorUrl(u, mirrorOrigin) {
     const info = parseCdnUrl(u);
     if (!info) return u;
-    if (mirrorOrigin === 'https://raw.githubusercontent.com') {
-      return 'https://raw.githubusercontent.com/' + info.user + '/' + info.repo + '/' + info.branch + '/' + info.path;
-    }
-    if (mirrorOrigin.includes('statically.io')) {
-      return 'https://cdn.statically.io/gh/' + info.user + '/' + info.repo + '/' + info.branch + '/' + info.path;
-    }
     return mirrorOrigin + '/gh/' + info.user + '/' + info.repo + '@' + info.branch + '/' + info.path;
   }
 
   function resolveSafeAssetUrl(u) {
-    if (!u || typeof u !== 'string') return u;
-    if (/\.(chunk\d+|part\d+|data|wasm)$/i.test(u) || u.includes('/Build/')) {
-      try {
-        const r = new RegExp('https?:\\/\\/[^\\/]+\\/gh\\/([^\\/]+)\\/([^\\/@]+)(?:@([^\\/]+)|\\/([^\\/]+))\\/(.*)', 'i');
-        let m = u.match(r);
-        if (m) {
-          return 'https://raw.githubusercontent.com/' + m[1] + '/' + m[2] + '/main/' + m[5];
-        }
-      } catch (e) {}
-    }
     return u;
   }
 

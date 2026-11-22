@@ -61,14 +61,19 @@
 
   function getActiveCdn() {
     var q = getQueryCdn();
-    if (q) return q;
+    if (q && q.includes('jsdelivr.net')) return q;
     try {
       if (typeof localStorage !== 'undefined') {
         var stored = localStorage.getItem('athyx_cdn_mirror');
         if (stored) {
-          var key = stored.toLowerCase().trim();
-          if (CDN_PROVIDERS[key]) return CDN_PROVIDERS[key].origin;
-          if (/^https?:\/\//i.test(stored)) return stored.replace(/\/+$/, '');
+          // Strictly jsDelivr: purge any stale non-jsdelivr mirrors like raw.githubusercontent.com
+          if (!stored.includes('jsdelivr.net')) {
+            localStorage.removeItem('athyx_cdn_mirror');
+          } else {
+            var key = stored.toLowerCase().trim();
+            if (CDN_PROVIDERS[key]) return CDN_PROVIDERS[key].origin;
+            if (/^https?:\/\/[a-z0-9.-]*jsdelivr\.net/i.test(stored)) return stored.replace(/\/+$/, '');
+          }
         }
       }
     } catch (_) {}
@@ -80,7 +85,7 @@
       var origin = value;
       var key = String(value || '').toLowerCase().trim();
       if (CDN_PROVIDERS[key]) origin = CDN_PROVIDERS[key].origin;
-      else if (!/^https?:\/\//i.test(origin)) origin = 'https://cdn.jsdelivr.net';
+      else if (!/^https?:\/\/[a-z0-9.-]*jsdelivr\.net/i.test(origin)) origin = 'https://cdn.jsdelivr.net';
       origin = origin.replace(/\/+$/, '');
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('athyx_cdn_mirror', origin);

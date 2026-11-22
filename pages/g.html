@@ -794,7 +794,7 @@
       let gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
 
       async function fetchWithMirrorFallback(targetUrl, opts) {
-        const origins = [null, ...ICON_MIRRORS];
+        const origins = ["https://raw.githubusercontent.com", null, ...ICON_MIRRORS];
         const tried = new Set();
         let lastErr = null;
         for (const origin of origins) {

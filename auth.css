@@ -74,27 +74,6 @@
   margin-bottom: 24px;
 }
 
-.auth-logo-icon {
-  width: 52px;
-  height: 52px;
-  margin: 0 auto 14px;
-  background: var(--surface-hover, rgba(255, 255, 255, 0.08));
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  color: var(--accent, #ffffff);
-  box-shadow: 0 0 20px var(--accent-dim, rgba(255, 255, 255, 0.12));
-  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.auth-logo-icon:hover {
-  transform: scale(1.06);
-  border-color: var(--accent, #ffffff);
-}
-
 .auth-title {
   font-family: var(--font-heading, "Outfit", sans-serif);
   font-size: 24px;

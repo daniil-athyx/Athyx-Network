@@ -1361,11 +1361,12 @@
           this._hasMirrorHandler = true;
           let retryIdx = 0;
           this.addEventListener('error', () => {
-            if (this.src && parseCdnUrl(this.src) && retryIdx < MIRROR_ORIGINS.length) {
+            while (this.src && parseCdnUrl(this.src) && retryIdx < MIRROR_ORIGINS.length) {
               const nextUrl = getMirrorUrl(this.src, MIRROR_ORIGINS[retryIdx++]);
               if (nextUrl && nextUrl !== this.src) {
                 console.warn('[Athyx CDN Auto-Fallback] Image load failed, trying mirror:', nextUrl);
                 origSrcDesc.set.call(this, nextUrl);
+                break;
               }
             }
           });

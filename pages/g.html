@@ -984,11 +984,26 @@
 
   const MIRROR_ORIGINS = [
     "https://cdn.jsdelivr.net",
+    "https://raw.githubusercontent.com",
     "https://fastly.jsdelivr.net",
-    "https://gcore.jsdelivr.net",
-    "https://cdn.statically.io",
-    "https://raw.githubusercontent.com"
+    "https://gcore.jsdelivr.net"
   ];
+  const jsdelivrBlockedRepos = new Set();
+
+  function markJsdelivrBlocked(u) {
+    const info = parseCdnUrl(u);
+    if (info && /jsdelivr\.net/i.test(u)) {
+      jsdelivrBlockedRepos.add((info.user + '/' + info.repo).toLowerCase());
+    }
+  }
+
+  function maybeSkipBlockedJsdelivr(u) {
+    const info = parseCdnUrl(u);
+    if (info && /jsdelivr\.net/i.test(u) && jsdelivrBlockedRepos.has((info.user + '/' + info.repo).toLowerCase())) {
+      return getMirrorUrl(u, 'https://raw.githubusercontent.com');
+    }
+    return u;
+  }
 
   function getMirrorUrl(u, mirrorOrigin) {
     const info = parseCdnUrl(u);
@@ -1160,6 +1175,7 @@
           } else if (!/^https?:\\/\\//i.test(url) && !url.startsWith('data:') && !url.startsWith('blob:')) {
             url = absoluteBase + url.replace(/^(\\.\\/)/, '');
           }
+          url = maybeSkipBlockedJsdelivr(url);
         }
         resolvedUrl = url;
         const args = Array.prototype.slice.call(arguments);
@@ -1199,6 +1215,10 @@
             if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
             listeners.loadend.forEach(f => f.call(xhr, e));
             return;
+          }
+
+          if (xhr.status === 403) {
+            markJsdelivrBlocked(resolvedUrl);
           }
 
           let mirrorIdx = 0;
@@ -1253,6 +1273,10 @@
         });
 
         origAddEventListener('error', function(e) {
+          if (xhr.status === 403) {
+            markJsdelivrBlocked(resolvedUrl);
+          }
+
           let mirrorIdx = 0;
           function tryNext() {
             if (mirrorIdx >= MIRROR_ORIGINS.length) {

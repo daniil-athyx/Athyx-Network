@@ -25,8 +25,10 @@
 - **18 MB File Size Limit**: Every single file pushed to GitHub must strictly be $\le 18\text{ MB}$ to avoid jsDelivr limits (20MB) and GitHub transfer issues. If any file exceeds 18 MB, split it into chunks $\le 18\text{ MB}$ (e.g., `.part1`, `.part2`) and reassemble into a Blob at runtime in the launcher HTML.
 - Launcher HTMLs in `ubg-assets` use `<base href="https://cdn.jsdelivr.net/gh/daniil-athyx/athyx-game-lib@main/<Game Name>/">` to load their game files through jsDelivr.
 
-### 5. Game Database (`games.json`)
-- To register or edit any game, only update `assets/games.json` (and `ubg-assets/games.json`):
+### 5. Game Database (`ubg-assets/games.json`)
+- `games.json` lives ONLY in `ubg-assets/games.json`.
+- There is NO `games.json` in `Athyx-Network`. `pages/g.html` dynamically fetches `games.json` directly from `ubg-assets` via CDN.
+- To register, add, or edit any game, modify ONLY `ubg-assets/games.json`:
   ```json
   {
     "name": "Game Name",
@@ -34,4 +36,4 @@
     "icon": "icons/game_icon.webp"
   }
   ```
-- `pages/g.html` automatically reads `games.json`, renders the cards, and launches the game executable from `ubg-assets` seamlessly.
+- `pages/g.html` automatically reads `games.json` from `ubg-assets`, renders the cards, and launches the game executable from `ubg-assets` seamlessly.

@@ -449,18 +449,13 @@
   <script>
     const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://cdn.jsdelivr.net";
     const REPO_BASE = activeCdn.replace(/\/+$/, '') + "/gh/daniil-athyx/ubg-assets@main/";
-    const LOCAL_ICONS_BASE = "../assets/icons/";
-    const PRIMARY_GAMES_JSON = "../assets/games.json";
-    const FALLBACK_GAMES_JSON = "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/games.json";
+    const PRIMARY_GAMES_JSON = REPO_BASE + "games.json";
+    const FALLBACK_GAMES_JSON = "https://raw.githubusercontent.com/daniil-athyx/ubg-assets/main/games.json";
 
     function resolveGameIcon(i) {
       if (!i) return "";
       if (i.startsWith("http")) return i;
       if (i.startsWith("../") || i.startsWith("/")) return new URL(i, location.href).href;
-      if (i.startsWith("icons/")) {
-        const file = i.replace(/^icons\//, "");
-        return new URL(LOCAL_ICONS_BASE + encodeURI(file), location.href).href;
-      }
       return REPO_BASE + encodeURI(i);
     }
 

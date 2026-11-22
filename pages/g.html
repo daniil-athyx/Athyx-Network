@@ -1355,6 +1355,7 @@
   const origImage = window.Image;
   window.Image = function() {
     const img = new origImage();
+    img._hasMirrorHandler = true;
     let retryIdx = 0;
     let userOnError = null;
 
@@ -1365,7 +1366,10 @@
     });
 
     img.addEventListener('error', function(e) {
-      if (img.src && parseCdnUrl(img.src) && retryIdx < MIRROR_ORIGINS.length) {
+      if (img.src && /jsdelivr\.net/i.test(img.src)) {
+        markJsdelivrBlocked(img.src);
+      }
+      while (img.src && parseCdnUrl(img.src) && retryIdx < MIRROR_ORIGINS.length) {
         const nextUrl = getMirrorUrl(img.src, MIRROR_ORIGINS[retryIdx++]);
         if (nextUrl && nextUrl !== img.src) {
           console.warn('[Athyx CDN Auto-Fallback] Image load failed, trying mirror:', nextUrl);
@@ -1398,6 +1402,7 @@
           if (/^https?:\\/\\//i.test(val) && val.includes(' ')) {
             val = encodeURI(val);
           }
+          val = maybeSkipBlockedJsdelivr(val);
         }
         if (!this._hasMirrorHandler && parseCdnUrl(val)) {
           this._hasMirrorHandler = true;

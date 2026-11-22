@@ -448,7 +448,7 @@
 
   <script>
     const activeCdn = window.AthyxCdn ? window.AthyxCdn.getActiveCdn() : "https://cdn.jsdelivr.net";
-    const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@6118bd1eb317992421afda61f0e019a7240ded23/";
+    const REPO_BASE = window.AthyxCdn ? window.AthyxCdn.getUbgAssetsBase() : "https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@5cfae6b1d66425fbb7d7b88b29a3eef3286c1f1c/";
     const PRIMARY_GAMES_JSON = REPO_BASE + "games.json";
     const FALLBACK_GAMES_JSON = PRIMARY_GAMES_JSON;
 
@@ -462,7 +462,7 @@
     function parseCdnUrl(u) {
       if (!u || typeof u !== 'string') return null;
       let m = u.match(/https?:\/\/[^\/]+\/gh\/([^\/]+)\/([^\/@]+)(?:@([^\/]+)|\/([^\/]+))\/(.*)/i);
-      if (m) return { user: m[1], repo: m[2], branch: m[3] || m[4] || '6118bd1eb317992421afda61f0e019a7240ded23', path: m[5] };
+      if (m) return { user: m[1], repo: m[2], branch: m[3] || m[4] || '5cfae6b1d66425fbb7d7b88b29a3eef3286c1f1c', path: m[5] };
       return null;
     }
 

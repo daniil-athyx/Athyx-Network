@@ -1121,215 +1121,91 @@
   // XMLHttpRequest interceptor to resolve relative paths against absoluteBase, rewrite CDN, and auto-fallback
   if (window.XMLHttpRequest) {
     const OrigXHR = window.XMLHttpRequest;
-    window.XMLHttpRequest = function() {
-      const xhr = new OrigXHR();
-      let resolvedUrl = '';
-      let reqMethod = 'GET';
-      let reqBody = null;
-      let userOnLoad = null;
-      let userOnError = null;
-      let userOnReady = null;
-      let userOnLoadEnd = null;
-      let listeners = { load: [], error: [], readystatechange: [], loadend: [] };
+    const origOpen = OrigXHR.prototype.open;
+    const origSend = OrigXHR.prototype.send;
 
-      Object.defineProperty(xhr, 'onload', {
-        get: () => userOnLoad,
-        set: (fn) => { userOnLoad = fn; },
-        configurable: true
-      });
-      Object.defineProperty(xhr, 'onerror', {
-        get: () => userOnError,
-        set: (fn) => { userOnError = fn; },
-        configurable: true
-      });
-      Object.defineProperty(xhr, 'onreadystatechange', {
-        get: () => userOnReady,
-        set: (fn) => { userOnReady = fn; },
-        configurable: true
-      });
-      Object.defineProperty(xhr, 'onloadend', {
-        get: () => userOnLoadEnd,
-        set: (fn) => { userOnLoadEnd = fn; },
-        configurable: true
-      });
+    OrigXHR.prototype.open = function(method, url) {
+      this._reqMethod = method;
+      if (typeof url === 'string') {
+        url = resolveSafeAssetUrl(url);
+        url = rewriteCdnUrl(url);
+        if (url.startsWith('file:///')) {
+          url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
+        } else if (url.startsWith('/') && !url.startsWith('//')) {
+          url = absoluteBase + url.replace(/^\\//, '');
+        } else if (!/^https?:\\/\\//i.test(url) && !url.startsWith('data:') && !url.startsWith('blob:')) {
+          url = absoluteBase + url.replace(/^(\\.\\/)/, '');
+        }
+        url = maybeSkipBlockedJsdelivr(url);
+      }
+      this._resolvedUrl = url;
+      const args = Array.prototype.slice.call(arguments);
+      args[1] = url;
+      return origOpen.apply(this, args);
+    };
 
-      const origAddEventListener = xhr.addEventListener.bind(xhr);
-      xhr.addEventListener = function(type, fn, options) {
-        if (listeners[type]) {
-          listeners[type].push(fn);
+    OrigXHR.prototype.send = function(body) {
+      const xhr = this;
+      const resolvedUrl = xhr._resolvedUrl;
+      const reqMethod = xhr._reqMethod || 'GET';
+      const reqBody = body;
+
+      if (!resolvedUrl || !parseCdnUrl(resolvedUrl)) {
+        return origSend.call(xhr, body);
+      }
+
+      let mirrorIdx = 0;
+      function tryNext(origEvent) {
+        if (mirrorIdx >= MIRROR_ORIGINS.length) {
           return;
         }
-        return origAddEventListener(type, fn, options);
-      };
-
-      const origOpen = xhr.open;
-      xhr.open = function(method, url) {
-        reqMethod = method;
-        if (typeof url === 'string') {
-          url = resolveSafeAssetUrl(url);
-          url = rewriteCdnUrl(url);
-          if (url.startsWith('file:///')) {
-            url = absoluteBase + url.replace(/^file:\\/\\/\\/?/, '');
-          } else if (url.startsWith('/') && !url.startsWith('//')) {
-            url = absoluteBase + url.replace(/^\\//, '');
-          } else if (!/^https?:\\/\\//i.test(url) && !url.startsWith('data:') && !url.startsWith('blob:')) {
-            url = absoluteBase + url.replace(/^(\\.\\/)/, '');
+        const nextUrl = getMirrorUrl(resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
+        if (!nextUrl || nextUrl === resolvedUrl) return tryNext(origEvent);
+        console.warn('[Athyx CDN Auto-Fallback] XHR got failure, retrying mirror:', nextUrl);
+        try {
+          const retryXhr = new OrigXHR();
+          retryXhr.open(reqMethod, nextUrl, true);
+          if (xhr.responseType) {
+            try { retryXhr.responseType = xhr.responseType; } catch (_) {}
           }
-          url = maybeSkipBlockedJsdelivr(url);
-        }
-        resolvedUrl = url;
-        const args = Array.prototype.slice.call(arguments);
-        args[1] = url;
-        return origOpen.apply(xhr, args);
-      };
-
-      const origSend = xhr.send;
-      xhr.send = function(body) {
-        reqBody = body;
-        if (!parseCdnUrl(resolvedUrl)) {
-          origAddEventListener('load', (e) => {
-            if (userOnLoad) userOnLoad.call(xhr, e);
-            listeners.load.forEach(f => f.call(xhr, e));
-          });
-          origAddEventListener('error', (e) => {
-            if (userOnError) userOnError.call(xhr, e);
-            listeners.error.forEach(f => f.call(xhr, e));
-          });
-          origAddEventListener('readystatechange', (e) => {
-            if (userOnReady) userOnReady.call(xhr, e);
-            listeners.readystatechange.forEach(f => f.call(xhr, e));
-          });
-          origAddEventListener('loadend', (e) => {
-            if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
-            listeners.loadend.forEach(f => f.call(xhr, e));
-          });
-          return origSend.call(xhr, body);
-        }
-
-        origAddEventListener('load', function(e) {
-          if (xhr.status < 400) {
-            if (userOnReady) userOnReady.call(xhr, e);
-            listeners.readystatechange.forEach(f => f.call(xhr, e));
-            if (userOnLoad) userOnLoad.call(xhr, e);
-            listeners.load.forEach(f => f.call(xhr, e));
-            if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
-            listeners.loadend.forEach(f => f.call(xhr, e));
-            return;
-          }
-
-          if (xhr.status === 403) {
-            markJsdelivrBlocked(resolvedUrl);
-          }
-
-          let mirrorIdx = 0;
-          function tryNext() {
-            if (mirrorIdx >= MIRROR_ORIGINS.length) {
-              if (userOnReady) userOnReady.call(xhr, e);
-              listeners.readystatechange.forEach(f => f.call(xhr, e));
-              if (userOnLoad) userOnLoad.call(xhr, e);
-              listeners.load.forEach(f => f.call(xhr, e));
-              if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
-              listeners.loadend.forEach(f => f.call(xhr, e));
-              return;
-            }
-            const nextUrl = getMirrorUrl(resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
-            if (!nextUrl || nextUrl === resolvedUrl) return tryNext();
-            console.warn('[Athyx CDN Auto-Fallback] XHR got status ' + xhr.status + ', retrying mirror:', nextUrl);
-            try {
-              const retryXhr = new OrigXHR();
-              retryXhr.open(reqMethod, nextUrl, true);
-              if (xhr.responseType) {
-                try { retryXhr.responseType = xhr.responseType; } catch (_) {}
-              }
-              retryXhr.timeout = 5000;
-              retryXhr.ontimeout = tryNext;
-              retryXhr.onload = function(re) {
-                if (retryXhr.status < 400) {
-                  try {
-                    Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
-                    Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
-                    Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
-                    if (retryXhr.responseType === '' || retryXhr.responseType === 'text') {
-                      Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
-                    }
-                  } catch(_) {}
-                  if (userOnReady) userOnReady.call(xhr, re);
-                  listeners.readystatechange.forEach(f => f.call(xhr, re));
-                  if (userOnLoad) userOnLoad.call(xhr, re);
-                  listeners.load.forEach(f => f.call(xhr, re));
-                  if (userOnLoadEnd) userOnLoadEnd.call(xhr, re);
-                  listeners.loadend.forEach(f => f.call(xhr, re));
-                } else {
-                  tryNext();
+          retryXhr.timeout = 5000;
+          retryXhr.ontimeout = () => tryNext(origEvent);
+          retryXhr.onload = function(re) {
+            if (retryXhr.status < 400) {
+              try {
+                Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
+                Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
+                Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
+                if (retryXhr.responseType === '' || retryXhr.responseType === 'text') {
+                  Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
                 }
-              };
-              retryXhr.onerror = tryNext;
-              retryXhr.send(reqBody);
-            } catch (_) {
-              tryNext();
+              } catch(_) {}
+              if (typeof xhr.onload === 'function') xhr.onload.call(xhr, re);
+              xhr.dispatchEvent(new Event('load'));
+            } else {
+              tryNext(origEvent);
             }
-          }
-          tryNext();
-        });
+          };
+          retryXhr.onerror = () => tryNext(origEvent);
+          retryXhr.send(reqBody);
+        } catch (_) {
+          tryNext(origEvent);
+        }
+      }
 
-        origAddEventListener('error', function(e) {
-          if (xhr.status === 403) {
-            markJsdelivrBlocked(resolvedUrl);
-          }
+      xhr.addEventListener('load', function(e) {
+        if (xhr.status >= 400) {
+          if (xhr.status === 403) markJsdelivrBlocked(resolvedUrl);
+          tryNext(e);
+        }
+      });
 
-          let mirrorIdx = 0;
-          function tryNext() {
-            if (mirrorIdx >= MIRROR_ORIGINS.length) {
-              if (userOnError) userOnError.call(xhr, e);
-              listeners.error.forEach(f => f.call(xhr, e));
-              if (userOnLoadEnd) userOnLoadEnd.call(xhr, e);
-              listeners.loadend.forEach(f => f.call(xhr, e));
-              return;
-            }
-            const nextUrl = getMirrorUrl(resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
-            if (!nextUrl || nextUrl === resolvedUrl) return tryNext();
-            console.warn('[Athyx CDN Auto-Fallback] XHR error, retrying mirror:', nextUrl);
-            try {
-              const retryXhr = new OrigXHR();
-              retryXhr.open(reqMethod, nextUrl, true);
-              if (xhr.responseType) {
-                try { retryXhr.responseType = xhr.responseType; } catch (_) {}
-              }
-              retryXhr.timeout = 5000;
-              retryXhr.ontimeout = tryNext;
-              retryXhr.onload = function(re) {
-                if (retryXhr.status < 400) {
-                  try {
-                    Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
-                    Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
-                    Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
-                    if (retryXhr.responseType === '' || retryXhr.responseType === 'text') {
-                      Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
-                    }
-                  } catch(_) {}
-                  if (userOnReady) userOnReady.call(xhr, re);
-                  listeners.readystatechange.forEach(f => f.call(xhr, re));
-                  if (userOnLoad) userOnLoad.call(xhr, re);
-                  listeners.load.forEach(f => f.call(xhr, re));
-                  if (userOnLoadEnd) userOnLoadEnd.call(xhr, re);
-                  listeners.loadend.forEach(f => f.call(xhr, re));
-                } else {
-                  tryNext();
-                }
-              };
-              retryXhr.onerror = tryNext;
-              retryXhr.send(reqBody);
-            } catch (_) {
-              tryNext();
-            }
-          }
-          tryNext();
-        });
+      xhr.addEventListener('error', function(e) {
+        if (xhr.status === 403) markJsdelivrBlocked(resolvedUrl);
+        tryNext(e);
+      });
 
-        return origSend.call(xhr, body);
-      };
-
-      return xhr;
+      return origSend.call(xhr, body);
     };
   }
 

@@ -614,6 +614,109 @@
       height: 100%;
     }
 
+    /* Bottom Dock Glow Indicator */
+    .dock-glow-indicator {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 14px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 998;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 1;
+    }
+
+    .dock-glow-pill {
+      width: 110px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 9999px 9999px 0 0;
+      box-shadow:
+        0 -1px 8px var(--accent-glow),
+        0 -3px 20px 2px var(--accent-glow),
+        0 -1px 2px var(--accent);
+      opacity: 0.8;
+      transition: all 0.25s ease;
+      animation: dockGlowPulse 2.8s ease-in-out infinite;
+    }
+
+    @keyframes dockGlowPulse {
+      0%, 100% {
+        opacity: 0.7;
+        transform: scaleX(1);
+        box-shadow: 0 -1px 8px var(--accent-glow), 0 -2px 14px 1px var(--accent-glow);
+      }
+      50% {
+        opacity: 1;
+        transform: scaleX(1.12);
+        box-shadow: 0 -1px 12px var(--accent-glow), 0 -4px 24px 3px var(--accent-glow);
+      }
+    }
+
+    /* Hovering near trigger zone brightens the indicator */
+    .dock-trigger-zone:hover ~ .dock-glow-indicator .dock-glow-pill {
+      opacity: 1;
+      transform: scaleX(1.2);
+      box-shadow: 0 -2px 16px var(--accent-glow), 0 -5px 30px 4px var(--accent-glow);
+    }
+
+    /* When dock is open, smoothly hide the indicator */
+    .dock-wrapper:not(.dock-hidden) ~ .dock-glow-indicator,
+    .dock-wrapper.dock-game-hidden ~ .dock-glow-indicator {
+      opacity: 0 !important;
+      transform: translateX(-50%) translateY(10px) !important;
+      pointer-events: none !important;
+    }
+
+    /* Left position */
+    .dock-glow-indicator.indicator-pos-left {
+      top: 50%;
+      left: 0;
+      bottom: auto;
+      right: auto;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 180px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .dock-glow-indicator.indicator-pos-left .dock-glow-pill {
+      width: 4px;
+      height: 110px;
+      border-radius: 0 9999px 9999px 0;
+      box-shadow: 1px 0 8px var(--accent-glow), 3px 0 20px 2px var(--accent-glow);
+    }
+    .dock-wrapper:not(.dock-hidden) ~ .dock-glow-indicator.indicator-pos-left {
+      transform: translateY(-50%) translateX(-10px) !important;
+    }
+
+    /* Right position */
+    .dock-glow-indicator.indicator-pos-right {
+      top: 50%;
+      right: 0;
+      bottom: auto;
+      left: auto;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 180px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .dock-glow-indicator.indicator-pos-right .dock-glow-pill {
+      width: 4px;
+      height: 110px;
+      border-radius: 9999px 0 0 9999px;
+      box-shadow: -1px 0 8px var(--accent-glow), -3px 0 20px 2px var(--accent-glow);
+    }
+    .dock-wrapper:not(.dock-hidden) ~ .dock-glow-indicator.indicator-pos-right {
+      transform: translateY(-50%) translateX(10px) !important;
+    }
+
     .dock-item {
       display: inline-flex;
       align-items: center;
@@ -1503,6 +1606,11 @@
     </button>
   </div>
 
+  <!-- Bottom Dock Glow Indicator -->
+  <div class="dock-glow-indicator" id="dockGlowIndicator" aria-hidden="true">
+    <div class="dock-glow-pill"></div>
+  </div>
+
   <div id="global-notification-container"
     style="position:fixed; top:70px; left:20px; z-index:9999; display:flex; flex-direction:column; gap:10px; pointer-events:none;">
   </div>
@@ -2346,13 +2454,17 @@
 
       dockNav.classList.remove("dock-pos-left", "dock-pos-right");
       if (dockTriggerZone) dockTriggerZone.classList.remove("trigger-pos-left", "trigger-pos-right");
+      const glowIndicator = document.getElementById("dockGlowIndicator");
+      if (glowIndicator) glowIndicator.classList.remove("indicator-pos-left", "indicator-pos-right");
 
       if (pos === "left") {
         dockNav.classList.add("dock-pos-left");
         if (dockTriggerZone) dockTriggerZone.classList.add("trigger-pos-left");
+        if (glowIndicator) glowIndicator.classList.add("indicator-pos-left");
       } else if (pos === "right") {
         dockNav.classList.add("dock-pos-right");
         if (dockTriggerZone) dockTriggerZone.classList.add("trigger-pos-right");
+        if (glowIndicator) glowIndicator.classList.add("indicator-pos-right");
       }
       showDock();
     }

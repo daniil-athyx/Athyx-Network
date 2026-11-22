@@ -9,8 +9,9 @@
 - These HTML files are loaded at runtime through jsDelivr: `https://cdn.jsdelivr.net/gh/daniil-athyx/ubg-assets@main/<Game Name>.html`.
 
 ### 3. Game Icons (`ubg-assets/icons/`)
-- All game icons live in `ubg-assets/icons/` (e.g. `ubg-assets/icons/<icon_name>.webp`).
-- They are also mirrored to `Athyx-Network/assets/icons/`.
+- All game icons live exclusively in `ubg-assets/icons/` as `.webp` files (e.g. `ubg-assets/icons/<name>.webp`).
+- DO NOT mirror game icons to Athyx Network. Game icons are hosted in `ubg-assets` and loaded via CDN.
+- All entries in `games.json` must strictly reference `.webp` icons (`"icons/<name>.webp"`). Old formats (`.png`, `.jpg`, `.svg`) must never be added.
 
 ### 4. Game Assets & Data Files (`athyx-game-lib`)
 - All actual game files, assets, audio, engines, and data files belong exclusively in `athyx-game-lib` under `athyx-game-lib/<Game Name>/`.

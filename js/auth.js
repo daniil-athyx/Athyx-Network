@@ -252,6 +252,8 @@ async function handleFormSubmit(e) {
 function unlockGateway(user) {
   currentUser = user;
   const username = user?.displayName || localStorage.getItem('athyx_user') || 'Member';
+  localStorage.setItem('athyx_user', username);
+  document.documentElement.classList.add('auth-session-present');
 
   // Smoothly unlock and hide gateway overlay
   if (gatewayOverlay) {
@@ -287,6 +289,8 @@ function unlockGateway(user) {
 // Lock UI when not authenticated
 function lockGateway() {
   currentUser = null;
+  localStorage.removeItem('athyx_user');
+  document.documentElement.classList.remove('auth-session-present');
   if (gatewayOverlay) {
     gatewayOverlay.classList.remove('unlocked');
   }
@@ -302,8 +306,9 @@ function lockGateway() {
 // Sign out
 export async function logOutUser() {
   try {
-    await signOut(auth);
     localStorage.removeItem('athyx_user');
+    document.documentElement.classList.remove('auth-session-present');
+    await signOut(auth);
     lockGateway();
   } catch (err) {
     console.error('[Athyx Auth] Sign out error:', err);

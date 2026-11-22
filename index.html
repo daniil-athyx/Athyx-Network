@@ -19,6 +19,13 @@
       const savedCloakTitle = localStorage.getItem("athyx_tab_title");
       if (savedCloakTitle) document.title = savedCloakTitle;
     } catch (e) { }
+
+    // Instant Auth Pre-check: Hide auth gateway immediately before paint if already authenticated
+    try {
+      if (localStorage.getItem("athyx_user")) {
+        document.documentElement.classList.add("auth-session-present");
+      }
+    } catch (e) { }
   </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -33,6 +33,15 @@
   pointer-events: none;
 }
 
+/* Instantly suppress gateway overlay before first paint with zero delay or flicker */
+html.auth-session-present #athyx-auth-gateway,
+html.auth-session-present .auth-gateway-overlay {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 /* Auth Card */
 .auth-card {
   position: relative;

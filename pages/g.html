@@ -793,9 +793,27 @@
       let gameUrl = REPO_BASE + encodeURI(game.path);
       let gameBaseFolder = gameUrl.substring(0, gameUrl.lastIndexOf('/') + 1);
 
+      async function fetchWithMirrorFallback(targetUrl, opts) {
+        const origins = [null, ...ICON_MIRRORS];
+        const tried = new Set();
+        let lastErr = null;
+        for (const origin of origins) {
+          const url = origin ? getMirrorUrl(targetUrl, origin) : targetUrl;
+          if (!url || tried.has(url)) continue;
+          tried.add(url);
+          try {
+            const r = await fetch(url + (url.includes('?') ? '&' : '?') + "v=" + Date.now(), opts || { cache: "no-store" });
+            if (r.ok) return r;
+            lastErr = new Error("Status " + r.status);
+          } catch (e) {
+            lastErr = e;
+          }
+        }
+        throw lastErr || new Error("All mirrors failed");
+      }
+
       try {
-        const res = await fetch(gameUrl + "?v=" + Date.now(), { cache: "no-store" });
-        if (!res.ok) throw new Error("Status " + res.status);
+        const res = await fetchWithMirrorFallback(gameUrl, { cache: "no-store" });
         let html = await res.text();
 
         if (window.AthyxCdn) {
@@ -820,7 +838,7 @@
             nestedUrl = gameBaseFolder + nestedUrl.replace(/^(\.\/|\/)/, '');
           }
           try {
-            const nestedRes = await fetch(nestedUrl);
+            const nestedRes = await fetchWithMirrorFallback(nestedUrl);
             if (nestedRes.ok) {
               html = await nestedRes.text();
               gameUrl = nestedUrl;

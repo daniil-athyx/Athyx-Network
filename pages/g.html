@@ -965,11 +965,11 @@
   }
 
   const MIRROR_ORIGINS = [
+    "https://raw.githubusercontent.com",
     "https://cdn.jsdelivr.net",
-    "https://gcore.jsdelivr.net",
     "https://fastly.jsdelivr.net",
     "https://cdn.statically.io",
-    "https://raw.githubusercontent.com"
+    "https://gcore.jsdelivr.net"
   ];
 
   function getMirrorUrl(u, mirrorOrigin) {
@@ -992,15 +992,6 @@
         let m = u.match(r);
         if (m) {
           return 'https://raw.githubusercontent.com/' + m[1] + '/' + m[2] + '/main/' + m[5];
-        }
-      } catch (e) {}
-    }
-    if (u.includes('athyx-game-lib') && u.includes('.json')) {
-      try {
-        const r = new RegExp('https?:\\/\\/[^\\/]+\\/gh\\/([^\\/]+)\\/([^\\/@]+)(?:@([^\\/]+)|\\/([^\\/]+))\\/(.*)', 'i');
-        let m = u.match(r);
-        if (m) {
-          return 'https://gcore.jsdelivr.net/gh/' + m[1] + '/' + m[2] + '@' + (m[3] || m[4] || 'main') + '/' + m[5];
         }
       } catch (e) {}
     }
@@ -1206,29 +1197,39 @@
             const nextUrl = getMirrorUrl(resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
             if (!nextUrl || nextUrl === resolvedUrl) return tryNext();
             console.warn('[Athyx CDN Auto-Fallback] XHR got status ' + xhr.status + ', retrying mirror:', nextUrl);
-            const retryXhr = new OrigXHR();
-            retryXhr.responseType = xhr.responseType;
-            retryXhr.open(reqMethod, nextUrl, true);
-            retryXhr.onload = function(re) {
-              if (retryXhr.status < 400) {
-                try {
-                  Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
-                  Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
-                  Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
-                  Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
-                } catch(_) {}
-                if (userOnReady) userOnReady.call(xhr, re);
-                listeners.readystatechange.forEach(f => f.call(xhr, re));
-                if (userOnLoad) userOnLoad.call(xhr, re);
-                listeners.load.forEach(f => f.call(xhr, re));
-                if (userOnLoadEnd) userOnLoadEnd.call(xhr, re);
-                listeners.loadend.forEach(f => f.call(xhr, re));
-              } else {
-                tryNext();
+            try {
+              const retryXhr = new OrigXHR();
+              retryXhr.open(reqMethod, nextUrl, true);
+              if (xhr.responseType) {
+                try { retryXhr.responseType = xhr.responseType; } catch (_) {}
               }
-            };
-            retryXhr.onerror = tryNext;
-            retryXhr.send(reqBody);
+              retryXhr.timeout = 5000;
+              retryXhr.ontimeout = tryNext;
+              retryXhr.onload = function(re) {
+                if (retryXhr.status < 400) {
+                  try {
+                    Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
+                    Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
+                    Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
+                    if (retryXhr.responseType === '' || retryXhr.responseType === 'text') {
+                      Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
+                    }
+                  } catch(_) {}
+                  if (userOnReady) userOnReady.call(xhr, re);
+                  listeners.readystatechange.forEach(f => f.call(xhr, re));
+                  if (userOnLoad) userOnLoad.call(xhr, re);
+                  listeners.load.forEach(f => f.call(xhr, re));
+                  if (userOnLoadEnd) userOnLoadEnd.call(xhr, re);
+                  listeners.loadend.forEach(f => f.call(xhr, re));
+                } else {
+                  tryNext();
+                }
+              };
+              retryXhr.onerror = tryNext;
+              retryXhr.send(reqBody);
+            } catch (_) {
+              tryNext();
+            }
           }
           tryNext();
         });
@@ -1245,29 +1246,40 @@
             }
             const nextUrl = getMirrorUrl(resolvedUrl, MIRROR_ORIGINS[mirrorIdx++]);
             if (!nextUrl || nextUrl === resolvedUrl) return tryNext();
-            const retryXhr = new OrigXHR();
-            retryXhr.responseType = xhr.responseType;
-            retryXhr.open(reqMethod, nextUrl, true);
-            retryXhr.onload = function(re) {
-              if (retryXhr.status < 400) {
-                try {
-                  Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
-                  Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
-                  Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
-                  Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
-                } catch(_) {}
-                if (userOnReady) userOnReady.call(xhr, re);
-                listeners.readystatechange.forEach(f => f.call(xhr, re));
-                if (userOnLoad) userOnLoad.call(xhr, re);
-                listeners.load.forEach(f => f.call(xhr, re));
-                if (userOnLoadEnd) userOnLoadEnd.call(xhr, re);
-                listeners.loadend.forEach(f => f.call(xhr, re));
-              } else {
-                tryNext();
+            console.warn('[Athyx CDN Auto-Fallback] XHR error, retrying mirror:', nextUrl);
+            try {
+              const retryXhr = new OrigXHR();
+              retryXhr.open(reqMethod, nextUrl, true);
+              if (xhr.responseType) {
+                try { retryXhr.responseType = xhr.responseType; } catch (_) {}
               }
-            };
-            retryXhr.onerror = tryNext;
-            retryXhr.send(reqBody);
+              retryXhr.timeout = 5000;
+              retryXhr.ontimeout = tryNext;
+              retryXhr.onload = function(re) {
+                if (retryXhr.status < 400) {
+                  try {
+                    Object.defineProperty(xhr, 'status', { get: () => retryXhr.status, configurable: true });
+                    Object.defineProperty(xhr, 'statusText', { get: () => retryXhr.statusText, configurable: true });
+                    Object.defineProperty(xhr, 'response', { get: () => retryXhr.response, configurable: true });
+                    if (retryXhr.responseType === '' || retryXhr.responseType === 'text') {
+                      Object.defineProperty(xhr, 'responseText', { get: () => retryXhr.responseText, configurable: true });
+                    }
+                  } catch(_) {}
+                  if (userOnReady) userOnReady.call(xhr, re);
+                  listeners.readystatechange.forEach(f => f.call(xhr, re));
+                  if (userOnLoad) userOnLoad.call(xhr, re);
+                  listeners.load.forEach(f => f.call(xhr, re));
+                  if (userOnLoadEnd) userOnLoadEnd.call(xhr, re);
+                  listeners.loadend.forEach(f => f.call(xhr, re));
+                } else {
+                  tryNext();
+                }
+              };
+              retryXhr.onerror = tryNext;
+              retryXhr.send(reqBody);
+            } catch (_) {
+              tryNext();
+            }
           }
           tryNext();
         });

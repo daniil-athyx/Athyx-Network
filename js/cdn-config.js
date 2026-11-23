@@ -105,8 +105,8 @@
     return 'custom';
   }
 
-  var UBG_ASSETS_SHA = '4119f368a3039167cd99109f1bf126e118efd8d9';
-  var ATHYX_GAME_LIB_SHA = '1945692857eb80c8cc2fe1be9c477e115aabe4d4';
+  var UBG_ASSETS_SHA = '0faa1005d80794ed738a21b4a87edaf8db031193';
+  var ATHYX_GAME_LIB_SHA = 'bfbb581f559bdd5c143d6b4f00366b525eb479cf';
 
   function rewriteUrl(url, targetOrigin) {
     if (!url || typeof url !== 'string') return url;

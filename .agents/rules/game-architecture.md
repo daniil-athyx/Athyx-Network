@@ -1,5 +1,11 @@
 # Game Architecture and Integration Rules
 
+### 0. STRICT CDN POLICY: jsDelivr ONLY (NO raw.githubusercontent.com)
+- **NEVER use `raw.githubusercontent.com` under any circumstance.**
+- **NEVER use any CDN or source other than jsDelivr (`https://cdn.jsdelivr.net`).**
+- jsDelivr is the **ONLY** authorized CDN for all games, launchers, icons, game data, scripts, and assets.
+- Any attempt to use `raw.githubusercontent.com`, Statically, or other third-party mirrors is strictly forbidden.
+
 ### 1. NEVER Edit `pages/g.html` When Adding or Modifying Games
 - `pages/g.html` is the core launcher UI and must NEVER be edited when adding, updating, fixing, or modifying games.
 - Do NOT add hardcoded game `if` checks, redirects, or custom iframe routes into `pages/g.html`.
@@ -37,3 +43,10 @@
   }
   ```
 - `pages/g.html` automatically reads `games.json` from `ubg-assets`, renders the cards, and launches the game executable from `ubg-assets` seamlessly.
+
+### 6. Dual-Repository & Architecture Synchronization on Game Fixes & Updates
+- Whenever an AI agent adds, fixes, patches, or updates any game:
+  - **Always Update Both Repositories**: You must update `ubg-assets` (launchers, `games.json`, `.webp` icons) AND `athyx-game-lib` (game directories, stitched/split asset chunks, scripts, engines) consistently.
+  - **Always Update Game Architecture Rules**: Whenever game architectures, chunking logic, loader patterns, or directory paths evolve, immediately update the game architecture rule files (`.agents/rules/game-architecture.md` and global rules) so all future agent turns follow the exact current system.
+  - **Never Update One in Isolation**: Never patch `ubg-assets` without ensuring `athyx-game-lib` contains the matching mirrored assets, and never modify `athyx-game-lib` without updating the corresponding launcher in `ubg-assets`.
+  - **Commit, Push & Pin SHAs**: Commit and push both repos. When updating `athyx-game-lib` or `ubg-assets`, verify whether commit SHAs in `cdn-config.js` or launcher HTMLs need updating, and ensure changes are deployed to Firebase Hosting.
